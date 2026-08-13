@@ -22,6 +22,13 @@ class GeocodingResult(BaseModel):
     place_type: str
 
 
+class ReverseGeocodeResponse(BaseModel):
+    latitude: float
+    longitude: float
+    display_name: Optional[str] = None
+    place_type: Optional[str] = None
+
+
 @router.get("/geocode", response_model=List[GeocodingResult])
 async def geocode_address(
     current_user: RequireAnyAuth,
@@ -44,6 +51,22 @@ async def geocode_address(
         )
         for r in results
     ]
+
+
+@router.get("/reverse-geocode", response_model=ReverseGeocodeResponse)
+async def reverse_geocode(
+    current_user: RequireAnyAuth,
+    lat: float = Query(..., ge=-90, le=90, description="Latitude to resolve"),
+    lon: float = Query(..., ge=-180, le=180, description="Longitude to resolve"),
+):
+    """Resolve coordinates to a human-readable place name (best-effort)."""
+    location = await geocoding_service.reverse(lat, lon)
+    return ReverseGeocodeResponse(
+        latitude=lat,
+        longitude=lon,
+        display_name=location.display_name if location else None,
+        place_type=location.place_type if location else None,
+    )
 
 
 @router.get("/preview", response_model=RouteOptimizeResponse)

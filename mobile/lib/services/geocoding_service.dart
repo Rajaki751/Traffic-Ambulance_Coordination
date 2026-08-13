@@ -37,4 +37,13 @@ class GeocodingService {
         .map((e) => GeocodingResult.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<String?> reverse(double latitude, double longitude) async {
+    final res = await _api.get(
+      '/api/v1/directions/reverse-geocode',
+      query: {'lat': latitude, 'lon': longitude},
+    );
+    final data = res.data as Map<String, dynamic>?;
+    return data?['display_name'] as String?;
+  }
 }

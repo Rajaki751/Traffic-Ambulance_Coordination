@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../core/kathmandu.dart';
 import '../providers/emergency_provider.dart';
+import '../screens/location_pick_screen.dart';
 import '../services/ai_service.dart';
 import '../services/api_service.dart';
 import '../services/geocoding_service.dart';
@@ -66,6 +67,28 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
     _latCtrl.dispose();
     _lonCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickOnMap(BuildContext context) async {
+    final initialLat =
+        double.tryParse(_latCtrl.text.trim()) ?? KathmanduLocation.centerLat;
+    final initialLon =
+        double.tryParse(_lonCtrl.text.trim()) ?? KathmanduLocation.centerLon;
+    final picked = await Navigator.push<PickedLocation>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickScreen(
+          initialLat: initialLat,
+          initialLon: initialLon,
+        ),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      _latCtrl.text = picked.latitude.toStringAsFixed(6);
+      _lonCtrl.text = picked.longitude.toStringAsFixed(6);
+      _destCtrl.text = picked.label ?? 'Pinned location';
+    });
   }
 
   void _showLocationSearch(BuildContext context) {
@@ -366,15 +389,30 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
               icon: Icons.location_on_outlined,
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Enter a destination' : null,
-              trailing: IconButton(
-                tooltip: 'Search location',
-                padding: const EdgeInsets.all(7),
-                onPressed: () => _showLocationSearch(context),
-                icon: const Icon(
-                  Icons.search_rounded,
-                  size: 20,
-                  color: kAuthIcon,
-                ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: 'Search location',
+                    padding: const EdgeInsets.all(7),
+                    onPressed: () => _showLocationSearch(context),
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: kAuthIcon,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Pin on map',
+                    padding: const EdgeInsets.all(7),
+                    onPressed: () => _pickOnMap(context),
+                    icon: const Icon(
+                      Icons.map_outlined,
+                      size: 20,
+                      color: kAuthRedLink,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),

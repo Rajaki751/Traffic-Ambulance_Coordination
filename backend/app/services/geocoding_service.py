@@ -1,9 +1,12 @@
 """Geocoding service using Nominatim (OpenStreetMap) for address-to-coordinate resolution."""
 
+import logging
 from typing import Optional
 from dataclasses import dataclass
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -67,3 +70,27 @@ class GeocodingService:
         """Return the best single geocoding match, or None."""
         results = await self.geocode(query, bias_lat=bias_lat, bias_lon=bias_lon, limit=1)
         return results[0] if results else None
+
+    async def reverse(
+        self, latitude: float, longitude: float
+    ) -> Optional[GeocodedLocation]:
+        """Resolve coordinates to a place name (best-effort, None on failure)."""
+        params = {"lat": latitude, "lon": longitude, "format": "json"}
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    self.REVERSE_URL, params=params, headers=self.HEADERS
+                )
+                resp.raise_for_status()
+                data = resp.json()
+            if not data or data.get("error"):
+                return None
+            return GeocodedLocation(
+                latitude=float(data["lat"]),
+                longitude=float(data["lon"]),
+                display_name=data.get("display_name", ""),
+                place_type=data.get("type", "unknown"),
+            )
+        except Exception as exc:
+            logger.warning("Reverse geocode failed for (%s, %s): %s", latitude, longitude, exc)
+            return None

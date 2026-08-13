@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driver dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F7F5;
+    --card: #FFFFFF;
+    --border: #D3D1C7;
+    --text: #1A1A18;
+    --muted: #5F5E5A;
+    --faint: #8A8880;
+    --icon: #B4B2A9;
+    --red: #E24B4A;
+    --red-dark: #C93B3A;
+    --red-pressed: #B2322F;
+    --red-badge-text: #791F1F;
+    --red-badge-bg: #FCEBEB;
+    --red-link: #A32D2D;
+    --green-badge-bg: #E8F5EC;
+    --green-badge-text: #1F7A44;
+    --blue: #2E6FD8;
+    --green: #2F9E63;
+    --nav-h: 64px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* ── Header ─────────────────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text);
+  }
+
+  .logout-btn {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 120ms ease, background-color 120ms ease;
+  }
+
+  .logout-btn:hover { color: var(--text); background: var(--bg); }
+  .logout-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  .logout-btn svg { width: 20px; height: 20px; }
+
+  /* ── Content ────────────────────────────────────────── */
+  .content {
+    padding: 16px 16px 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(26, 26, 24, 0.04);
+  }
+
+  /* ── My status ──────────────────────────────────────── */
+  .status-card {
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .status-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .status-head h2 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge.available {
+    background: var(--green-badge-bg);
+    color: var(--green-badge-text);
+  }
+
+  .pills {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--faint);
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+  }
+
+  .pill:hover { border-color: #BCBAB0; color: var(--text); }
+
+  .pill svg { width: 16px; height: 16px; }
+
+  .pill.active {
+    background: var(--red-badge-bg);
+    border-color: var(--red);
+    color: var(--red-badge-text);
+  }
+
+  /* ── Stat cards ─────────────────────────────────────── */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(26, 26, 24, 0.04);
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .stat svg { width: 26px; height: 26px; }
+
+  .stat .value {
+    margin-top: 8px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .stat .label {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--faint);
+  }
+
+  .stat svg.icon-gray { color: var(--icon); }
+  .stat svg.icon-blue { color: var(--blue); }
+  .stat svg.icon-green { color: var(--green); }
+
+  /* ── Quick actions ──────────────────────────────────── */
+  .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── Emergency button (fixed above nav) ─────────────── */
+  .emergency-btn {
+    position: fixed;
+    bottom: calc(var(--nav-h) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 448px;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 52px;
+    background: var(--red);
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(26, 26, 24, 0.04);
+    transition: background-color 120ms ease;
+  }
+
+  .emergency-btn:hover { background: var(--red-dark); }
+  .emergency-btn:active { background: var(--red-pressed); }
+  .emergency-btn:focus-visible { outline: 2px solid var(--red-pressed); outline-offset: 2px; }
+  .emergency-btn svg { width: 20px; height: 20px; }
+
+  /* ── Bottom nav ─────────────────────────────────────── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: var(--nav-h);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--card);
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 72px;
+    padding: 6px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--icon);
+    transition: color 120ms ease;
+  }
+
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-item span { font-size: 11px; }
+
+  .nav-item:hover { color: var(--faint); }
+
+  .nav-item.active { color: var(--red-link); }
+
+  .nav-item:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; border-radius: 6px; }
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <h1>Driver dashboard</h1>
+      <button class="logout-btn" type="button" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 17l5-5-5-5"/>
+          <path d="M15 12H3"/>
+          <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="content">
+
+      <section class="card status-card">
+        <div class="status-head">
+          <h2>My status</h2>
+          <span class="badge available">Available</span>
+        </div>
+        <div class="pills" role="group" aria-label="Driver status">
+          <button class="pill active" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            Available
+          </button>
+          <button class="pill" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="7" width="18" height="13" rx="2"/>
+              <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            On duty
+          </button>
+          <button class="pill" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 6v6l3 2"/>
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+            Offline
+          </button>
+        </div>
+      </section>
+
+      <div class="stats">
+        <div class="stat">
+          <svg class="icon-gray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h13l3 4h2a2 2 0 0 1 2 2v4h-3"/>
+            <rect x="3" y="6" width="3" height="11" rx="1"/>
+            <circle cx="8" cy="18" r="2"/>
+            <circle cx="18" cy="18" r="2"/>
+            <path d="M12 6v5h5"/>
+          </svg>
+          <p class="value">No</p>
+          <p class="label">Active emergency</p>
+        </div>
+        <div class="stat">
+          <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 12l2 2 4-4"/>
+            <circle cx="12" cy="12" r="9"/>
+          </svg>
+          <p class="value">0</p>
+          <p class="label">Today's trips</p>
+        </div>
+        <div class="stat">
+          <svg class="icon-gray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/>
+            <path d="M10 19a2 2 0 0 0 4 0"/>
+          </svg>
+          <p class="value">0</p>
+          <p class="label">Notifications</p>
+        </div>
+        <div class="stat">
+          <svg class="icon-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 14l7-8"/>
+            <circle cx="12" cy="12" r="9"/>
+          </svg>
+          <p class="value">— km/h</p>
+          <p class="label">Speed</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">Quick actions</h2>
+
+    </main>
+
+    <button class="emergency-btn" type="button" id="emergencyBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" aria-hidden="true">
+        <path d="M12 4.5v15M4.5 12h15"/>
+      </svg>
+      Activate emergency
+    </button>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <button class="nav-item active" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 11l9-8 9 8"/>
+          <path d="M5 10v10h14V10"/>
+          <path d="M10 20v-6h4v6"/>
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="6" cy="19" r="2"/>
+          <circle cx="18" cy="5" r="2"/>
+          <path d="M6 17v-3a6 6 0 0 1 6-6h4"/>
+          <path d="M16 10l2-2-2-2"/>
+        </svg>
+        <span>Trips</span>
+      </button>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/>
+          <path d="M10 19a2 2 0 0 0 4 0"/>
+        </svg>
+        <span>Alerts</span>
+      </button>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/>
+        </svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+<script>
+  document.querySelectorAll('.pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.nav-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach((i) => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  document.getElementById('emergencyBtn').addEventListener('click', (e) => e.preventDefault());
+</script>
+</body>
+</html>

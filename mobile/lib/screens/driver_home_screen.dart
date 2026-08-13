@@ -21,6 +21,9 @@ const _kGreenBadgeText = Color(0xFF1F7A44);
 const _kBlue = Color(0xFF2E6FD8);
 const _kGreen = Color(0xFF2F9E63);
 const _kOrange = Color(0xFFE8833A);
+const _kNeutralTint = Color(0xFFF2F1ED);
+const _kBlueTint = Color(0xFFEAF1FC);
+const _kOrangeTint = Color(0xFFFDF1E7);
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -177,22 +180,54 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
-          Column(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Driver dashboard',
-                style: text.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.3,
-                  color: kAuthText,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Driver dashboard',
+                      style: text.copyWith(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.6,
+                        color: kAuthFaint,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${_greetingPrefix(DateTime.now())}, $firstName',
+                      style: text.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.5,
+                        color: kAuthText,
+                        height: 1.15,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Welcome, $firstName',
-                style: text.copyWith(fontSize: 14, color: kAuthMuted),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: kAuthRedBadgeBg,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: kAuthRed.withOpacity(0.25)),
+                ),
+                child: Center(
+                  child: Text(
+                    firstName.isEmpty ? 'D' : firstName[0].toUpperCase(),
+                    style: text.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: kAuthRedLink,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -215,34 +250,50 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'My status',
-                      style: text.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: kAuthText,
-                      ),
-                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: emergency.isEmergencyActive
                             ? kAuthRedBadgeBg
                             : _kGreenBadgeBg,
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
-                        emergency.isEmergencyActive ? 'Busy' : _driverStatus,
-                        style: text.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: emergency.isEmergencyActive
-                              ? kAuthRedBadgeText
-                              : _kGreenBadgeText,
-                        ),
+                      child: Icon(
+                        emergency.isEmergencyActive
+                            ? Icons.local_hospital_rounded
+                            : Icons.check_circle_rounded,
+                        size: 20,
+                        color: emergency.isEmergencyActive
+                            ? kAuthRedBadgeText
+                            : _kGreenBadgeText,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'My status',
+                            style: text.copyWith(
+                              fontSize: 12.5,
+                              color: kAuthFaint,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            emergency.isEmergencyActive
+                                ? 'Busy'
+                                : _driverStatus,
+                            style: text.copyWith(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              color: kAuthText,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -286,7 +337,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 value: emergency.isEmergencyActive ? 'Yes' : 'No',
                 iconColor: emergency.isEmergencyActive
                     ? kAuthRed
-                    : kAuthIcon,
+                    : kAuthMuted,
+                tint: emergency.isEmergencyActive
+                    ? kAuthRedBadgeBg
+                    : _kNeutralTint,
               ),
               const SizedBox(width: 12),
               _statCard(
@@ -294,6 +348,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 label: "Today's trips",
                 value: '$todayTrips',
                 iconColor: _kBlue,
+                tint: _kBlueTint,
               ),
             ],
           ),
@@ -304,7 +359,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 icon: Icons.notifications,
                 label: 'Notifications',
                 value: '${notifs.unreadCount}',
-                iconColor: notifs.unreadCount > 0 ? _kOrange : kAuthIcon,
+                iconColor: notifs.unreadCount > 0 ? _kOrange : kAuthMuted,
+                tint: notifs.unreadCount > 0
+                    ? _kOrangeTint
+                    : _kNeutralTint,
               ),
               const SizedBox(width: 12),
               _statCard(
@@ -314,6 +372,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     ? '${location.speedKmh != null ? location.speedKmh!.toStringAsFixed(0) : "—"} km/h'
                     : '— km/h',
                 iconColor: _kGreen,
+                tint: _kGreenBadgeBg,
               ),
             ],
           ),
@@ -366,13 +425,21 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             const SizedBox(height: 12),
           ],
 
-          Text(
-            'Quick actions',
-            style: text.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: kAuthText,
-            ),
+          Row(
+            children: [
+              Text(
+                'Quick actions',
+                style: text.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: kAuthText,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Divider(color: kAuthBorder, height: 1),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           if (!emergency.isEmergencyActive)
@@ -493,6 +560,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
+  String _greetingPrefix(DateTime now) {
+    final hour = now.hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
   Future<void> _setStatus(String display, String api) async {
     setState(() => _driverStatus = display);
     await context.read<AuthProvider>().updateAmbulanceStatus(api);
@@ -547,11 +621,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     required String label,
     required String value,
     required Color iconColor,
+    required Color tint,
   }) {
     final text = GoogleFonts.inter();
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+        padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
         decoration: BoxDecoration(
           color: kAuthCard,
           borderRadius: BorderRadius.circular(14),
@@ -566,14 +641,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 26, color: iconColor),
-            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: tint,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(height: 10),
             Text(
               value,
               style: text.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                letterSpacing: -0.2,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.5,
                 color: kAuthText,
               ),
             ),

@@ -23,6 +23,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final MapController _mapController = MapController();
   bool _followMode = true;
   bool _showSteps = false;
+  bool _mapReady = false;
   double? _currentLat;
   double? _currentLon;
   StreamSubscription<void>? _posSub;
@@ -84,16 +85,25 @@ class _NavigationScreenState extends State<NavigationScreen> {
     }
   }
 
-  void _panToCurrent() {
-    if (_currentLat != null && _currentLon != null) {
+  Future<bool> _awaitMapReady() async {
+    for (var i = 0; i < 10 && !_mapReady; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+    return mounted && _mapReady;
+  }
+
+  Future<void> _panToCurrent() async {
+    if (_currentLat == null || _currentLon == null) return;
+    if (!await _awaitMapReady()) return;
+    try {
       _mapController.move(
         LatLng(_currentLat!, _currentLon!),
         _mapController.camera.zoom,
       );
-    }
+    } catch (_) {}
   }
 
-  void _fitToRoute() {
+  Future<void> _fitToRoute() async {
     final emergency = context.read<EmergencyProvider>().activeEmergency;
     if (emergency == null) return;
     final points = <LatLng>[];
@@ -117,11 +127,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
       if (p.longitude > maxLon) maxLon = p.longitude;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (points.length == 1) {
-        _mapController.move(points.first, 16);
-        return;
-      }
+    if (!await _awaitMapReady()) return;
+    if (points.length == 1) {
+      _mapController.move(points.first, 16);
+      return;
+    }
+    try {
       _mapController.fitCamera(
         CameraFit.bounds(
           bounds: LatLngBounds(
@@ -131,7 +142,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
           padding: const EdgeInsets.all(64),
         ),
       );
-    });
+    } catch (_) {}
   }
 
   @override
@@ -277,6 +288,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
               initialZoom: 15,
               minZoom: 12,
               maxZoom: 18,
+              onMapReady: () => _mapReady = true,
             ),
             children: [
               TileLayer(
@@ -294,17 +306,21 @@ class _NavigationScreenState extends State<NavigationScreen> {
               children: [
                 _mapButton(
                   icon: Icons.add,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!await _awaitMapReady()) return;
                     final z = _mapController.camera.zoom;
-                    _mapController.move(_mapController.camera.center, math.min(z + 1, 18));
+                    _mapController.move(
+                        _mapController.camera.center, math.min(z + 1, 18));
                   },
                 ),
                 const SizedBox(height: 8),
                 _mapButton(
                   icon: Icons.remove,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!await _awaitMapReady()) return;
                     final z = _mapController.camera.zoom;
-                    _mapController.move(_mapController.camera.center, math.max(z - 1, 12));
+                    _mapController.move(
+                        _mapController.camera.center, math.max(z - 1, 12));
                   },
                 ),
                 const SizedBox(height: 8),

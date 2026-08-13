@@ -17,6 +17,7 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<NotificationProvider>().setMode(driver: true);
+      if (!mounted) return;
       await context.read<EmergencyProvider>().loadHistory();
     });
   }

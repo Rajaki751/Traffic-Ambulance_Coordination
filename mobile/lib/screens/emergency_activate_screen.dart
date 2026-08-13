@@ -42,8 +42,32 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
     final searchCtrl = TextEditingController();
     List<GeocodingResult>? results;
     bool loading = false;
+    var open = true;
 
-    showDialog(
+    Future<void> runSearch(StateSetter setDialogState) async {
+      if (!open || searchCtrl.text.trim().length < 2) return;
+      setDialogState(() => loading = true);
+      try {
+        final api = context.read<ApiService?>();
+        if (api == null) return;
+        final svc = GeocodingService(api);
+        final r = await svc.search(
+          searchCtrl.text.trim(),
+          lat: 27.7172,
+          lon: 85.3240,
+        );
+        if (!open) return;
+        setDialogState(() {
+          results = r;
+          loading = false;
+        });
+      } catch (e) {
+        if (!open) return;
+        setDialogState(() => loading = false);
+      }
+    }
+
+    final dialogFuture = showDialog<void>(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
@@ -65,48 +89,10 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.search),
-                    onPressed: () async {
-                      if (searchCtrl.text.trim().length < 2) return;
-                      setDialogState(() => loading = true);
-                      try {
-                        final api = context.read<ApiService?>();
-                        if (api == null) return;
-                        final svc = GeocodingService(api);
-                        final r = await svc.search(
-                          searchCtrl.text.trim(),
-                          lat: 27.7172,
-                          lon: 85.3240,
-                        );
-                        setDialogState(() {
-                          results = r;
-                          loading = false;
-                        });
-                      } catch (e) {
-                        setDialogState(() => loading = false);
-                      }
-                    },
+                    onPressed: () => runSearch(setDialogState),
                   ),
                 ),
-                onSubmitted: (_) async {
-                  if (searchCtrl.text.trim().length < 2) return;
-                  setDialogState(() => loading = true);
-                  try {
-                    final api = context.read<ApiService?>();
-                    if (api == null) return;
-                    final svc = GeocodingService(api);
-                    final r = await svc.search(
-                      searchCtrl.text.trim(),
-                      lat: 27.7172,
-                      lon: 85.3240,
-                    );
-                    setDialogState(() {
-                      results = r;
-                      loading = false;
-                    });
-                  } catch (e) {
-                    setDialogState(() => loading = false);
-                  }
-                },
+                onSubmitted: (_) => runSearch(setDialogState),
               ),
               const SizedBox(height: 12),
               if (loading) const CircularProgressIndicator(),
@@ -153,6 +139,10 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
         ),
       ),
     );
+    dialogFuture.whenComplete(() {
+      open = false;
+      searchCtrl.dispose();
+    });
   }
 
   Widget _predictionRow(IconData icon, String label, String value) {

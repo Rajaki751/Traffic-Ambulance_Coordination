@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final url = await _serverConfig.getApiBaseUrl();
     if (!mounted) return;
     setState(() {
-      _serverCtrl.text = url.contains('10.0.2.2') ? '' : url;
+      _serverCtrl.text = url;
     });
   }
 

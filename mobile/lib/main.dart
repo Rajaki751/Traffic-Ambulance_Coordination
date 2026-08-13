@@ -19,6 +19,7 @@ import 'services/ai_service.dart';
 import 'services/emergency_service.dart';
 import 'services/gps_service.dart';
 import 'services/junction_service.dart';
+import 'services/live_service.dart';
 import 'services/notification_service.dart';
 import 'services/profile_service.dart';
 import 'services/server_config_service.dart';
@@ -45,16 +46,22 @@ class AmbulanceApp extends StatefulWidget {
 class _AmbulanceAppState extends State<AmbulanceApp> {
   late final GpsTrackingService _gpsService = GpsTrackingService(widget.api);
   late final _authService = AuthService(widget.api);
-  late final _authProvider = AuthProvider(_authService, widget.serverConfig);
+  late final LiveService _liveService = LiveService();
+  late final _authProvider =
+      AuthProvider(_authService, widget.serverConfig, _liveService);
   late final _profileService = ProfileService(widget.api);
   late final _router = GoRouter(
+    initialLocation: '/',
     refreshListenable: _authProvider,
     redirect: (context, state) {
+      if (_authProvider.loading) return null;
       final loggedIn = _authProvider.isAuthenticated;
-      final onLogin = state.matchedLocation == '/login';
-      final onRegister = state.matchedLocation == '/register';
-      if (!loggedIn && !onLogin && !onRegister) return '/login';
-      if (loggedIn && (onLogin || onRegister)) {
+      final path = state.matchedLocation;
+      if (!loggedIn) {
+        if (path == '/login' || path == '/register') return null;
+        return '/login';
+      }
+      if (path == '/login' || path == '/register' || path == '/') {
         final role = _authProvider.user?.role;
         if (role == UserRole.driver) return '/driver';
         if (role == UserRole.officer) return '/officer';
@@ -63,6 +70,7 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
       return null;
     },
     routes: [
+      GoRoute(path: '/', builder: (_, __) => const _SplashScreen()),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
       GoRoute(path: '/driver', builder: (_, __) => const DriverHomeScreen()),
@@ -73,6 +81,9 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
   @override
   void initState() {
     super.initState();
+    widget.api.onUnauthorized = () {
+      _authProvider.logout();
+    };
     _authProvider.init();
   }
 
@@ -99,7 +110,12 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
           create: (_) => JunctionProvider(JunctionService(widget.api)),
         ),
         ChangeNotifierProvider(
-          create: (_) => NotificationProvider(NotificationApiService(widget.api)),
+          create: (_) {
+            final notifProvider =
+                NotificationProvider(NotificationApiService(widget.api));
+            _liveService.onNotification = notifProvider.refresh;
+            return notifProvider;
+          },
         ),
         ChangeNotifierProvider(
           create: (_) => SettingsProvider(),
@@ -116,6 +132,17 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
       ),
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }

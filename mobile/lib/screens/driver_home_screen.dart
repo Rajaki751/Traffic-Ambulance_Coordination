@@ -37,11 +37,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       await emergency.restoreActiveSession();
       await notifications.setMode(driver: true);
       if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-        loc.startTracking(
+        final started = await loc.startTracking(
           emergency.activeEmergency!.id,
           onTick: emergency.refreshActiveEmergency,
         );
-        setState(() => _driverStatus = 'Busy');
+        if (!started && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location permission required for live tracking'),
+            ),
+          );
+        }
+        if (mounted) setState(() => _driverStatus = 'Busy');
       }
       await emergency.loadHistory();
     });
@@ -54,7 +61,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final location = context.watch<DriverLocationProvider>();
     final notifs = context.watch<NotificationProvider>();
     final active = emergency.activeEmergency;
-    final todayTrips = emergency.history.where((h) => h.endedAt != null).length;
+    final now = DateTime.now();
+    bool isToday(DateTime dt) =>
+        dt.year == now.year && dt.month == now.month && dt.day == now.day;
+    final todayTrips = emergency.history
+        .where((h) =>
+            isToday(h.startedAt) || (h.endedAt != null && isToday(h.endedAt!)))
+        .length;
 
     final pages = <Widget>[
       _buildHomePage(context, emergency, location, active, todayTrips, notifs),
@@ -91,12 +104,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
-            ).then((_) {
+            ).then((_) async {
+              if (!context.mounted) return;
               if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-                context.read<DriverLocationProvider>().startTracking(
+                await context.read<DriverLocationProvider>().startTracking(
                       emergency.activeEmergency!.id,
                       onTick: emergency.refreshActiveEmergency,
                     );
+                if (!context.mounted) return;
                 setState(() => _driverStatus = 'Busy');
               }
             });
@@ -229,7 +244,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   context,
                   icon: Icons.speed,
                   label: 'Speed',
-                  value: active != null ? '${(location.lat != null ? "—" : "—")} km/h' : '— km/h',
+                  value: active != null
+                      ? '${location.speedKmh != null ? location.speedKmh!.toStringAsFixed(0) : "—"} km/h'
+                      : '— km/h',
                   color: Colors.teal,
                 ),
               ),
@@ -283,12 +300,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   context,
                   MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
                 );
-                if (!mounted) return;
+                if (!context.mounted) return;
                 if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-                  context.read<DriverLocationProvider>().startTracking(
+                  await context.read<DriverLocationProvider>().startTracking(
                         emergency.activeEmergency!.id,
                         onTick: emergency.refreshActiveEmergency,
                       );
+                  if (!context.mounted) return;
                   setState(() => _driverStatus = 'Busy');
                 }
               },
@@ -339,9 +357,20 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     onPressed: emergency.loading
                         ? null
                         : () async {
-                            context.read<DriverLocationProvider>().stopTracking();
-                            await emergency.endEmergency();
-                            setState(() => _driverStatus = 'Available');
+                            final ok = await emergency.endEmergency();
+                            if (!context.mounted) return;
+                            if (ok) {
+                              context.read<DriverLocationProvider>().stopTracking();
+                              setState(() => _driverStatus = 'Available');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    emergency.error ?? 'Failed to end emergency',
+                                  ),
+                                ),
+                              );
+                            }
                           },
                   ),
                 ),
@@ -462,9 +491,23 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               onPressed: emergency.loading
                                   ? null
                                   : () async {
-                                      context.read<DriverLocationProvider>().stopTracking();
-                                      await emergency.endEmergency();
-                                      setState(() => _driverStatus = 'Available');
+                                      final ok = await emergency.endEmergency();
+                                      if (!context.mounted) return;
+                                      if (ok) {
+                                        context
+                                            .read<DriverLocationProvider>()
+                                            .stopTracking();
+                                        setState(() => _driverStatus = 'Available');
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              emergency.error ??
+                                                  'Failed to end emergency',
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     },
                             ),
                           ),
@@ -493,12 +536,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           context,
                           MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
                         );
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-                          context.read<DriverLocationProvider>().startTracking(
+                          await context.read<DriverLocationProvider>().startTracking(
                                 emergency.activeEmergency!.id,
                                 onTick: emergency.refreshActiveEmergency,
                               );
+                          if (!context.mounted) return;
                           setState(() => _driverStatus = 'Busy');
                         }
                       },

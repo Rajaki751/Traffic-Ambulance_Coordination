@@ -5,6 +5,7 @@ class ApiService {
   late final Dio _dio;
   String? _token;
   String _baseUrl = AppConstants.defaultBaseUrl;
+  void Function()? onUnauthorized;
 
   ApiService() {
     _dio = Dio(BaseOptions(
@@ -19,6 +20,13 @@ class ApiService {
           options.headers['Authorization'] = 'Bearer $_token';
         }
         handler.next(options);
+      },
+      onError: (error, handler) {
+        if (error.response?.statusCode == 401) {
+          _token = null;
+          onUnauthorized?.call();
+        }
+        handler.next(error);
       },
     ));
   }

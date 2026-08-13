@@ -45,6 +45,12 @@ class EmergencyProvider extends ChangeNotifier {
         return null;
       }
       final pos = await _gpsService.getCurrentPosition();
+      if (pos == null) {
+        _error = 'Could not get your location';
+        _loading = false;
+        notifyListeners();
+        return null;
+      }
       _lastPrediction = await _aiService.predictIncident(
         callerLat: pos.latitude,
         callerLon: pos.longitude,
@@ -86,6 +92,12 @@ class EmergencyProvider extends ChangeNotifier {
         return false;
       }
       final pos = await _gpsService.getCurrentPosition();
+      if (pos == null) {
+        _error = 'Could not get your location';
+        _loading = false;
+        notifyListeners();
+        return false;
+      }
       _activeEmergency = await _emergencyService.activate(
         destination: destination,
         currentLat: pos.latitude,
@@ -136,8 +148,8 @@ class EmergencyProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> endEmergency() async {
-    if (_activeEmergency == null) return;
+  Future<bool> endEmergency() async {
+    if (_activeEmergency == null) return true;
     _loading = true;
     notifyListeners();
     try {
@@ -145,11 +157,16 @@ class EmergencyProvider extends ChangeNotifier {
       _gpsService.stopTracking();
       _activeEmergency = null;
       _lastPrediction = null;
+      _error = null;
+      _loading = false;
+      notifyListeners();
+      return true;
     } catch (e) {
       _error = 'Failed to end emergency: $e';
+      _loading = false;
+      notifyListeners();
+      return false;
     }
-    _loading = false;
-    notifyListeners();
   }
 
   Future<void> updateTripStage(String stage) async {
@@ -161,8 +178,8 @@ class EmergencyProvider extends ChangeNotifier {
       double? lon;
       try {
         final pos = await _gpsService.getCurrentPosition();
-        lat = pos.latitude;
-        lon = pos.longitude;
+        lat = pos?.latitude;
+        lon = pos?.longitude;
       } catch (_) {}
       _activeEmergency = await _emergencyService.updateTripStage(
         _activeEmergency!.id,

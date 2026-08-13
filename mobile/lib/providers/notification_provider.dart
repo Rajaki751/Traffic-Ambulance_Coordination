@@ -39,7 +39,16 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> markRead(int id) async {
-    await _service.markRead(id);
+    try {
+      await _service.markRead(id);
+      await load();
+    } catch (_) {
+      // read may fail (e.g. officer-only endpoint on a driver); keep the list as-is
+    }
+  }
+
+  Future<void> refresh() async {
+    if (_loading) return;
     await load();
   }
 

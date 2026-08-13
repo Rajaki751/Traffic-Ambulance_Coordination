@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants.dart';
 import '../models/user_model.dart';
@@ -49,8 +50,7 @@ class AuthService {
     if (vehicleNumber != null) data['vehicle_number'] = vehicleNumber;
     if (assignedZone != null) data['assigned_zone'] = assignedZone;
 
-    final res = await _api.post('/api/v1/auth/register', data: data);
-    final resData = res.data as Map<String, dynamic>;
+    await _api.post('/api/v1/auth/register', data: data);
 
     final loginRes = await _api.post('/api/v1/auth/login', data: {
       'email': email,
@@ -90,8 +90,12 @@ class AuthService {
         ),
         token: token,
       );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await logout();
+      }
+      return null;
     } catch (_) {
-      await logout();
       return null;
     }
   }
@@ -99,7 +103,10 @@ class AuthService {
   Future<void> logout() async {
     _api.setToken(null);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await prefs.remove(AppConstants.tokenKey);
+    await prefs.remove(AppConstants.userIdKey);
+    await prefs.remove(AppConstants.userRoleKey);
+    await prefs.remove(AppConstants.userNameKey);
   }
 
   Future<void> updateAmbulanceStatus(String status) async {

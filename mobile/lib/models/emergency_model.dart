@@ -22,7 +22,6 @@ class EmergencyModel {
   final double? hospitalLongitude;
   final List<RouteStepModel>? routeSteps;
   final List<List<double>>? routeCoordinates;
-  final String? routePreference;
 
   EmergencyModel({
     required this.id,
@@ -48,7 +47,6 @@ class EmergencyModel {
     this.hospitalLongitude,
     this.routeSteps,
     this.routeCoordinates,
-    this.routePreference,
   });
 
   factory EmergencyModel.fromJson(Map<String, dynamic> json) {
@@ -84,7 +82,6 @@ class EmergencyModel {
               .map((e) => (e as List).map((n) => (n as num).toDouble()).toList())
               .toList()
           : null,
-      routePreference: json['route_preference'] as String?,
     );
   }
 }

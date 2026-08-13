@@ -12,20 +12,18 @@ class TrafficPoint {
 }
 
 class TrafficService {
-  final ApiService? _api;
-  TrafficService([this._api]);
+  final ApiService _api;
+  TrafficService(this._api);
 
   /// Try to fetch traffic points from backend; if it fails, return synthetic data.
   Future<List<TrafficPoint>> fetchKathmanduTraffic() async {
-    if (_api != null) {
-      try {
-        final res = await _api!.get('/api/v1/ai/model-info');
-        if (res.statusCode == 200) {
-          return _generateSyntheticKathmanduTraffic();
-        }
-      } catch (_) {
-        // ignore and fall back to synthetic
+    try {
+      final res = await _api.get('/api/v1/ai/model-info');
+      if (res.statusCode == 200) {
+        return _generateSyntheticKathmanduTraffic();
       }
+    } catch (_) {
+      // ignore and fall back to synthetic
     }
     return _generateSyntheticKathmanduTraffic();
   }

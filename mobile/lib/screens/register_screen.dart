@@ -191,6 +191,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             vehicleNumber: _role == 'driver' ? _vehicleCtrl.text.trim() : null,
                             assignedZone: _role == 'officer' ? _zoneCtrl.text.trim() : null,
                           );
+                          if (auth.isAuthenticated && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                   child: auth.loading
                       ? const SizedBox(

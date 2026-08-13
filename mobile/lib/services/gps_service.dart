@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'api_service.dart';
 
@@ -6,9 +7,16 @@ class GpsTrackingService {
   final ApiService _api;
   StreamSubscription<Position>? _subscription;
   int? _sessionId;
+  Future<void> _lastSend = Future.value();
   final _positionController = StreamController<Position>.broadcast();
+  late final AppLifecycleListener _lifecycleListener;
 
-  GpsTrackingService(this._api);
+  GpsTrackingService(this._api) {
+    _lifecycleListener = AppLifecycleListener(
+      onPause: pauseTracking,
+      onResume: resumeTracking,
+    );
+  }
 
   Stream<Position> get positionStream => _positionController.stream;
 
@@ -23,18 +31,32 @@ class GpsTrackingService {
         permission == LocationPermission.whileInUse;
   }
 
-  void startTracking(int emergencySessionId) {
+  Future<bool> startTracking(int emergencySessionId) async {
+    final ok = await requestPermission();
+    if (!ok) return false;
     _sessionId = emergencySessionId;
+    _startStream();
+    return true;
+  }
+
+  void _startStream() {
     _subscription?.cancel();
     _subscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
         distanceFilter: 5,
       ),
-    ).listen((position) {
-      _positionController.add(position);
-      _sendUpdate(position);
-    });
+    ).listen(
+      (position) {
+        _positionController.add(position);
+        _sendUpdate(position);
+      },
+      onError: (Object error) {
+        debugPrint('GPS stream error: $error');
+        _subscription?.cancel();
+        _subscription = null;
+      },
+    );
   }
 
   void stopTracking() {
@@ -43,8 +65,32 @@ class GpsTrackingService {
     _sessionId = null;
   }
 
-  Future<void> _sendUpdate(Position position) async {
+  void pauseTracking() {
+    _subscription?.pause();
+  }
+
+  Future<void> resumeTracking() async {
     if (_sessionId == null) return;
+    final ok = await requestPermission();
+    if (!ok) {
+      _subscription?.cancel();
+      _subscription = null;
+      _sessionId = null;
+      return;
+    }
+    if (_subscription != null) {
+      _subscription!.resume();
+    } else {
+      _startStream();
+    }
+  }
+
+  void _sendUpdate(Position position) {
+    if (_sessionId == null) return;
+    _lastSend = _lastSend.then((_) => _doSend(position)).catchError((_) {});
+  }
+
+  Future<void> _doSend(Position position) async {
     try {
       await _api.post('/api/v1/gps/update', data: {
         'emergency_session_id': _sessionId,
@@ -56,8 +102,21 @@ class GpsTrackingService {
     } catch (_) {}
   }
 
-  Future<Position> getCurrentPosition() =>
-      Geolocator.getCurrentPosition(locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-      ));
+  Future<Position?> getCurrentPosition() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.bestForNavigation,
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void dispose() {
+    _lifecycleListener.dispose();
+    stopTracking();
+    _positionController.close();
+  }
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../core/kathmandu.dart';
 import '../providers/settings_provider.dart';
+import '../services/api_service.dart';
 import '../services/traffic_service.dart';
 import '../utils/route_utils.dart';
 
@@ -55,7 +56,7 @@ class LiveAmbulanceMarker {
 class _AmbulanceMapState extends State<AmbulanceMap> {
   final MapController _mapController = MapController();
   List<CircleMarker> _trafficCircles = [];
-  bool _loadingTraffic = false;
+  bool _mapReady = false;
 
   @override
   void initState() {
@@ -67,10 +68,11 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
   }
 
   Future<void> _loadTraffic() async {
-    setState(() => _loadingTraffic = true);
+    if (!mounted) return;
     try {
-      final svc = TrafficService();
+      final svc = TrafficService(context.read<ApiService>());
       final pts = await svc.fetchKathmanduTraffic();
+      if (!mounted) return;
       final circles = pts.map((p) {
         final color = _colorForIndex(p.index);
         final radius = 18.0 + p.index * 32.0; // radius in pixels
@@ -83,25 +85,22 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
       }).toList();
       setState(() => _trafficCircles = circles);
     } catch (_) {
+      if (!mounted) return;
       setState(() => _trafficCircles = []);
     }
-    setState(() => _loadingTraffic = false);
   }
 
   @override
   void didUpdateWidget(covariant AmbulanceMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final coordsChanged = widget.ambulanceLat != oldWidget.ambulanceLat ||
-        widget.ambulanceLon != oldWidget.ambulanceLon ||
-        widget.destLat != oldWidget.destLat ||
+    final routeChanged = widget.destLat != oldWidget.destLat ||
         widget.destLon != oldWidget.destLon ||
-        widget.routePolyline != oldWidget.routePolyline ||
-        widget.extraAmbulances.length != oldWidget.extraAmbulances.length;
-    if (coordsChanged) _fitToContent();
+        widget.routePolyline != oldWidget.routePolyline;
+    if (routeChanged) _fitToContent();
     if (widget.showTrafficOverlay && !oldWidget.showTrafficOverlay) _loadTraffic();
   }
 
-  void _fitToContent() {
+  Future<void> _fitToContent() async {
     final points = <LatLng>[];
     if (widget.ambulanceLat != null && widget.ambulanceLon != null) {
       points.add(LatLng(widget.ambulanceLat!, widget.ambulanceLon!));
@@ -131,7 +130,11 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
       }
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    for (var i = 0; i < 10 && !_mapReady; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+    if (!mounted || !_mapReady) return;
+    try {
       if (tooFar) {
         _mapController.move(center, 14);
         return;
@@ -159,7 +162,7 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
           padding: const EdgeInsets.all(48),
         ),
       );
-    });
+    } catch (_) {}
   }
 
   @override
@@ -229,6 +232,7 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
         initialZoom: 13,
         minZoom: 12,
         maxZoom: 18,
+        onMapReady: () => _mapReady = true,
       ),
       children: [
         TileLayer(

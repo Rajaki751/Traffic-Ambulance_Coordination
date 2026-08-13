@@ -23,6 +23,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<NotificationProvider>().setMode(driver: false);
+      if (!mounted) return;
       context.read<LiveAmbulanceProvider>().startPolling();
       context.read<JunctionProvider>().loadClearanceHistory();
     });

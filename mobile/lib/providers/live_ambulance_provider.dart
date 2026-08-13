@@ -66,6 +66,7 @@ class DriverLocationProvider extends ChangeNotifier {
   double? _lat;
   double? _lon;
   double? _heading;
+  double? _speedKmh;
   StreamSubscription<Position>? _sub;
   Timer? _refreshTimer;
 
@@ -74,29 +75,42 @@ class DriverLocationProvider extends ChangeNotifier {
   double? get lat => _lat;
   double? get lon => _lon;
   double? get heading => _heading;
+  double? get speedKmh => _speedKmh;
   bool get hasPosition => _lat != null && _lon != null;
 
   Future<void> init() async {
     final ok = await _gpsService.requestPermission();
     if (!ok) return;
-    final pos = await _gpsService.getCurrentPosition();
-    _lat = pos.latitude;
-    _lon = pos.longitude;
-    _heading = pos.heading;
-    notifyListeners();
-  }
-
-  void startTracking(int sessionId, {VoidCallback? onTick}) {
-    _gpsService.startTracking(sessionId);
-    _sub?.cancel();
-    _sub = _gpsService.positionStream.listen((pos) {
+    try {
+      final pos = await _gpsService.getCurrentPosition();
+      if (pos == null) return;
       _lat = pos.latitude;
       _lon = pos.longitude;
       _heading = pos.heading;
+      _speedKmh = pos.speed * 3.6;
       notifyListeners();
-    });
+    } catch (_) {}
+  }
+
+  Future<bool> startTracking(int sessionId, {VoidCallback? onTick}) async {
+    final ok = await _gpsService.startTracking(sessionId);
+    _sub?.cancel();
+    if (ok) {
+      _sub = _gpsService.positionStream.listen((pos) {
+        _lat = pos.latitude;
+        _lon = pos.longitude;
+        _heading = pos.heading;
+        _speedKmh = pos.speed * 3.6;
+        notifyListeners();
+      });
+    }
     _refreshTimer?.cancel();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 8), (_) => onTick?.call());
+    _refreshTimer = null;
+    if (ok) {
+      _refreshTimer =
+          Timer.periodic(const Duration(seconds: 8), (_) => onTick?.call());
+    }
+    return ok;
   }
 
   void stopTracking() {
@@ -110,6 +124,7 @@ class DriverLocationProvider extends ChangeNotifier {
   @override
   void dispose() {
     stopTracking();
+    _gpsService.dispose();
     super.dispose();
   }
 }

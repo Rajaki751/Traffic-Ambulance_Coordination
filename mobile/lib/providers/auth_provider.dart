@@ -2,16 +2,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/live_service.dart';
 import '../services/server_config_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
   final ServerConfigService _serverConfig;
+  final LiveService _liveService;
   UserModel? _user;
   bool _loading = false;
   String? _error;
 
-  AuthProvider(this._authService, this._serverConfig);
+  AuthProvider(this._authService, this._serverConfig, this._liveService);
 
   Future<void> configureServer(String url) async {
     await _serverConfig.saveApiBaseUrl(url);
@@ -29,6 +31,7 @@ class AuthProvider extends ChangeNotifier {
     _user = await _authService.autoLogin();
     _loading = false;
     notifyListeners();
+    if (_user != null) _connectLive();
   }
 
   Future<bool> login(String email, String password) async {
@@ -48,6 +51,7 @@ class AuthProvider extends ChangeNotifier {
       _user = user;
       _loading = false;
       notifyListeners();
+      _connectLive();
       return true;
     } on DioException catch (e) {
       _error = _messageForDioError(e);
@@ -85,6 +89,7 @@ class AuthProvider extends ChangeNotifier {
       _user = user;
       _loading = false;
       notifyListeners();
+      _connectLive();
       return true;
     } on DioException catch (e) {
       final detail = e.response?.data;
@@ -124,9 +129,20 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    _liveService.disconnect();
     await _authService.logout();
     _user = null;
     notifyListeners();
+  }
+
+  void _connectLive() {
+    final user = _user;
+    if (user == null || user.token == null) return;
+    _liveService.connect(
+      baseUrl: _authService.baseUrl,
+      token: user.token!,
+      channel: user.role.name,
+    );
   }
 
   Future<bool> updateAmbulanceStatus(String status) async {

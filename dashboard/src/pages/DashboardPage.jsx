@@ -6,7 +6,6 @@ import {
   IconClock,
   IconMapPin,
   IconShieldCheck,
-  IconTimeline,
 } from '@tabler/icons-react';
 import LiveMap from '../components/LiveMap';
 import StatCard from '../components/StatCard';
@@ -91,13 +90,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Real-Time Dashboard</h1>
-        <span className="flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-          <IconTimeline className="h-4 w-4" stroke={1.7} />
-          Refreshes every 15s
-        </span>
-      </div>
+      <h1 className="text-2xl font-bold tracking-tight">Real-Time Dashboard</h1>
       {error && <ErrorBanner message={error} onRetry={loadData} />}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

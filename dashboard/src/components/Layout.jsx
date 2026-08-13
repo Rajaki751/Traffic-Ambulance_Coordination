@@ -1,32 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import {
-  IconActivity,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconLogout,
-} from '@tabler/icons-react';
+import { IconChevronsLeft, IconChevronsRight, IconLogout } from '@tabler/icons-react';
 import Sidebar from './Sidebar';
 import { useAdminWebSocket, WebSocketContext } from '../hooks/useWebSocket';
 
-const statusStyles = {
-  open: 'bg-green-500',
-  connecting: 'bg-yellow-500',
-  reconnecting: 'bg-yellow-500',
-  closed: 'bg-red-500',
-};
-
-const statusLabels = {
-  open: 'Live',
-  connecting: 'Connecting',
-  reconnecting: 'Reconnecting',
-  closed: 'Offline',
-};
-
 export default function Layout() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState('connecting');
   const [collapsed, setCollapsed] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const listenersRef = useRef(new Set());
 
   const subscribe = useCallback((listener) => {
@@ -44,7 +25,7 @@ export default function Layout() {
 
   useAdminWebSocket(
     (msg) => listenersRef.current.forEach((listener) => listener(msg)),
-    { onStatusChange: setStatus, onSessionExpired: logout }
+    { onSessionExpired: logout }
   );
 
   return (
@@ -67,31 +48,50 @@ export default function Layout() {
             </button>
             <h2 className="text-lg font-semibold tracking-tight">System Monitor</h2>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm dark:border-gray-700">
-              <span
-                className={`h-2 w-2 animate-pulse rounded-full ${statusStyles[status] || 'bg-gray-400'}`}
-              />
-              <span className="flex items-center gap-1.5">
-                <IconActivity className="h-4 w-4 text-gray-400" stroke={1.7} />
-                {statusLabels[status] || status}
-              </span>
-            </span>
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              <IconLogout className="h-4 w-4" stroke={1.7} />
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+          >
+            <IconLogout className="h-4 w-4" stroke={1.7} />
+            Logout
+          </button>
         </header>
         <main className="flex-1 overflow-auto p-6">
-          <WebSocketContext.Provider value={{ status, subscribe }}>
+          <WebSocketContext.Provider value={{ subscribe }}>
             <Outlet />
           </WebSocketContext.Provider>
         </main>
       </div>
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-xl border bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-emergency dark:bg-red-900/30">
+                <IconLogout className="h-6 w-6" stroke={1.7} />
+              </div>
+              <h2 className="text-lg font-bold tracking-tight">Log out?</h2>
+            </div>
+            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+              You will need to sign in again to access the dashboard.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={logout}
+                className="rounded-lg bg-emergency px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emergency-dark"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

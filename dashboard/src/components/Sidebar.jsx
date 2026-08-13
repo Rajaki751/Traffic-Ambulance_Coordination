@@ -72,20 +72,15 @@ export default function Sidebar({ collapsed = false, onToggle }) {
             className={`mt-3 flex items-center gap-2.5 rounded-lg bg-white/5 py-2 ${
               collapsed ? 'justify-center px-0' : 'px-3'
             }`}
-            title={collapsed ? `${user.name ?? 'Admin'} · ${user.role ?? 'admin'}` : undefined}
+            title={`${user.name ?? 'Admin'} · ${user.role ?? 'admin'}`}
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 text-[11px] font-bold">
               {initials(user.name)}
             </span>
             {!collapsed && (
-              <div className="min-w-0">
-                <p className="truncate text-xs font-medium leading-tight">
-                  {user.name ?? 'Admin'}
-                </p>
-                <p className="truncate text-[10px] capitalize text-white/50">
-                  {user.role ?? 'admin'}
-                </p>
-              </div>
+              <p className="min-w-0 truncate text-xs font-medium text-white/80">
+                {user.email ?? user.name ?? 'Admin'}
+              </p>
             )}
           </div>
         )}

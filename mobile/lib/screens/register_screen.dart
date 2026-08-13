@@ -1,5 +1,3 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -79,234 +77,186 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final text = GoogleFonts.inter();
 
     return Scaffold(
-      backgroundColor: kAuthBase,
-      body: AuthBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            visualDensity: VisualDensity.compact,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              hoverColor: Colors.white.withOpacity(0.06),
-                              foregroundColor: Colors.white,
-                            ),
-                            icon: Icon(
-                              Icons.arrow_back_rounded,
-                              size: 22,
-                              color: Colors.white.withOpacity(0.60),
-                            ),
+      backgroundColor: kAuthBg,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          visualDensity: VisualDensity.compact,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            hoverColor: kAuthBorder.withOpacity(0.4),
+                            foregroundColor: kAuthMuted,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Register',
-                            style: text.copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.2,
-                              color: Colors.white,
+                          icon: Icon(
+                            Icons.arrow_back_rounded,
+                            size: 22,
+                            color: kAuthMuted,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Register',
+                          style: text.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                            color: kAuthText,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Center(
+                      child: AuthEmblem(icon: Icons.person_add_alt_1_rounded),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Create Account',
+                      textAlign: TextAlign.center,
+                      style: text.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: -0.24,
+                        color: kAuthText,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Register as Driver or Traffic Officer',
+                      textAlign: TextAlign.center,
+                      style: text.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: kAuthMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    AuthCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AuthField(
+                            controller: _nameCtrl,
+                            label: 'Full Name',
+                            icon: Icons.person_outline_rounded,
+                            validator: (v) =>
+                                v == null || v.trim().length < 2
+                                    ? 'Name required (min 2 chars)'
+                                    : null,
+                          ),
+                          const SizedBox(height: 16),
+                          AuthField(
+                            controller: _emailCtrl,
+                            label: 'Email',
+                            icon: Icons.mail_outline_rounded,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) => v == null ||
+                                    v.isEmpty ||
+                                    !v.contains('@')
+                                ? 'Valid email required'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          AuthField(
+                            controller: _passCtrl,
+                            label: 'Password',
+                            icon: Icons.lock_outline_rounded,
+                            obscure: _obscurePass,
+                            onToggleObscure: () => setState(
+                                () => _obscurePass = !_obscurePass),
+                            helper: 'Min 8 characters',
+                            validator: (v) => v == null || v.length < 8
+                                ? 'Password must be at least 8 characters'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          AuthField(
+                            controller: _confirmCtrl,
+                            label: 'Confirm Password',
+                            icon: Icons.lock_outline_rounded,
+                            obscure: _obscureConfirm,
+                            onToggleObscure: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm),
+                            validator: (v) => v != _passCtrl.text
+                                ? 'Passwords do not match'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          AuthDropdownField(
+                            label: 'Role',
+                            icon: Icons.badge_outlined,
+                            value: _role,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'driver',
+                                child: Text('Driver'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'officer',
+                                child: Text('Traffic Officer'),
+                              ),
+                            ],
+                            onChanged: (v) =>
+                                setState(() => _role = v ?? 'driver'),
+                          ),
+                          if (_role == 'driver') ...[
+                            const SizedBox(height: 16),
+                            AuthField(
+                              controller: _vehicleCtrl,
+                              label: 'Vehicle Number',
+                              icon: Icons.local_shipping_outlined,
+                              helper: 'e.g. BA 1 KHA 1234',
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Vehicle number required for drivers'
+                                  : null,
                             ),
+                          ],
+                          if (_role == 'officer') ...[
+                            const SizedBox(height: 16),
+                            AuthField(
+                              controller: _zoneCtrl,
+                              label: 'Assigned Zone',
+                              icon: Icons.map_outlined,
+                              helper: 'e.g. New Baneshwor',
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Assigned zone required for officers'
+                                  : null,
+                            ),
+                          ],
+                          if (auth.error != null) ...[
+                            const SizedBox(height: 16),
+                            AuthErrorBanner(message: auth.error!),
+                          ],
+                          const SizedBox(height: 24),
+                          AuthPrimaryButton(
+                            loading: auth.loading,
+                            label: 'Register',
+                            onPressed: _submit,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const Center(
-                        child: AuthEmblem(icon: Icons.person_add_alt_1_rounded),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Create Account',
-                        textAlign: TextAlign.center,
-                        style: text.copyWith(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -0.5,
-                          color: Colors.white,
-                          height: 1.15,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Register as Driver or Traffic Officer',
-                        textAlign: TextAlign.center,
-                        style: text.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white.withOpacity(0.57),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Container(
-                        padding: const EdgeInsets.all(22),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.08),
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x66000000),
-                              blurRadius: 60,
-                              offset: Offset(0, 28),
-                            ),
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 18,
-                              offset: Offset(0, 8),
-                            ),
-                            BoxShadow(
-                              color: Color(0x1A000000),
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                color: Colors.white.withOpacity(0.045),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.stretch,
-                                children: [
-                                  AuthField(
-                                    controller: _nameCtrl,
-                                    label: 'Full Name',
-                                    icon: Icons.person_outline_rounded,
-                                    validator: (v) => v == null ||
-                                            v.trim().length < 2
-                                        ? 'Name required (min 2 chars)'
-                                        : null,
-                                  ),
-                                  const SizedBox(height: 14),
-                                  AuthField(
-                                    controller: _emailCtrl,
-                                    label: 'Email',
-                                    icon: Icons.mail_outline_rounded,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (v) => v == null ||
-                                            v.isEmpty ||
-                                            !v.contains('@')
-                                        ? 'Valid email required'
-                                        : null,
-                                  ),
-                                  const SizedBox(height: 14),
-                                  AuthField(
-                                    controller: _passCtrl,
-                                    label: 'Password',
-                                    icon: Icons.lock_outline_rounded,
-                                    obscure: _obscurePass,
-                                    onToggleObscure: () => setState(() =>
-                                        _obscurePass = !_obscurePass),
-                                    helper: 'Min 8 characters',
-                                    validator: (v) => v == null ||
-                                            v.length < 8
-                                        ? 'Password must be at least 8 '
-                                            'characters'
-                                        : null,
-                                  ),
-                                  const SizedBox(height: 14),
-                                  AuthField(
-                                    controller: _confirmCtrl,
-                                    label: 'Confirm Password',
-                                    icon: Icons.lock_outline_rounded,
-                                    obscure: _obscureConfirm,
-                                    onToggleObscure: () => setState(() =>
-                                        _obscureConfirm = !_obscureConfirm),
-                                    validator: (v) =>
-                                        v != _passCtrl.text
-                                            ? 'Passwords do not match'
-                                            : null,
-                                  ),
-                                  const SizedBox(height: 14),
-                                  AuthDropdownField(
-                                    label: 'Role',
-                                    icon: Icons.badge_outlined,
-                                    value: _role,
-                                    items: const [
-                                      DropdownMenuItem(
-                                        value: 'driver',
-                                        child: Text('Driver'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'officer',
-                                        child: Text('Traffic Officer'),
-                                      ),
-                                    ],
-                                    onChanged: (v) =>
-                                        setState(() => _role = v ?? 'driver'),
-                                  ),
-                                  if (_role == 'driver') ...[
-                                    const SizedBox(height: 14),
-                                    AuthField(
-                                      controller: _vehicleCtrl,
-                                      label: 'Vehicle Number',
-                                      icon: Icons.local_shipping_outlined,
-                                      helper: 'e.g. BA 1 KHA 1234',
-                                      validator: (v) => v == null ||
-                                              v.trim().isEmpty
-                                          ? 'Vehicle number required for '
-                                              'drivers'
-                                          : null,
-                                    ),
-                                  ],
-                                  if (_role == 'officer') ...[
-                                    const SizedBox(height: 14),
-                                    AuthField(
-                                      controller: _zoneCtrl,
-                                      label: 'Assigned Zone',
-                                      icon: Icons.map_outlined,
-                                      helper: 'e.g. New Baneshwor',
-                                      validator: (v) => v == null ||
-                                              v.trim().isEmpty
-                                          ? 'Assigned zone required for '
-                                              'officers'
-                                          : null,
-                                    ),
-                                  ],
-                                  if (auth.error != null) ...[
-                                    const SizedBox(height: 16),
-                                    AuthErrorBanner(message: auth.error!),
-                                  ],
-                                  const SizedBox(height: 24),
-                                  AuthGlowButton(
-                                    loading: auth.loading,
-                                    label: 'Register',
-                                    onPressed: _submit,
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      AuthFooterLink(
-                        question: 'Already have an account? ',
-                        action: 'Sign In',
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 24),
+                    AuthFooterLink(
+                      question: 'Already have an account? ',
+                      action: 'Sign In',
+                      onTap: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
             ),

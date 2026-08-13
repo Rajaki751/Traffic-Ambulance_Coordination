@@ -1,5 +1,3 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -53,203 +51,144 @@ class _LoginScreenState extends State<LoginScreen> {
     final text = GoogleFonts.inter();
 
     return Scaffold(
-      backgroundColor: kAuthBase,
-      body: AuthBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 8),
-                      const Center(child: AuthEmblem()),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Ambulance Coordination',
-                        textAlign: TextAlign.center,
-                        style: text.copyWith(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -0.5,
-                          color: Colors.white,
-                          height: 1.15,
-                        ),
+      backgroundColor: kAuthBg,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Center(child: AuthBadge()),
+                    const SizedBox(height: 24),
+                    const Center(child: AuthEmblem()),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Ambulance coordination',
+                      textAlign: TextAlign.center,
+                      style: text.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: -0.24,
+                        color: kAuthText,
+                        height: 1.2,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Driver & Traffic Officer Portal',
-                        textAlign: TextAlign.center,
-                        style: text.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white.withOpacity(0.57),
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Driver & Traffic Officer Portal',
+                      textAlign: TextAlign.center,
+                      style: text.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: kAuthMuted,
                       ),
-                      const SizedBox(height: 32),
-                      Container(
-                        padding: const EdgeInsets.all(22),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.08),
+                    ),
+                    const SizedBox(height: 32),
+                    AuthCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _DisclosureRow(
+                            title: 'Advanced settings',
+                            open: _advancedOpen,
+                            onToggle: () => setState(
+                                () => _advancedOpen = !_advancedOpen),
                           ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x66000000),
-                              blurRadius: 60,
-                              offset: Offset(0, 28),
+                          AnimatedCrossFade(
+                            firstChild:
+                                const SizedBox(width: double.infinity),
+                            secondChild: Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: AuthField(
+                                controller: _serverCtrl,
+                                label: 'Server URL',
+                                icon: Icons.dns_outlined,
+                                keyboardType: TextInputType.url,
+                                helper: 'Use your PC IP on a physical '
+                                    'phone (same Wi-Fi)',
+                                validator: (v) {
+                                  if (v == null || v.trim().isEmpty) {
+                                    return 'Server URL required';
+                                  }
+                                  if (!v.contains(':')) {
+                                    return 'Include port, e.g. '
+                                        'http://192.168.x.x:8000';
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 18,
-                              offset: Offset(0, 8),
-                            ),
-                            BoxShadow(
-                              color: Color(0x1A000000),
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
-                            ),
+                            crossFadeState: _advancedOpen
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                            duration: const Duration(milliseconds: 260),
+                            sizeCurve: Curves.easeOutCubic,
+                          ),
+                          const SizedBox(height: 20),
+                          AuthField(
+                            controller: _emailCtrl,
+                            label: 'Email',
+                            icon: Icons.mail_outline_rounded,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) => v == null || v.isEmpty
+                                ? 'Email required'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          AuthField(
+                            controller: _passCtrl,
+                            label: 'Password',
+                            icon: Icons.lock_outline_rounded,
+                            obscure: _obscurePass,
+                            onToggleObscure: () => setState(
+                                () => _obscurePass = !_obscurePass),
+                            validator: (v) => v == null || v.length < 6
+                                ? 'Password required'
+                                : null,
+                          ),
+                          if (auth.error != null) ...[
+                            const SizedBox(height: 16),
+                            AuthErrorBanner(message: auth.error!),
                           ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                color: Colors.white.withOpacity(0.045),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.stretch,
-                                children: [
-                                  _DisclosureRow(
-                                    title: 'Advanced settings',
-                                    open: _advancedOpen,
-                                    onToggle: () => setState(
-                                        () => _advancedOpen = !_advancedOpen),
-                                  ),
-                                  AnimatedCrossFade(
-                                    firstChild: const SizedBox(
-                                        width: double.infinity),
-                                    secondChild: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 16, bottom: 4),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          AuthField(
-                                            controller: _serverCtrl,
-                                            label: 'Server URL',
-                                            icon: Icons.dns_outlined,
-                                            keyboardType: TextInputType.url,
-                                            validator: (v) {
-                                              if (v == null ||
-                                                  v.trim().isEmpty) {
-                                                return 'Server URL required';
-                                              }
-                                              if (!v.contains(':')) {
-                                                return 'Include port, e.g. '
-                                                    'http://192.168.x.x:8000';
-                                              }
-                                              return null;
-                                            },
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            'Use your PC IP on a physical '
-                                            'phone (same Wi-Fi)',
-                                            style: text.copyWith(
-                                              fontSize: 11.5,
-                                              color: Colors.white
-                                                  .withOpacity(0.38),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    crossFadeState: _advancedOpen
-                                        ? CrossFadeState.showSecond
-                                        : CrossFadeState.showFirst,
-                                    duration:
-                                        const Duration(milliseconds: 260),
-                                    sizeCurve: Curves.easeOutCubic,
-                                  ),
-                                  const SizedBox(height: 18),
-                                  AuthField(
-                                    controller: _emailCtrl,
-                                    label: 'Email',
-                                    icon: Icons.mail_outline_rounded,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (v) => v == null || v.isEmpty
-                                        ? 'Email required'
-                                        : null,
-                                  ),
-                                  const SizedBox(height: 14),
-                                  AuthField(
-                                    controller: _passCtrl,
-                                    label: 'Password',
-                                    icon: Icons.lock_outline_rounded,
-                                    obscure: _obscurePass,
-                                    onToggleObscure: () => setState(
-                                        () => _obscurePass = !_obscurePass),
-                                    validator: (v) => v == null ||
-                                            v.length < 6
-                                        ? 'Password required'
-                                        : null,
-                                  ),
-                                  if (auth.error != null) ...[
-                                    const SizedBox(height: 16),
-                                    AuthErrorBanner(message: auth.error!),
-                                  ],
-                                  const SizedBox(height: 24),
-                                  AuthGlowButton(
-                                    loading: auth.loading,
-                                    label: 'Sign In',
-                                    onPressed: () async {
-                                      if (!_formKey.currentState!
-                                          .validate()) {
-                                        return;
-                                      }
-                                      await auth.configureServer(
-                                          _serverCtrl.text.trim());
-                                      await auth.login(
-                                        _emailCtrl.text.trim(),
-                                        _passCtrl.text,
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
-                            ),
+                          const SizedBox(height: 24),
+                          AuthPrimaryButton(
+                            loading: auth.loading,
+                            label: 'Sign In',
+                            onPressed: () async {
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+                              await auth.configureServer(
+                                  _serverCtrl.text.trim());
+                              await auth.login(
+                                _emailCtrl.text.trim(),
+                                _passCtrl.text,
+                              );
+                            },
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      AuthFooterLink(
-                        question: "Don't have an account? ",
-                        action: 'Register',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 24),
+                    AuthFooterLink(
+                      question: "Don't have an account? ",
+                      action: 'Register',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
             ),
@@ -279,6 +218,7 @@ class _DisclosureRow extends StatelessWidget {
       child: InkWell(
         onTap: onToggle,
         borderRadius: BorderRadius.circular(8),
+        hoverColor: kAuthBorder.withOpacity(0.35),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
           child: Row(
@@ -287,9 +227,9 @@ class _DisclosureRow extends StatelessWidget {
               Text(
                 title,
                 style: text.copyWith(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white.withOpacity(0.42),
+                  color: kAuthFaint,
                 ),
               ),
               const SizedBox(width: 4),
@@ -300,7 +240,7 @@ class _DisclosureRow extends StatelessWidget {
                 child: Icon(
                   Icons.chevron_right_rounded,
                   size: 14,
-                  color: Colors.white.withOpacity(0.35),
+                  color: kAuthFaint,
                 ),
               ),
             ],

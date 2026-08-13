@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   IconAmbulance,
@@ -38,50 +37,26 @@ function initials(name) {
 }
 
 export default function Sidebar({ collapsed = false, onToggle }) {
-  const user = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('user');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  }, []);
-
   return (
     <aside
       className={`sticky top-0 flex h-screen flex-col bg-emergency-dark text-white transition-[width] duration-200 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
-      <div className="border-b border-white/10 p-4">
-        <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-            <IconAmbulance className="h-6 w-6 text-emergency-dark" stroke={1.8} />
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <h1 className="truncate text-base font-bold leading-tight tracking-tight">
-                Emergency Coord
-              </h1>
-              <p className="text-xs text-white/60">Admin Dashboard</p>
-            </div>
-          )}
+      <div
+        className={`flex items-center gap-3 border-b border-white/10 p-6 ${
+          collapsed ? 'justify-center px-0' : ''
+        }`}
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
+          <IconAmbulance className="h-6 w-6 text-emergency-dark" stroke={1.8} />
         </div>
-        {user && (
-          <div
-            className={`mt-3 flex items-center gap-2.5 rounded-lg bg-white/5 py-2 ${
-              collapsed ? 'justify-center px-0' : 'px-3'
-            }`}
-            title={`${user.name ?? 'Admin'} · ${user.role ?? 'admin'}`}
-          >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 text-[11px] font-bold">
-              {initials(user.name)}
-            </span>
-            {!collapsed && (
-              <p className="min-w-0 truncate text-xs font-medium text-white/80">
-                {user.email ?? user.name ?? 'Admin'}
-              </p>
-            )}
+        {!collapsed && (
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold leading-tight tracking-tight">
+              Emergency Coord
+            </h1>
+            <p className="text-xs text-white/60">Admin Dashboard</p>
           </div>
         )}
       </div>

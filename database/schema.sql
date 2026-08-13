@@ -67,6 +67,8 @@ CREATE INDEX ix_gps_logs_timestamp ON gps_logs(timestamp);
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     officer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    notification_type VARCHAR(50) NOT NULL DEFAULT 'emergency_alert',
     emergency_session_id INTEGER REFERENCES emergency_sessions(id) ON DELETE SET NULL,
     title VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
@@ -76,3 +78,17 @@ CREATE TABLE notifications (
 );
 
 CREATE INDEX ix_notifications_officer_id ON notifications(officer_id);
+CREATE INDEX ix_notifications_user_id ON notifications(user_id);
+
+CREATE TABLE junction_clearances (
+    id SERIAL PRIMARY KEY,
+    officer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    emergency_session_id INTEGER REFERENCES emergency_sessions(id) ON DELETE SET NULL,
+    junction_name VARCHAR(255) NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    notes TEXT,
+    cleared_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX ix_junction_clearances_officer_id ON junction_clearances(officer_id);

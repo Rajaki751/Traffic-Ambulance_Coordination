@@ -7,7 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.ai.eta_predictor import ETAPredictor
 from app.ai.route_prediction import RoutePredictionService
+from app.core.logging import get_logger
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.emergency import EmergencySession, EmergencyStatus, TripStage
 from app.models.officer import TrafficOfficer
@@ -16,6 +18,15 @@ from app.schemas.route import RoutePreference
 from app.services.geocoding_service import GeocodingService
 from app.services.gps_service import gps_service
 from app.services.notification_service import NotificationService
+
+logger = get_logger(__name__)
+
+
+def _as_utc(value: Optional[datetime]) -> Optional[datetime]:
+    """Normalize a possibly naive datetime (SQLite round-trip) to UTC-aware."""
+    if value is None:
+        return None
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value
 
 
 class EmergencyActivationError(ValueError):
@@ -140,6 +151,24 @@ class EmergencyService:
         dest_lon = result.prediction.incident_longitude
         route = result.route
 
+        eta_minutes = route.eta_minutes
+        now = datetime.now(timezone.utc)
+        eta_ratio = ETAPredictor().predict_ratio(
+            distance_km=route.distance_km,
+            baseline_duration_min=route.duration_minutes,
+            hour=now.hour,
+            day_of_week=now.weekday(),
+            traffic_factor=result.traffic.factor,
+            incident_type=payload.incident_type,
+        )
+        if eta_ratio is not None:
+            eta_minutes = round(route.duration_minutes * eta_ratio, 1)
+            logger.info(
+                "Learned ETA model applied: ratio %.2f -> ETA %s min",
+                eta_ratio,
+                eta_minutes,
+            )
+
         session = EmergencySession(
             ambulance_id=ambulance.id,
             destination=payload.destination,
@@ -151,7 +180,10 @@ class EmergencyService:
                 {"instruction": s.instruction, "distance_m": s.distance_m, "duration_s": s.duration_s}
                 for s in route.steps
             ],
-            eta_minutes=route.eta_minutes,
+            eta_minutes=eta_minutes,
+            baseline_duration_min=route.duration_minutes,
+            distance_km=route.distance_km,
+            congestion_score=route.congestion_score,
             use_ai_prediction=result.used_ai_prediction,
             incident_type=payload.incident_type,
             predicted_incident_lat=dest_lat if result.used_ai_prediction else None,
@@ -232,6 +264,12 @@ class EmergencyService:
         session.status = EmergencyStatus.COMPLETED
         session.trip_stage = TripStage.COMPLETED.value
         session.ended_at = datetime.now(timezone.utc)
+        started = _as_utc(session.started_at)
+        ended = _as_utc(session.ended_at)
+        if started is not None and ended is not None:
+            session.actual_duration_min = round(
+                (ended - started).total_seconds() / 60.0, 1
+            )
 
         amb_result = await db.execute(
             select(Ambulance).where(Ambulance.id == ambulance_id)

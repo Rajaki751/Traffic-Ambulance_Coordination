@@ -139,8 +139,36 @@ class IncidentLocationPredictor:
 
     MODEL_VERSION = "hybrid-v1"
 
+    def __init__(self) -> None:
+        self._discovered: list[dict] = []
+        self._discovered_sig: tuple = (-1, -1)
+
+    def _refresh_discovered(self) -> None:
+        """Reload learned hotspots when models/hotspots.json changes."""
+        try:
+            from app.ai.hotspot_discovery import HOTSPOTS_PATH, load_hotspots
+        except Exception:
+            return
+        try:
+            if HOTSPOTS_PATH.exists():
+                stat = HOTSPOTS_PATH.stat()
+                signature = (stat.st_mtime_ns, stat.st_size)
+                if signature != self._discovered_sig:
+                    self._discovered = load_hotspots()
+                    self._discovered_sig = signature
+                    if self._discovered:
+                        logger.info(
+                            "Loaded %d learned hotspots", len(self._discovered)
+                        )
+            elif self._discovered:
+                self._discovered = []
+                self._discovered_sig = (-1, -1)
+        except Exception as exc:
+            logger.warning("Failed to refresh learned hotspots: %s", exc)
+
     def ensure_model(self) -> None:
-        """No model file needed; kept for startup compatibility."""
+        """No model file needed; loads learned hotspots if present."""
+        self._refresh_discovered()
         return None
 
     def predict(
@@ -165,8 +193,11 @@ class IncidentLocationPredictor:
         )
         night = hour >= 22 or hour <= 5
 
+        self._refresh_discovered()
+        all_hotspots = HOTSPOTS + self._discovered
+
         candidates: list[tuple[dict, float, float]] = []
-        for hotspot in HOTSPOTS:
+        for hotspot in all_hotspots:
             matching = kinds & hotspot["kinds"]
             if not matching:
                 continue
@@ -223,7 +254,7 @@ class IncidentLocationPredictor:
             # city centre) by the type's default offset distance.
             target_lat, target_lon = _KATHMANDU_CENTER
             nearest: float | None = None
-            for hotspot in HOTSPOTS:
+            for hotspot in all_hotspots:
                 if not (kinds & hotspot["kinds"]):
                     continue
                 distance = _distance_km(

@@ -24,6 +24,10 @@ EMERGENCY_SESSION_COLUMNS = [
     ("hospital_name", "VARCHAR(255)"),
     ("hospital_latitude", "FLOAT"),
     ("hospital_longitude", "FLOAT"),
+    ("baseline_duration_min", "FLOAT"),
+    ("actual_duration_min", "FLOAT"),
+    ("distance_km", "FLOAT"),
+    ("congestion_score", "FLOAT"),
 ]
 
 NOTIFICATION_COLUMNS = [

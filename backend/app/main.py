@@ -33,6 +33,16 @@ async def lifespan(app: FastAPI):
 
         IncidentLocationPredictor().ensure_model()
         logger.info("Incident location estimator ready (hybrid-v1)")
+        from app.ai.learning import ensure_learning_models
+
+        learning = await ensure_learning_models()
+        if learning["eta"].get("trained"):
+            logger.info("Learned ETA model ready (%s)", learning["eta"].get("source"))
+        if learning["hotspots"].get("discovered"):
+            logger.info(
+                "%s hotspot clusters available",
+                learning["hotspots"].get("discovered"),
+            )
     except Exception as exc:
         logger.warning("ML model not loaded at startup: %s", exc)
     yield

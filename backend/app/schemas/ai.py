@@ -51,3 +51,7 @@ class ModelInfoResponse(BaseModel):
     model_path: str
     supported_incident_types: List[str]
     description: str
+    eta_ready: Optional[bool] = None
+    eta_model_version: Optional[str] = None
+    eta_training_samples: Optional[int] = None
+    discovered_hotspots: Optional[int] = None

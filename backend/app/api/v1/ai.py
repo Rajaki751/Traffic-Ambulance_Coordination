@@ -1,13 +1,25 @@
-"""AI incident prediction and traffic-aware routing APIs."""
+"""AI incident prediction, learned ETA, and hotspot management APIs."""
 
-from fastapi import APIRouter, HTTPException
+import asyncio
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.ai.eta_predictor import ETAPredictor, MIN_TRAINING_SAMPLES
+from app.ai.hotspot_discovery import (
+    MIN_RECORDS,
+    discover_hotspots,
+    load_hotspots,
+    save_hotspots,
+)
 from app.ai.incident_predictor import (
     INCIDENT_TYPES,
     IncidentLocationPredictor,
 )
+from app.ai.learning import fetch_completed_trips
 from app.ai.route_prediction import RoutePredictionService
 from app.api.deps import RequireAdmin, RequireAnyAuth
+from app.database.session import get_db
 from app.schemas.ai import (
     IncidentPredictRequest,
     IncidentPredictResponse,
@@ -24,6 +36,8 @@ incident_predictor = IncidentLocationPredictor()
 @router.get("/model-info", response_model=ModelInfoResponse)
 async def model_info(_: RequireAnyAuth):
     """Return estimator metadata and supported incident types."""
+    eta_predictor = ETAPredictor()
+    eta_ready = eta_predictor.ensure_model()
     return ModelInfoResponse(
         model_loaded=True,
         model_version=IncidentLocationPredictor.MODEL_VERSION,
@@ -32,15 +46,23 @@ async def model_info(_: RequireAnyAuth):
         description=(
             "Deterministic hotspot-anchored estimator: caller position, "
             "per-type reach profiles, and a curated Kathmandu risk hotspot "
-            "table produce the incident estimate. OSRM provides "
-            "shortest-path routing with traffic-adjusted ETA."
+            "table produce the incident estimate; learned hotspots refine it. "
+            "A gradient-boosted ETA model, trained on completed trips, "
+            "corrects OSRM baseline durations. OSRM provides shortest-path "
+            "routing with traffic-adjusted ETA."
         ),
+        eta_ready=eta_ready,
+        eta_model_version=ETAPredictor.MODEL_VERSION if eta_ready else None,
+        eta_training_samples=(
+            MIN_TRAINING_SAMPLES if not eta_ready else None
+        ),
+        discovered_hotspots=len(load_hotspots()),
     )
 
 
 @router.post("/predict-incident", response_model=IncidentPredictResponse)
 async def predict_incident(payload: IncidentPredictRequest, _: RequireAnyAuth):
-    """Forecast incident location using scikit-learn ML model."""
+    """Forecast incident location using the hotspot-anchored estimator."""
     try:
         prediction, traffic = await route_prediction_service.predict_incident(
             payload.caller_latitude,
@@ -64,7 +86,7 @@ async def predict_incident(payload: IncidentPredictRequest, _: RequireAnyAuth):
 @router.post("/route-to-incident", response_model=RouteToIncidentResponse)
 async def route_to_incident(payload: RouteToIncidentRequest, _: RequireAnyAuth):
     """
-    Predict incident location (ML) and compute fastest ambulance route (OSRM)
+    Predict incident location and compute fastest ambulance route (OSRM)
     with real-time traffic adjustment.
     """
     try:
@@ -96,12 +118,46 @@ async def route_to_incident(payload: RouteToIncidentRequest, _: RequireAnyAuth):
 
 
 @router.post("/retrain-model")
-async def retrain_model(_: RequireAdmin):
-    """Legacy endpoint: the hybrid estimator needs no training (admin only)."""
+async def retrain_model(_: RequireAdmin, db: AsyncSession = Depends(get_db)):
+    """Train the learned ETA model and discover hotspots from completed trips (admin)."""
+    trips = await fetch_completed_trips(db)
+
+    if len(trips) < MIN_TRAINING_SAMPLES:
+        return {
+            "status": "info",
+            "note": (
+                f"need at least {MIN_TRAINING_SAMPLES} completed trips to train "
+                f"the ETA model, have {len(trips)}"
+            ),
+            "eta": None,
+            "hotspots": None,
+        }
+
+    try:
+        metrics = await asyncio.to_thread(ETAPredictor().train, trips)
+    except ValueError as exc:
+        return {"status": "info", "note": str(exc), "eta": None, "hotspots": None}
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    records = [
+        (t["dest_latitude"], t["dest_longitude"], t["incident_type"])
+        for t in trips
+        if t.get("dest_latitude") is not None and t.get("dest_longitude") is not None
+    ]
+    discovered: list[dict] = []
+    if len(records) >= MIN_RECORDS:
+        discovered = await asyncio.to_thread(discover_hotspots, records)
+        if discovered:
+            await asyncio.to_thread(save_hotspots, discovered, len(records))
+            incident_predictor.ensure_model()
+
     return {
         "status": "ok",
-        "message": (
-            "The hotspot-anchored estimator requires no training; "
-            "model_version is hybrid-v1."
-        ),
+        "eta": metrics,
+        "hotspots": {
+            "clusters": len(discovered),
+            "records_used": len(records),
+            "discovered": discovered,
+        },
     }

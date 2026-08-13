@@ -39,3 +39,8 @@ body {
   width: 100%;
   border-radius: 0.75rem;
 }
+
+.leaflet-container:focus,
+.leaflet-container:focus-visible {
+  outline: none;
+}

@@ -1,11 +1,15 @@
 """Authentication endpoints: register and login."""
 
+from datetime import datetime, timedelta, timezone
+
 import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import RequireAnyAuth, get_db
+from app.core.config import get_settings
+from app.core.ratelimit import rate_limit
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.officer import TrafficOfficer
@@ -72,15 +76,46 @@ async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(
+    payload: UserLogin,
+    db: AsyncSession = Depends(get_db),
+    _: None = Depends(
+        rate_limit(
+            get_settings().login_rate_limit_max,
+            get_settings().login_rate_limit_window_seconds,
+        )
+    ),
+):
     """Authenticate and receive JWT access token."""
     result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
+
+    now = datetime.now(timezone.utc)
+    if user and user.locked_until and user.locked_until > now:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Account temporarily locked due to too many failed attempts. Try again later.",
+        )
+
     if not user or not await verify_password(payload.password, user.password_hash):
+        if user:
+            settings = get_settings()
+            user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+            if user.failed_login_attempts >= settings.max_login_attempts:
+                user.failed_login_attempts = 0
+                user.locked_until = now + timedelta(
+                    minutes=settings.login_lockout_minutes
+                )
+            await db.commit()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
+
+    if user.failed_login_attempts or user.locked_until:
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        await db.commit()
 
     token = create_access_token(subject=user.id, role=user.role.value)
     return TokenResponse(

@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
 
+    # Login hardening
+    max_login_attempts: int = 5
+    login_lockout_minutes: int = 15
+    login_rate_limit_max: int = 10
+    login_rate_limit_window_seconds: int = 60
+
     cors_origins: str = "http://localhost:5173,http://localhost:3000"
 
     osrm_base_url: str = "https://router.project-osrm.org"

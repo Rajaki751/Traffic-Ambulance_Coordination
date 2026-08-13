@@ -7,10 +7,26 @@ import ErrorBanner from '../components/ErrorBanner';
 import { ambulancesApi } from '../services/api';
 
 const statusMeta = {
-  available: { tone: 'green', label: 'Available', accent: 'bg-green-500', icon: 'bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-300' },
-  on_duty: { tone: 'blue', label: 'On Duty', accent: 'bg-blue-500', icon: 'bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' },
-  emergency: { tone: 'red', label: 'Emergency', accent: 'bg-red-500', icon: 'bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-300' },
-  offline: { tone: 'gray', label: 'Offline', accent: 'bg-gray-400', icon: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' },
+  available: {
+    tone: 'green',
+    label: 'Available',
+    dot: 'bg-green-500',
+  },
+  on_duty: {
+    tone: 'blue',
+    label: 'On Duty',
+    dot: 'bg-blue-500',
+  },
+  emergency: {
+    tone: 'red',
+    label: 'Emergency',
+    dot: 'bg-red-500',
+  },
+  offline: {
+    tone: 'gray',
+    label: 'Offline',
+    dot: 'bg-gray-400',
+  },
 };
 
 const fallback = statusMeta.offline;
@@ -58,7 +74,7 @@ export default function AmbulancesPage() {
               key={chip.key}
               className="flex items-center gap-2 rounded-full border bg-white px-3.5 py-1.5 text-xs font-medium dark:border-gray-700 dark:bg-gray-800"
             >
-              <span className={`h-2 w-2 rounded-full ${statusMeta[chip.key].accent}`} />
+              <span className={`h-2 w-2 rounded-full ${statusMeta[chip.key].dot}`} />
               {chip.label}
               <span className="font-bold tabular-nums">{counts[chip.key]}</span>
             </span>
@@ -68,57 +84,57 @@ export default function AmbulancesPage() {
 
       {error && <ErrorBanner message={error} onRetry={loadAmbulances} />}
 
-      {!error && ambulances.length === 0 ? (
-        <Card bodyClassName="p-12 text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-700/60">
-            <IconAmbulance className="h-7 w-7 text-gray-300 dark:text-gray-600" stroke={1.5} />
-          </span>
-          <p className="mt-4 text-sm font-medium text-gray-600 dark:text-gray-300">
-            No ambulances registered
-          </p>
-          <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
-            Registered vehicles will appear here
-          </p>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {ambulances.map((a) => {
-            const meta = statusMeta[a.status] || fallback;
-            return (
-              <div
-                key={a.id}
-                className="overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
-              >
-                <div className={`h-1 ${meta.accent}`} />
-                <div className="p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.icon}`}
-                      >
-                        <IconAmbulance className="h-6 w-6" stroke={1.7} />
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="truncate font-mono text-base font-semibold tracking-tight">
-                          {a.vehicle_number}
-                        </h3>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          Unit #{a.id}
-                        </p>
-                      </div>
-                    </div>
-                    <StatusPill tone={meta.tone} label={meta.label} pulse={meta.tone === 'red'} />
+      <Card
+        title="Fleet Registry"
+        subtitle={`${ambulances.length} vehicles tracked`}
+        icon={IconAmbulance}
+        bodyClassName="p-0"
+      >
+        {!error && ambulances.length === 0 ? (
+          <div className="p-12 text-center">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-700/60">
+              <IconAmbulance className="h-7 w-7 text-gray-300 dark:text-gray-600" stroke={1.5} />
+            </span>
+            <p className="mt-4 text-sm font-medium text-gray-600 dark:text-gray-300">
+              No ambulances registered
+            </p>
+            <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
+              Registered vehicles will appear here
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100 dark:divide-gray-700/60">
+            {ambulances.map((a) => {
+              const meta = statusMeta[a.status] || fallback;
+              return (
+                <div
+                  key={a.id}
+                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-800/40 sm:px-6"
+                >
+                  <span
+                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${meta.dot} ${
+                      meta.tone === 'red' ? 'animate-pulse' : ''
+                    }`}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-sm font-bold tracking-tight">
+                      {a.vehicle_number}
+                    </p>
+                    <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
+                      <IconSteeringWheel className="h-3.5 w-3.5 shrink-0" stroke={1.7} />
+                      {a.driver_name ?? 'No driver assigned'}
+                    </p>
                   </div>
-                  <div className="mt-4 flex items-center gap-2 border-t border-gray-100 pt-3.5 text-sm text-gray-500 dark:border-gray-700/60 dark:text-gray-400">
-                    <IconSteeringWheel className="h-4 w-4 shrink-0" stroke={1.7} />
-                    {a.driver_name ?? 'No driver assigned'}
-                  </div>
+                  <span className="hidden shrink-0 font-mono text-xs text-gray-400 dark:text-gray-500 md:block">
+                    #{a.id}
+                  </span>
+                  <StatusPill tone={meta.tone} label={meta.label} pulse={meta.tone === 'red'} />
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

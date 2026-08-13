@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const _Badge(),
                         const SizedBox(height: 24),
                         const Center(child: _Emblem()),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
                         Text(
                           'Ambulance Coordination',
                           textAlign: TextAlign.center,
@@ -278,13 +278,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                         );
                                       },
                                     ),
+                                    const SizedBox(height: 8),
                                   ],
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -464,7 +465,7 @@ class _Emblem extends StatelessWidget {
       width: 88,
       height: 88,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -473,29 +474,49 @@ class _Emblem extends StatelessWidget {
         border: Border.all(color: Colors.white.withOpacity(0.08)),
         boxShadow: [
           BoxShadow(
-            color: _kEmber.withOpacity(0.32),
-            blurRadius: 38,
-            spreadRadius: 3,
+            color: _kEmber.withOpacity(0.14),
+            blurRadius: 60,
+            offset: const Offset(0, 18),
           ),
           BoxShadow(
-            color: _kEmber.withOpacity(0.15),
-            blurRadius: 90,
-            offset: const Offset(0, 26),
+            color: Colors.black.withOpacity(0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: ShaderMask(
-        blendMode: BlendMode.srcATop,
-        shaderCallback: (rect) => const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [_kEmberLight, _kEmber, _kEmberDark],
-        ).createShader(rect),
-        child: const Icon(
-          Icons.medical_services_outlined,
-          size: 40,
-          color: Colors.white,
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  _kEmberLight.withOpacity(0.50),
+                  _kEmber.withOpacity(0.20),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.55, 1.0],
+              ),
+            ),
+          ),
+          ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (rect) => const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [_kEmberLight, _kEmber, _kEmberDark],
+            ).createShader(rect),
+            child: const Icon(
+              Icons.medical_services_outlined,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -526,6 +547,8 @@ class _PxField extends StatefulWidget {
 
 class _PxFieldState extends State<_PxField> {
   final _focus = FocusNode();
+  bool _eyeHover = false;
+  bool _eyePressed = false;
 
   @override
   void initState() {
@@ -612,14 +635,29 @@ class _PxFieldState extends State<_PxField> {
                 color: Colors.white.withOpacity(0.50),
               ),
               suffixIcon: widget.onToggleObscure != null
-                  ? IconButton(
-                      onPressed: widget.onToggleObscure,
-                      icon: Icon(
-                        widget.obscure
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        size: 20,
-                        color: Colors.white.withOpacity(0.55),
+                  ? MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      onEnter: (_) => setState(() => _eyeHover = true),
+                      onExit: (_) => setState(() => _eyeHover = false),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTapDown: (_) => setState(() => _eyePressed = true),
+                        onTapUp: (_) {
+                          setState(() => _eyePressed = false);
+                          widget.onToggleObscure!();
+                        },
+                        onTapCancel: () => setState(() => _eyePressed = false),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Icon(
+                            widget.obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            size: 20,
+                            color: Colors.white.withOpacity(
+                                _eyeHover || _eyePressed ? 1.0 : 0.55),
+                          ),
+                        ),
                       ),
                     )
                   : null,
@@ -655,34 +693,37 @@ class _DisclosureRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = GoogleFonts.inter();
-    return InkWell(
-      onTap: onToggle,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: text.copyWith(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.55),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: onToggle,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: text.copyWith(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withOpacity(0.42),
+                ),
               ),
-            ),
-            const SizedBox(width: 6),
-            AnimatedRotation(
-              turns: open ? 0.5 : 0,
-              duration: const Duration(milliseconds: 240),
-              curve: Curves.easeOut,
-              child: Icon(
-                Icons.chevron_right_rounded,
-                size: 16,
-                color: Colors.white.withOpacity(0.45),
+              const SizedBox(width: 4),
+              AnimatedRotation(
+                turns: open ? 0.5 : 0,
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOut,
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 14,
+                  color: Colors.white.withOpacity(0.35),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

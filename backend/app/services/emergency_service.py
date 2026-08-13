@@ -98,9 +98,10 @@ class EmergencyService:
             else payload.current_longitude
         )
 
-        # Resolve destination: prefer explicit coords, else geocode the text
-        manual_lat = payload.dest_latitude if not payload.use_ai_prediction else None
-        manual_lon = payload.dest_longitude if not payload.use_ai_prediction else None
+        # Resolve destination: pinned map coords (either mode) win; else
+        # manual mode geocodes the text, AI mode falls back to its estimate
+        manual_lat = payload.dest_latitude
+        manual_lon = payload.dest_longitude
 
         if not payload.use_ai_prediction:
             # Manual mode: try to geocode destination text if coords missing
@@ -121,20 +122,21 @@ class EmergencyService:
                     "Please provide latitude/longitude manually or enable AI prediction."
                 )
         else:
-            # AI mode: try geocoding as a hint, but let ML model decide
-            # If geocoding succeeds, pass the geocoded coords as manual override
-            # so the route goes to the actual location the user typed
-            geocoded_lat, geocoded_lon = await self._resolve_destination(
-                payload.destination,
-                None,
-                None,
-                caller_lat,
-                caller_lon,
-                use_ai=True,
-            )
-            if geocoded_lat is not None and geocoded_lon is not None:
-                manual_lat = geocoded_lat
-                manual_lon = geocoded_lon
+            # AI mode: pinned coordinates override the estimate; otherwise
+            # try geocoding the text as a hint so the route goes to the
+            # actual location the user typed
+            if manual_lat is None or manual_lon is None:
+                geocoded_lat, geocoded_lon = await self._resolve_destination(
+                    payload.destination,
+                    None,
+                    None,
+                    caller_lat,
+                    caller_lon,
+                    use_ai=True,
+                )
+                if geocoded_lat is not None and geocoded_lon is not None:
+                    manual_lat = geocoded_lat
+                    manual_lon = geocoded_lon
 
         result = await self.route_prediction.predict_and_route(
             ambulance_latitude=payload.current_latitude,

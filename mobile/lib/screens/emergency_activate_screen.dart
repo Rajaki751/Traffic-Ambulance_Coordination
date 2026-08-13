@@ -31,6 +31,9 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
     text: KathmanduLocation.centerLon.toString(),
   );
   bool _useAi = true;
+  bool _pinned = false;
+  double? _pinnedLat;
+  double? _pinnedLon;
   String _incidentType = 'general';
   String _routePreference = 'fastest';
   KathmanduHospital? _hospital = kathmanduHospitals.first;
@@ -85,6 +88,9 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
     );
     if (picked == null || !mounted) return;
     setState(() {
+      _pinned = true;
+      _pinnedLat = picked.latitude;
+      _pinnedLon = picked.longitude;
       _latCtrl.text = picked.latitude.toStringAsFixed(6);
       _lonCtrl.text = picked.longitude.toStringAsFixed(6);
       _destCtrl.text = picked.label ?? 'Pinned location';
@@ -415,6 +421,24 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                 ],
               ),
             ),
+            if (_pinned && _useAi) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.push_pin_outlined, size: 14, color: kAuthRedLink),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Pinned location overrides the AI estimate for this activation.',
+                      style: GoogleFonts.inter().copyWith(
+                        color: kAuthRedLink,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 8),
             AuthDropdownField(
               label: 'Hospital (optional)',
@@ -455,8 +479,11 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                     incidentType: _incidentType,
                   );
                   if (pred != null && mounted) {
-                    _latCtrl.text = pred.incidentLat.toStringAsFixed(6);
-                    _lonCtrl.text = pred.incidentLon.toStringAsFixed(6);
+                    setState(() {
+                      _pinned = false;
+                      _latCtrl.text = pred.incidentLat.toStringAsFixed(6);
+                      _lonCtrl.text = pred.incidentLon.toStringAsFixed(6);
+                    });
                   }
                 },
               ),
@@ -506,8 +533,12 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                   useAiPrediction: _useAi,
                   incidentType: _incidentType,
                   routePreference: _routePreference,
-                  destLat: _useAi ? null : double.tryParse(_latCtrl.text),
-                  destLon: _useAi ? null : double.tryParse(_lonCtrl.text),
+                  destLat: _pinned
+                      ? _pinnedLat
+                      : (_useAi ? null : double.tryParse(_latCtrl.text)),
+                  destLon: _pinned
+                      ? _pinnedLon
+                      : (_useAi ? null : double.tryParse(_lonCtrl.text)),
                   hospitalName: _hospital?.name,
                   hospitalLatitude: _hospital?.lat,
                   hospitalLongitude: _hospital?.lon,

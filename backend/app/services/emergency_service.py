@@ -1,7 +1,7 @@
 """Emergency session lifecycle management."""
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,12 @@ from app.models.officer import TrafficOfficer
 from app.schemas.emergency import EmergencyActivate, EmergencyResponse
 from app.schemas.route import RoutePreference
 from app.services.geocoding_service import GeocodingService
+from app.services.gps_service import gps_service
 from app.services.notification_service import NotificationService
+
+
+class EmergencyActivationError(ValueError):
+    """Client-side activation failure (bad destination coordinates)."""
 
 
 class EmergencyService:
@@ -23,6 +28,7 @@ class EmergencyService:
     def __init__(self) -> None:
         self.route_prediction = RoutePredictionService()
         self.geocoding = GeocodingService()
+        self._ambulance_prior_status: Dict[int, AmbulanceStatus] = {}
 
     async def _resolve_destination(
         self,
@@ -68,9 +74,18 @@ class EmergencyService:
         if existing:
             existing.status = EmergencyStatus.CANCELLED
             existing.ended_at = datetime.now(timezone.utc)
+            gps_service.evict(ambulance.id)
 
-        caller_lat = payload.caller_latitude or payload.current_latitude
-        caller_lon = payload.caller_longitude or payload.current_longitude
+        caller_lat = (
+            payload.caller_latitude
+            if payload.caller_latitude is not None
+            else payload.current_latitude
+        )
+        caller_lon = (
+            payload.caller_longitude
+            if payload.caller_longitude is not None
+            else payload.current_longitude
+        )
 
         # Resolve destination: prefer explicit coords, else geocode the text
         manual_lat = payload.dest_latitude if not payload.use_ai_prediction else None
@@ -90,7 +105,7 @@ class EmergencyService:
             manual_lon = geocoded_lon
 
             if manual_lat is None or manual_lon is None:
-                raise ValueError(
+                raise EmergencyActivationError(
                     f"Could not find coordinates for '{payload.destination}'. "
                     "Please provide latitude/longitude manually or enable AI prediction."
                 )
@@ -154,6 +169,7 @@ class EmergencyService:
             hospital_longitude=payload.hospital_longitude,
         )
         db.add(session)
+        self._ambulance_prior_status[ambulance.id] = ambulance.status
         ambulance.status = AmbulanceStatus.EMERGENCY
         await db.flush()
 
@@ -211,7 +227,10 @@ class EmergencyService:
             select(Ambulance).where(Ambulance.id == ambulance_id)
         )
         ambulance = amb_result.scalar_one()
-        ambulance.status = AmbulanceStatus.ON_DUTY
+        ambulance.status = self._ambulance_prior_status.pop(
+            ambulance_id, AmbulanceStatus.AVAILABLE
+        )
+        gps_service.evict(ambulance_id)
 
         return EmergencyResponse.model_validate(session)
 
@@ -265,7 +284,19 @@ class EmergencyService:
                 pass
 
         if stage == TripStage.ARRIVED_HOSPITAL:
+            session.status = EmergencyStatus.COMPLETED
+            session.trip_stage = TripStage.COMPLETED.value
             session.ended_at = datetime.now(timezone.utc)
+
+            amb_result = await db.execute(
+                select(Ambulance).where(Ambulance.id == ambulance_id)
+            )
+            ambulance = amb_result.scalar_one_or_none()
+            if ambulance:
+                ambulance.status = self._ambulance_prior_status.pop(
+                    ambulance_id, AmbulanceStatus.AVAILABLE
+                )
+            gps_service.evict(ambulance_id)
         return session
 
     async def get_active_sessions(self, db: AsyncSession) -> List[EmergencySession]:

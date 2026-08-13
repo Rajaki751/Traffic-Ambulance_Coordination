@@ -94,6 +94,8 @@ class ConnectionManager:
                 dead.append(ws)
         for ws in dead:
             self._connections[key].discard(ws)
+        if not self._connections[key]:
+            del self._connections[key]
 
 
 ws_manager = ConnectionManager()

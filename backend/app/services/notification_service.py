@@ -73,6 +73,7 @@ class NotificationService:
     ) -> NotificationResponse:
         notif = Notification(
             officer_id=driver_user_id,
+            user_id=driver_user_id,
             notification_type="driver_update",
             emergency_session_id=emergency_session_id,
             title=title,
@@ -86,7 +87,7 @@ class NotificationService:
     async def get_user_notifications(
         db: AsyncSession, user_id: int, unread_only: bool = False
     ) -> List[Notification]:
-        query = select(Notification).where(Notification.officer_id == user_id)
+        query = select(Notification).where(Notification.user_id == user_id)
         if unread_only:
             query = query.where(Notification.is_read == False)  # noqa: E712
         query = query.order_by(Notification.created_at.desc())

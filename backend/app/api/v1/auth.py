@@ -1,11 +1,12 @@
 """Authentication endpoints: register and login."""
 
+import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import RequireAnyAuth, get_db
-from app.core.security import create_access_token, get_password_hash, verify_password
+from app.core.security import create_access_token, hash_password, verify_password
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.officer import TrafficOfficer
 from app.models.user import User, UserRole
@@ -21,19 +22,32 @@ async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    if payload.role == UserRole.ADMIN:
+        raise HTTPException(status_code=400, detail="Admin accounts cannot be self-registered")
+
     if payload.role == UserRole.DRIVER and not payload.vehicle_number:
         raise HTTPException(status_code=400, detail="vehicle_number required for drivers")
+    if payload.role == UserRole.DRIVER:
+        existing_ambulance = await db.execute(
+            select(Ambulance).where(Ambulance.vehicle_number == payload.vehicle_number)
+        )
+        if existing_ambulance.scalar_one_or_none():
+            raise HTTPException(status_code=400, detail="vehicle_number already registered")
     if payload.role == UserRole.OFFICER and not payload.assigned_zone:
         raise HTTPException(status_code=400, detail="assigned_zone required for officers")
 
     user = User(
         name=payload.name,
         email=payload.email,
-        password_hash=get_password_hash(payload.password),
+        password_hash=await hash_password(payload.password),
         role=payload.role,
     )
     db.add(user)
-    await db.flush()
+    try:
+        await db.flush()
+    except sqlalchemy.exc.IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="Email or vehicle number already registered")
 
     if payload.role == UserRole.DRIVER:
         db.add(
@@ -62,7 +76,7 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
     """Authenticate and receive JWT access token."""
     result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
-    if not user or not verify_password(payload.password, user.password_hash):
+    if not user or not await verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",

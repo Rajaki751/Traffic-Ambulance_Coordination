@@ -16,6 +16,7 @@ from app.models import (  # noqa: F401
     Ambulance,
     EmergencySession,
     GPSLog,
+    JunctionClearance,
     Notification,
     TrafficOfficer,
     User,

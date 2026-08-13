@@ -78,6 +78,8 @@ async def acknowledge_notification(
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
 
+    await db.commit()
+
     await ws_manager.broadcast_all_admins(
         {
             "type": "notification_acknowledged",

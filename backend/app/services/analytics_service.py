@@ -80,30 +80,29 @@ class AnalyticsService:
     async def get_ambulance_stats(db: AsyncSession) -> list[AmbulanceStats]:
         result = await db.execute(select(Ambulance))
         ambulances = result.scalars().all()
-        stats: list[AmbulanceStats] = []
 
-        for amb in ambulances:
-            total = await db.scalar(
-                select(func.count())
-                .select_from(EmergencySession)
-                .where(EmergencySession.ambulance_id == amb.id)
-            ) or 0
+        counts = await db.execute(
+            select(EmergencySession.ambulance_id, func.count())
+            .group_by(EmergencySession.ambulance_id)
+        )
+        total_map = dict(counts.all())
 
-            active = await db.execute(
-                select(EmergencySession).where(
-                    EmergencySession.ambulance_id == amb.id,
-                    EmergencySession.status == EmergencyStatus.ACTIVE,
-                )
+        active_result = await db.execute(
+            select(EmergencySession).where(
+                EmergencySession.status == EmergencyStatus.ACTIVE
             )
-            active_session = active.scalar_one_or_none()
+        )
+        active_map = {s.ambulance_id: s for s in active_result.scalars().all()}
 
-            stats.append(
-                AmbulanceStats(
-                    ambulance_id=amb.id,
-                    vehicle_number=amb.vehicle_number,
-                    status=amb.status.value,
-                    total_emergencies=total,
-                    active_session_id=active_session.id if active_session else None,
-                )
+        return [
+            AmbulanceStats(
+                ambulance_id=amb.id,
+                vehicle_number=amb.vehicle_number,
+                status=amb.status.value,
+                total_emergencies=total_map.get(amb.id, 0),
+                active_session_id=(
+                    active_map[amb.id].id if amb.id in active_map else None
+                ),
             )
-        return stats
+            for amb in ambulances
+        ]

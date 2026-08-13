@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import RequireAnyAuth, get_db
 from app.ai.route_optimizer import RouteOptimizer
+from app.models.user import UserRole
 from app.schemas.route import RouteOptimizeRequest, RouteOptimizeResponse
 from app.services.emergency_service import EmergencyService
 
@@ -27,8 +28,16 @@ async def optimize_route(
     previous_polyline = None
     if payload.emergency_session_id:
         session = await emergency_service.get_session(db, payload.emergency_session_id)
-        if session:
-            previous_polyline = session.route_polyline
+        if not session:
+            raise HTTPException(status_code=404, detail="Emergency session not found")
+        if current_user.role != UserRole.ADMIN:
+            ambulance = current_user.ambulance
+            if ambulance is None or session.ambulance_id != ambulance.id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Emergency session does not belong to your ambulance",
+                )
+        previous_polyline = session.route_polyline
 
     try:
         result = await route_optimizer.optimize_route(
@@ -48,6 +57,6 @@ async def optimize_route(
         if session:
             session.route_polyline = result.polyline
             session.eta_minutes = result.eta_minutes
-            await db.flush()
+            await db.commit()
 
     return result

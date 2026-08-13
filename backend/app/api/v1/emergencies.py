@@ -16,7 +16,7 @@ from app.schemas.emergency import (
     EmergencyResponse,
     EmergencyTripStageUpdate,
 )
-from app.services.emergency_service import EmergencyService
+from app.services.emergency_service import EmergencyActivationError, EmergencyService
 from app.websocket.manager import ws_manager
 
 router = APIRouter()
@@ -59,12 +59,14 @@ async def activate_emergency(
 
     try:
         session = await emergency_service.activate(db, ambulance, payload)
-    except ValueError as exc:
+    except EmergencyActivationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(
             status_code=502, detail=f"Emergency activation failed: {exc}"
         ) from exc
+
+    await db.commit()
 
     await ws_manager.broadcast_all_admins(
         {"type": "emergency_activated", "data": session.model_dump(mode="json")}
@@ -91,6 +93,8 @@ async def end_emergency(
     session = await emergency_service.end_session(db, session_id, ambulance.id)
     if not session:
         raise HTTPException(status_code=404, detail="Active session not found")
+
+    await db.commit()
 
     await ws_manager.broadcast_all_admins(
         {"type": "emergency_ended", "data": session.model_dump(mode="json")}
@@ -122,6 +126,8 @@ async def update_trip_stage(
         raise HTTPException(status_code=404, detail="Active session not found")
 
     resp = EmergencyResponse.model_validate(session)
+
+    await db.commit()
 
     await ws_manager.broadcast_all_admins(
         {"type": "trip_stage_updated", "data": resp.model_dump(mode="json")}

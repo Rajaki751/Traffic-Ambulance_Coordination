@@ -34,7 +34,20 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
-    user_id = int(payload["sub"])
+    return await _get_user_from_payload(db, payload)
+
+
+async def _get_user_from_payload(
+    db: AsyncSession, payload: dict
+) -> User:
+    """Resolve a User from a validated token payload."""
+    try:
+        user_id = int(payload["sub"])
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
     result = await db.execute(
         select(User)
         .where(User.id == user_id)

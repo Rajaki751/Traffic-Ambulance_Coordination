@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.api.deps import RequireAnyAuth, get_db
-from app.core.security import get_password_hash, verify_password
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.schemas.profile import ChangePasswordRequest, ProfileResponse, ProfileUpdate
 
@@ -82,9 +82,9 @@ async def change_password(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if not verify_password(payload.current_password, user.password_hash):
+    if not await verify_password(payload.current_password, user.password_hash):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
 
-    user.password_hash = get_password_hash(payload.new_password)
+    user.password_hash = await hash_password(payload.new_password)
     await db.flush()
     return {"message": "Password changed successfully"}

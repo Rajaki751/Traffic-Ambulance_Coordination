@@ -1,10 +1,12 @@
 """AI incident prediction and traffic-aware routing APIs."""
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException
 
 from app.ai.incident_predictor import INCIDENT_TYPES, MODEL_PATH, IncidentLocationPredictor
 from app.ai.route_prediction import RoutePredictionService
-from app.api.deps import RequireAnyAuth
+from app.api.deps import RequireAdmin, RequireAnyAuth
 from app.schemas.ai import (
     IncidentPredictRequest,
     IncidentPredictResponse,
@@ -74,6 +76,8 @@ async def route_to_incident(payload: RouteToIncidentRequest, _: RequireAnyAuth):
             manual_incident_lat=payload.manual_incident_lat,
             manual_incident_lon=payload.manual_incident_lon,
         )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Route prediction failed: {exc}") from exc
 
@@ -91,10 +95,10 @@ async def route_to_incident(payload: RouteToIncidentRequest, _: RequireAnyAuth):
 
 
 @router.post("/retrain-model")
-async def retrain_model(_: RequireAnyAuth):
-    """Retrain incident location model from historical CSV data."""
+async def retrain_model(_: RequireAdmin):
+    """Retrain incident location model from historical CSV data (admin only)."""
     try:
-        metrics = incident_predictor.train()
+        metrics = await asyncio.to_thread(incident_predictor.train)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Training failed: {exc}") from exc
     return {"status": "ok", "metrics": metrics}

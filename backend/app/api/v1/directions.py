@@ -2,11 +2,10 @@
 
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import RequireAnyAuth, get_db
+from app.api.deps import RequireAnyAuth
 from app.ai.route_optimizer import RouteOptimizer
 from app.schemas.route import RouteOptimizeResponse, RoutePreference
 from app.services.geocoding_service import GeocodingService
@@ -49,6 +48,7 @@ async def geocode_address(
 
 @router.get("/preview", response_model=RouteOptimizeResponse)
 async def preview_route(
+    current_user: RequireAnyAuth,
     origin_lat: float = Query(...),
     origin_lon: float = Query(...),
     dest_lat: float = Query(...),
@@ -58,7 +58,6 @@ async def preview_route(
         RoutePreference.FASTEST,
         description="Route preference: fastest (time) or shortest (distance)",
     ),
-    db: AsyncSession = Depends(get_db),
 ):
     try:
         result = await route_optimizer.optimize_route(

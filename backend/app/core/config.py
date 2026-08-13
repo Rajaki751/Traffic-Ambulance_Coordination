@@ -3,7 +3,7 @@
 from functools import lru_cache
 from typing import List
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -53,6 +53,18 @@ class Settings(BaseSettings):
         if isinstance(value, list):
             return ",".join(value)
         return value
+
+    @model_validator(mode="after")
+    def _validate_secret_key(self) -> "Settings":
+        default_keys = {
+            "change-this-to-a-long-random-secret-key-in-production",
+            "dev-demo-secret-key",
+        }
+        if self.environment != "development" and self.secret_key in default_keys:
+            raise ValueError(
+                "SECRET_KEY must be set to a strong random value in non-development environments"
+            )
+        return self
 
     @property
     def cors_origins_list(self) -> List[str]:

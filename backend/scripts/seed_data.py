@@ -10,7 +10,7 @@ import asyncio
 
 from sqlalchemy import select
 
-from app.core.security import get_password_hash
+from app.core.security import hash_password
 from app.database.session import async_session_maker, init_db
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.officer import TrafficOfficer
@@ -28,19 +28,19 @@ async def seed() -> None:
         admin = User(
             name="System Admin",
             email="admin@ambulance.gov",
-            password_hash=get_password_hash("Admin@12345"),
+            password_hash=await hash_password("Admin@12345"),
             role=UserRole.ADMIN,
         )
         driver = User(
             name="John Driver",
             email="driver@ambulance.gov",
-            password_hash=get_password_hash("Driver@12345"),
+            password_hash=await hash_password("Driver@12345"),
             role=UserRole.DRIVER,
         )
         officer = User(
             name="Sarah Officer",
             email="officer@ambulance.gov",
-            password_hash=get_password_hash("Officer@12345"),
+            password_hash=await hash_password("Officer@12345"),
             role=UserRole.OFFICER,
         )
         db.add_all([admin, driver, officer])

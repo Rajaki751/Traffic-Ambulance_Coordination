@@ -22,6 +22,8 @@ EMERGENCY_SESSION_COLUMNS = [
     ("pickup_latitude", "FLOAT"),
     ("pickup_longitude", "FLOAT"),
     ("hospital_name", "VARCHAR(255)"),
+    ("hospital_latitude", "FLOAT"),
+    ("hospital_longitude", "FLOAT"),
 ]
 
 NOTIFICATION_COLUMNS = [

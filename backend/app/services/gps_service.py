@@ -9,10 +9,13 @@ from sqlalchemy.orm import selectinload
 
 from app.ai.route_optimizer import RouteOptimizer
 from app.ai.traffic_service import TrafficService
+from app.core.logging import get_logger
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.emergency import EmergencySession, EmergencyStatus
 from app.models.gps import GPSLog
 from app.schemas.gps import GPSUpdate, LiveAmbulanceLocation
+
+logger = get_logger(__name__)
 
 
 class GPSService:
@@ -42,20 +45,27 @@ class GPSService:
         if session and session.status == EmergencyStatus.ACTIVE:
             # Dynamic reroute check
             if session.dest_latitude and session.dest_longitude:
-                traffic = TrafficService.get_current_conditions()
-                route = await self.route_optimizer.optimize_route(
-                    payload.latitude,
-                    payload.longitude,
-                    session.dest_latitude,
-                    session.dest_longitude,
-                    previous_polyline=session.route_polyline,
-                    current_lat=payload.latitude,
-                    current_lon=payload.longitude,
-                    traffic_factor=traffic.factor,
-                )
-                if route.reroute_recommended:
-                    session.route_polyline = route.polyline
-                    session.eta_minutes = route.eta_minutes
+                try:
+                    traffic = TrafficService.get_current_conditions()
+                    route = await self.route_optimizer.optimize_route(
+                        payload.latitude,
+                        payload.longitude,
+                        session.dest_latitude,
+                        session.dest_longitude,
+                        previous_polyline=session.route_polyline,
+                        current_lat=payload.latitude,
+                        current_lon=payload.longitude,
+                        traffic_factor=traffic.factor,
+                    )
+                    if route.reroute_recommended:
+                        session.route_polyline = route.polyline
+                        session.eta_minutes = route.eta_minutes
+                except Exception as exc:
+                    logger.warning(
+                        "Reroute failed for session %s, keeping previous route: %s",
+                        session.id,
+                        exc,
+                    )
 
             ambulance = session.ambulance
             live = LiveAmbulanceLocation(
@@ -149,6 +159,10 @@ class GPSService:
     def update_cache(self, location: LiveAmbulanceLocation) -> None:
         self._live_cache[location.ambulance_id] = location
 
+    def evict(self, ambulance_id: int) -> None:
+        """Remove an ambulance from the live cache (session ended/cancelled)."""
+        self._live_cache.pop(ambulance_id, None)
+
     @staticmethod
     async def _get_session_with_ambulance(
         db: AsyncSession, session_id: int
@@ -159,3 +173,6 @@ class GPSService:
             .options(selectinload(EmergencySession.ambulance))
         )
         return result.scalar_one_or_none()
+
+
+gps_service = GPSService()

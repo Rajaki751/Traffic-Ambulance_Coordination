@@ -4,11 +4,12 @@ Orchestrates ML incident forecasting + traffic-aware shortest-path routing.
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from app.ai.incident_predictor import IncidentLocationPredictor, IncidentPrediction
-from app.ai.route_optimizer import RouteOptimizer
+from app.ai.route_optimizer import EMERGENCY_ETA_FACTOR, RouteOptimizer
 from app.ai.traffic_service import TrafficConditions, TrafficService
 from app.schemas.route import RouteOptimizeResponse, RoutePreference
 
@@ -39,7 +40,8 @@ class RoutePredictionService:
         now = at or datetime.now(timezone.utc)
         traffic = self.traffic_service.get_current_conditions(now)
 
-        prediction = self.predictor.predict(
+        prediction = await asyncio.to_thread(
+            self.predictor.predict,
             caller_latitude=caller_latitude,
             caller_longitude=caller_longitude,
             hour=now.hour,
@@ -64,6 +66,9 @@ class RoutePredictionService:
         Forecast incident coordinates (unless manual override), then compute
         fastest path via OSRM with real-time traffic adjustment.
         """
+        if (manual_incident_lat is None) != (manual_incident_lon is None):
+            raise ValueError("both coordinates required")
+
         use_ai = manual_incident_lat is None or manual_incident_lon is None
 
         if use_ai:
@@ -95,6 +100,12 @@ class RoutePredictionService:
         traffic = self.traffic_service.get_current_conditions(
             osrm_congestion_score=route.congestion_score
         )
+
+        # Recompute ETA with the same traffic factor returned in the response
+        route.eta_minutes = round(
+            route.duration_minutes * EMERGENCY_ETA_FACTOR * max(traffic.factor, 1.0), 1
+        )
+        route.traffic_factor = round(traffic.factor, 2)
 
         return IncidentRouteResult(
             prediction=prediction,

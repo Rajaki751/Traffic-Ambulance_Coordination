@@ -4,6 +4,8 @@ import {
   IconAlarm,
   IconAmbulance,
   IconBroadcast,
+  IconEye,
+  IconEyeOff,
   IconLock,
   IconLockAccess,
   IconMail,
@@ -36,6 +38,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -176,12 +179,25 @@ export default function LoginPage() {
                 stroke={1.7}
               />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-4 transition-shadow focus:border-emergency focus:outline-none focus:ring-2 focus:ring-emergency/20 dark:border-gray-600 dark:bg-gray-800"
+                className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-11 transition-shadow focus:border-emergency focus:outline-none focus:ring-2 focus:ring-emergency/20 dark:border-gray-600 dark:bg-gray-800"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+              >
+                {showPassword ? (
+                  <IconEyeOff className="h-5 w-5" stroke={1.7} />
+                ) : (
+                  <IconEye className="h-5 w-5" stroke={1.7} />
+                )}
+              </button>
             </div>
           </label>
           <button

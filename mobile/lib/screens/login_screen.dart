@@ -93,8 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const _Badge(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 8),
                         const Center(child: _Emblem()),
                         const SizedBox(height: 24),
                         Text(
@@ -362,86 +361,6 @@ class _Glow extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const _PulseDot(),
-            const SizedBox(width: 8),
-            Text(
-              'EMERGENCY RESPONSE NETWORK',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.88,
-                color: Colors.white.withOpacity(0.60),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PulseDot extends StatefulWidget {
-  const _PulseDot();
-
-  @override
-  State<_PulseDot> createState() => _PulseDotState();
-}
-
-class _PulseDotState extends State<_PulseDot>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1300),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (context, _) {
-        final t = _ctrl.value;
-        return Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _kEmberLight,
-            boxShadow: [
-              BoxShadow(
-                color: _kEmber.withOpacity(0.35 + 0.45 * t),
-                blurRadius: 2 + 6 * t,
-                spreadRadius: 0.5 + 1.5 * t,
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

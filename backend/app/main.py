@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
         from app.ai.incident_predictor import IncidentLocationPredictor
 
         IncidentLocationPredictor().ensure_model()
-        logger.info("Incident location ML model ready")
+        logger.info("Incident location estimator ready (hybrid-v1)")
     except Exception as exc:
         logger.warning("ML model not loaded at startup: %s", exc)
     yield

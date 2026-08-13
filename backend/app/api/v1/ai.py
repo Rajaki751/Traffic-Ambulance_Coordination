@@ -1,10 +1,11 @@
 """AI incident prediction and traffic-aware routing APIs."""
 
-import asyncio
-
 from fastapi import APIRouter, HTTPException
 
-from app.ai.incident_predictor import INCIDENT_TYPES, MODEL_PATH, IncidentLocationPredictor
+from app.ai.incident_predictor import (
+    INCIDENT_TYPES,
+    IncidentLocationPredictor,
+)
 from app.ai.route_prediction import RoutePredictionService
 from app.api.deps import RequireAdmin, RequireAnyAuth
 from app.schemas.ai import (
@@ -22,17 +23,17 @@ incident_predictor = IncidentLocationPredictor()
 
 @router.get("/model-info", response_model=ModelInfoResponse)
 async def model_info(_: RequireAnyAuth):
-    """Return ML model metadata and training status."""
-    loaded = MODEL_PATH.exists()
+    """Return estimator metadata and supported incident types."""
     return ModelInfoResponse(
-        model_loaded=loaded,
-        model_version=IncidentLocationPredictor.MODEL_VERSION if loaded else None,
-        model_path=str(MODEL_PATH),
+        model_loaded=True,
+        model_version=IncidentLocationPredictor.MODEL_VERSION,
+        model_path="built-in hotspot-anchored algorithm (no model file)",
         supported_incident_types=INCIDENT_TYPES,
         description=(
-            "Random Forest (scikit-learn) forecasts incident coordinates from "
-            "caller location, time, traffic index, and incident type. "
-            "OSRM provides shortest-path routing with traffic-adjusted ETA."
+            "Deterministic hotspot-anchored estimator: caller position, "
+            "per-type reach profiles, and a curated Kathmandu risk hotspot "
+            "table produce the incident estimate. OSRM provides "
+            "shortest-path routing with traffic-adjusted ETA."
         ),
     )
 
@@ -96,9 +97,11 @@ async def route_to_incident(payload: RouteToIncidentRequest, _: RequireAnyAuth):
 
 @router.post("/retrain-model")
 async def retrain_model(_: RequireAdmin):
-    """Retrain incident location model from historical CSV data (admin only)."""
-    try:
-        metrics = await asyncio.to_thread(incident_predictor.train)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Training failed: {exc}") from exc
-    return {"status": "ok", "metrics": metrics}
+    """Legacy endpoint: the hybrid estimator needs no training (admin only)."""
+    return {
+        "status": "ok",
+        "message": (
+            "The hotspot-anchored estimator requires no training; "
+            "model_version is hybrid-v1."
+        ),
+    }

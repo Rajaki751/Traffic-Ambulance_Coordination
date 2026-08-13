@@ -1,4 +1,4 @@
-# Emergency Route Coordinator
+# AI-Driven Traffic Ambulance Coordination System
 
 Production-ready full-stack system for coordinating ambulances through traffic during emergencies with real-time GPS tracking, route optimization, and traffic officer alerts.
 
@@ -15,7 +15,8 @@ Production-ready full-stack system for coordinating ambulances through traffic d
                     ┌──────────────────────────────┐
                     │     FastAPI Backend          │
                     │  JWT · RBAC · WebSockets     │
-                    │  OSRM Route Optimization     │
+                    │  Hybrid AI Estimator         │
+                    │  Learned ETA · OSRM Routing  │
                     └──────────────┬───────────────┘
                                    ▼
                     ┌──────────────────────────────┐
@@ -31,7 +32,7 @@ Production-ready full-stack system for coordinating ambulances through traffic d
 | Mobile | Flutter, Provider, Dio, flutter_map, geolocator, go_router |
 | Dashboard | React, Vite, Tailwind CSS, React Leaflet, Axios |
 | Routing | OpenStreetMap + OSRM shortest-path |
-| AI / ML | scikit-learn Random Forest (incident location) + traffic-aware ETA |
+| AI / ML | Hotspot-anchored incident estimator + learned ETA model (gradient boosting) + auto-discovered hotspots |
 
 ## Project Structure
 
@@ -72,10 +73,6 @@ alembic upgrade head
 # Seed sample users
 python -m scripts.seed_data
 
-# Train ML incident model (auto-runs on startup if missing)
-python -m scripts.generate_incident_data
-python -m scripts.train_incident_model
-
 # Start API
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -111,6 +108,28 @@ Use `http://localhost:8000` for iOS simulator or your machine IP for physical de
 | Driver | driver@ambulance.gov | Driver@12345 |
 | Officer | officer@ambulance.gov | Officer@12345 |
 
+## How the AI Works
+
+### Incident location estimation (`hybrid-v1`)
+
+A deterministic, hotspot-anchored estimator — no model file, no training set:
+
+- starts from the caller's position with a per-type reach profile (cardiac incidents are close, fires imprecise)
+- attracts the estimate toward a curated table of ~48 Kathmandu risk hotspots (junctions, arterial roads, markets, hospital access) using inverse-square weighting, modulated by rush hour, night-time, and traffic
+- confidence is geometric (hotspot proximity + agreement), clamped to 0.35–0.98
+
+### Learned ETA model (`eta-v1`)
+
+Every completed emergency session records its ground truth: the OSRM baseline duration vs. the actual wall-clock duration. Once **≥25 trips** exist, a gradient-boosting regressor learns each trip's `actual / baseline` ratio from distance, hour, weekday, traffic factor, and incident type. New activations then get ETA = baseline × predicted ratio (clamped 0.7–2.2); before that, a static traffic heuristic is used. Training runs automatically at startup (or via the admin `retrain-model` endpoint) and persists to `backend/models/eta_model.joblib` (gitignored).
+
+### Auto-discovered hotspots
+
+Completed sessions also record their actual incident coordinates. With **≥20 records**, KMeans (k chosen by silhouette score) clusters them into recurring accident zones, kind-tagged by their dominant incident type. The clusters join the curated table inside the estimator, so predictions tune themselves to observed reality (`backend/models/hotspots.json`, gitignored).
+
+### Map pin override
+
+Instead of typing a destination, drivers can pin the incident spot on an interactive OpenStreetMap picker (center-pin drag, device-locate button). The picked coordinates are reverse-geocoded for confirmation, fill the destination field with exact lat/lon, and override the AI estimate even when AI prediction is enabled.
+
 ## API Overview
 
 ### Authentication
@@ -123,11 +142,11 @@ Use `http://localhost:8000` for iOS simulator or your machine IP for physical de
 - `POST /api/v1/emergencies/{id}/end` - End emergency
 - `GET /api/v1/emergencies/active` - List active (admin)
 
-### AI Route Prediction (scikit-learn + OSRM)
-- `GET /api/v1/ai/model-info` - ML model metadata
-- `POST /api/v1/ai/predict-incident` - Forecast incident coordinates
-- `POST /api/v1/ai/route-to-incident` - Predict incident + fastest traffic-aware route
-- `POST /api/v1/ai/retrain-model` - Retrain from `backend/data/incidents_history.csv`
+### AI Prediction & Learned Models (OSRM + scikit-learn)
+- `GET /api/v1/ai/model-info` - Estimator & learned-model metadata
+- `POST /api/v1/ai/predict-incident` - Estimate incident coordinates
+- `POST /api/v1/ai/route-to-incident` - Estimate incident + fastest traffic-aware route
+- `POST /api/v1/ai/retrain-model` - (admin) Train the ETA model + rediscover hotspots from completed trips
 
 ### GPS
 - `POST /api/v1/gps/update` - Send GPS coordinates
@@ -136,6 +155,9 @@ Use `http://localhost:8000` for iOS simulator or your machine IP for physical de
 
 ### Routes
 - `POST /api/v1/routes/optimize` - OSRM route + congestion score
+- `GET /api/v1/directions/geocode` - Place search (Nominatim)
+- `GET /api/v1/directions/reverse-geocode` - Coordinates → place name (Nominatim)
+- `GET /api/v1/directions/preview` - Route preview with traffic
 
 ### Notifications
 - `GET /api/v1/notifications/` - Officer alerts

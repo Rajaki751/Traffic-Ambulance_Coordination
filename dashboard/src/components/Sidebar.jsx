@@ -49,7 +49,7 @@ export default function Sidebar({ collapsed = false, onToggle }) {
 
   return (
     <aside
-      className={`flex flex-col bg-emergency-dark text-white transition-[width] duration-200 ${
+      className={`sticky top-0 flex h-screen flex-col bg-emergency-dark text-white transition-[width] duration-200 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >

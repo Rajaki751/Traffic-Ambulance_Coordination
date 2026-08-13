@@ -1,6 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { IconActivity, IconLogout } from '@tabler/icons-react';
+import {
+  IconActivity,
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconLogout,
+} from '@tabler/icons-react';
 import Sidebar from './Sidebar';
 import { useAdminWebSocket, WebSocketContext } from '../hooks/useWebSocket';
 
@@ -21,6 +26,7 @@ const statusLabels = {
 export default function Layout() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('connecting');
+  const [collapsed, setCollapsed] = useState(false);
   const listenersRef = useRef(new Set());
 
   const subscribe = useCallback((listener) => {
@@ -43,10 +49,24 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar collapsed={collapsed} />
       <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-white/90 px-6 py-4 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
-          <h2 className="text-lg font-semibold tracking-tight">System Monitor</h2>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setCollapsed((c) => !c)}
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className="rounded-lg border p-2 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              {collapsed ? (
+                <IconChevronsRight className="h-4 w-4" stroke={1.7} />
+              ) : (
+                <IconChevronsLeft className="h-4 w-4" stroke={1.7} />
+              )}
+            </button>
+            <h2 className="text-lg font-semibold tracking-tight">System Monitor</h2>
+          </div>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm dark:border-gray-700">
               <span

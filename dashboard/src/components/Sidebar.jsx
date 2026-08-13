@@ -13,19 +13,23 @@ const links = [
   { to: '/users', label: 'Users', icon: IconUsers },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed = false }) {
   return (
-    <aside className="flex w-64 flex-col bg-emergency-dark text-white">
+    <aside
+      className={`flex flex-col bg-emergency-dark text-white transition-[width] duration-200 ${collapsed ? 'w-20' : 'w-64'}`}
+    >
       <div className="flex items-center gap-3 border-b border-white/10 p-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
           <IconAmbulance className="h-6 w-6 text-emergency-dark" stroke={1.8} />
         </div>
-        <div>
-          <h1 className="text-base font-bold leading-tight tracking-tight">
-            Emergency Coord
-          </h1>
-          <p className="text-xs text-white/60">Admin Dashboard</p>
-        </div>
+        {!collapsed && (
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold leading-tight tracking-tight">
+              Emergency Coord
+            </h1>
+            <p className="text-xs text-white/60">Admin Dashboard</p>
+          </div>
+        )}
       </div>
       <nav className="flex-1 space-y-1 p-4">
         {links.map((link) => (
@@ -33,8 +37,11 @@ export default function Sidebar() {
             key={link.to}
             to={link.to}
             end={link.to === '/'}
+            title={collapsed ? link.label : undefined}
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors ${
+                collapsed ? 'justify-center px-0' : ''
+              } ${
                 isActive
                   ? 'bg-white/20 font-semibold'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
@@ -47,15 +54,10 @@ export default function Sidebar() {
               }`}
               stroke={1.7}
             />
-            {link.label}
+            {!collapsed && link.label}
           </NavLink>
         ))}
       </nav>
-      <div className="border-t border-white/10 p-4">
-        <p className="px-2 text-[11px] uppercase tracking-wider text-white/40">
-          v1.0.0
-        </p>
-      </div>
     </aside>
   );
 }

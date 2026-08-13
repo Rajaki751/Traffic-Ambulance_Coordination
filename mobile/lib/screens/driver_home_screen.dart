@@ -568,8 +568,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _setStatus(String display, String api) async {
+    final previous = _driverStatus;
     setState(() => _driverStatus = display);
-    await context.read<AuthProvider>().updateAmbulanceStatus(api);
+    final ok =
+        await context.read<AuthProvider>().updateAmbulanceStatus(api);
+    if (!mounted) return;
+    if (!ok) {
+      setState(() => _driverStatus = previous);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Couldn't sync status — check your connection"),
+        ),
+      );
+    }
   }
 
   Widget _statusPill({

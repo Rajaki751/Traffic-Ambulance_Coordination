@@ -2,15 +2,34 @@ import { useCallback, useEffect, useState } from 'react';
 import { IconAmbulance, IconSteeringWheel } from '@tabler/icons-react';
 import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
-import StatusPill from '../components/StatusPill';
 import ErrorBanner from '../components/ErrorBanner';
 import { ambulancesApi } from '../services/api';
 
 const statusMeta = {
-  available: { tone: 'green', label: 'Available', accent: 'bg-green-500', icon: 'bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-300' },
-  on_duty: { tone: 'blue', label: 'On Duty', accent: 'bg-blue-500', icon: 'bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' },
-  emergency: { tone: 'red', label: 'Emergency', accent: 'bg-red-500', icon: 'bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-300' },
-  offline: { tone: 'gray', label: 'Offline', accent: 'bg-gray-400', icon: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' },
+  available: {
+    label: 'Available',
+    dot: 'bg-green-500',
+    text: 'text-green-600 dark:text-green-400',
+    alert: false,
+  },
+  on_duty: {
+    label: 'On Duty',
+    dot: 'bg-blue-500',
+    text: 'text-blue-600 dark:text-blue-400',
+    alert: false,
+  },
+  emergency: {
+    label: 'Emergency',
+    dot: 'bg-red-500',
+    text: 'text-red-600 dark:text-red-400',
+    alert: true,
+  },
+  offline: {
+    label: 'Offline',
+    dot: 'bg-gray-400',
+    text: 'text-gray-500 dark:text-gray-400',
+    alert: false,
+  },
 };
 
 const fallback = statusMeta.offline;
@@ -58,7 +77,7 @@ export default function AmbulancesPage() {
               key={chip.key}
               className="flex items-center gap-2 rounded-full border bg-white px-3.5 py-1.5 text-xs font-medium dark:border-gray-700 dark:bg-gray-800"
             >
-              <span className={`h-2 w-2 rounded-full ${statusMeta[chip.key].accent}`} />
+              <span className={`h-2 w-2 rounded-full ${statusMeta[chip.key].dot}`} />
               {chip.label}
               <span className="font-bold tabular-nums">{counts[chip.key]}</span>
             </span>
@@ -87,32 +106,38 @@ export default function AmbulancesPage() {
             return (
               <div
                 key={a.id}
-                className="overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                className={`rounded-2xl border p-5 shadow-sm transition-shadow hover:shadow-md ${
+                  meta.alert
+                    ? 'border-red-200 bg-red-50/40 dark:border-red-900/40 dark:bg-red-900/10'
+                    : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
+                }`}
               >
-                <div className={`h-1 ${meta.accent}`} />
-                <div className="p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.icon}`}
-                      >
-                        <IconAmbulance className="h-6 w-6" stroke={1.7} />
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="truncate font-mono text-base font-semibold tracking-tight">
-                          {a.vehicle_number}
-                        </h3>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          Unit #{a.id}
-                        </p>
-                      </div>
-                    </div>
-                    <StatusPill tone={meta.tone} label={meta.label} pulse={meta.tone === 'red'} />
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 border-t border-gray-100 pt-3.5 text-sm text-gray-500 dark:border-gray-700/60 dark:text-gray-400">
-                    <IconSteeringWheel className="h-4 w-4 shrink-0" stroke={1.7} />
-                    {a.driver_name ?? 'No driver assigned'}
-                  </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center rounded-lg bg-gray-900 px-2.5 py-1.5 font-mono text-sm font-bold tracking-wide text-white">
+                    {a.vehicle_number}
+                  </span>
+                  <span
+                    className={`flex shrink-0 items-center gap-1.5 text-xs font-medium ${meta.text}`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${meta.dot} ${
+                        meta.alert ? 'animate-pulse' : ''
+                      }`}
+                    />
+                    {meta.label}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center gap-2 border-t border-gray-100 pt-3.5 text-sm dark:border-gray-700/60">
+                  <IconSteeringWheel
+                    className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500"
+                    stroke={1.7}
+                  />
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Driver:{' '}
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {a.driver_name ?? 'Unassigned'}
+                    </span>
+                  </span>
                 </div>
               </div>
             );

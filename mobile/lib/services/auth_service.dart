@@ -113,6 +113,11 @@ class AuthService {
     await _api.patch('/api/v1/ambulances/me/status', data: {'status': status});
   }
 
+  Future<void> saveName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.userNameKey, name);
+  }
+
   Future<void> _saveSession(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.tokenKey, user.token!);

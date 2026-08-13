@@ -153,4 +153,18 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> updateLocalName(String name) async {
+    final user = _user;
+    if (user == null) return;
+    _user = UserModel(
+      id: user.id,
+      name: name,
+      email: user.email,
+      role: user.role,
+      token: user.token,
+    );
+    await _authService.saveName(name);
+    notifyListeners();
+  }
 }

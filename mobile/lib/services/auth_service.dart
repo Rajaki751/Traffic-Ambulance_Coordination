@@ -1,0 +1,116 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import '../core/constants.dart';
+import '../models/user_model.dart';
+import 'api_service.dart';
+
+class AuthService {
+  final ApiService _api;
+  AuthService(this._api);
+
+  String get baseUrl => _api.baseUrl;
+
+  void setBaseUrl(String url) => _api.setBaseUrl(url);
+
+  Future<UserModel> login(String email, String password) async {
+    final res = await _api.post('/api/v1/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    final data = res.data as Map<String, dynamic>;
+    final user = UserModel(
+      id: data['user_id'] ?? data['id'],
+      name: data['name'] ?? '',
+      email: email,
+      role: UserRole.values.firstWhere(
+        (r) => r.name == data['role'].toString().toLowerCase(),
+        orElse: () => UserRole.driver,
+      ),
+      token: data['access_token'],
+    );
+    _api.setToken(user.token);
+    await _saveSession(user);
+    return user;
+  }
+
+  Future<UserModel> register({
+    required String name,
+    required String email,
+    required String password,
+    required String role,
+    String? vehicleNumber,
+    String? assignedZone,
+  }) async {
+    final data = <String, dynamic>{
+      'name': name,
+      'email': email,
+      'password': password,
+      'role': role,
+    };
+    if (vehicleNumber != null) data['vehicle_number'] = vehicleNumber;
+    if (assignedZone != null) data['assigned_zone'] = assignedZone;
+
+    final res = await _api.post('/api/v1/auth/register', data: data);
+    final resData = res.data as Map<String, dynamic>;
+
+    final loginRes = await _api.post('/api/v1/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    final loginData = loginRes.data as Map<String, dynamic>;
+    final user = UserModel(
+      id: loginData['user_id'] ?? loginData['id'],
+      name: loginData['name'] ?? name,
+      email: email,
+      role: UserRole.values.firstWhere(
+        (r) => r.name == loginData['role'].toString().toLowerCase(),
+        orElse: () => UserRole.driver,
+      ),
+      token: loginData['access_token'],
+    );
+    _api.setToken(user.token);
+    await _saveSession(user);
+    return user;
+  }
+
+  Future<UserModel?> autoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(AppConstants.tokenKey);
+    if (token == null) return null;
+    _api.setToken(token);
+    try {
+      final res = await _api.get('/api/v1/auth/me');
+      final data = res.data as Map<String, dynamic>;
+      return UserModel(
+        id: data['id'],
+        name: data['name'],
+        email: data['email'],
+        role: UserRole.values.firstWhere(
+          (r) => r.name == data['role'].toString().toLowerCase(),
+          orElse: () => UserRole.driver,
+        ),
+        token: token,
+      );
+    } catch (_) {
+      await logout();
+      return null;
+    }
+  }
+
+  Future<void> logout() async {
+    _api.setToken(null);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+  Future<void> updateAmbulanceStatus(String status) async {
+    await _api.patch('/api/v1/ambulances/me/status', data: {'status': status});
+  }
+
+  Future<void> _saveSession(UserModel user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.tokenKey, user.token!);
+    await prefs.setInt(AppConstants.userIdKey, user.id);
+    await prefs.setString(AppConstants.userRoleKey, user.role.name);
+    await prefs.setString(AppConstants.userNameKey, user.name);
+  }
+}

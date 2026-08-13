@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+
+# Env files
+.env
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Databases
+*.db
+*.sqlite3
+
+# ML artifacts (regenerable via scripts)
+backend/models/
+backend/data/incidents_history.csv
+
+# OS
+.DS_Store
+
+# Logs
+*.log

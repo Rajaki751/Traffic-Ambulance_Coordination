@@ -1,0 +1,69 @@
+"""Geocoding service using Nominatim (OpenStreetMap) for address-to-coordinate resolution."""
+
+from typing import Optional
+from dataclasses import dataclass
+
+import httpx
+
+
+@dataclass
+class GeocodedLocation:
+    latitude: float
+    longitude: float
+    display_name: str
+    place_type: str
+
+
+class GeocodingService:
+    """Convert text addresses/place names to lat/lon using Nominatim."""
+
+    NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
+    REVERSE_URL = "https://nominatim.openstreetmap.org/reverse"
+    HEADERS = {"User-Agent": "AmbulanceCoordinationSystem/1.0"}
+
+    async def geocode(
+        self,
+        query: str,
+        bias_lat: Optional[float] = None,
+        bias_lon: Optional[float] = None,
+        limit: int = 5,
+    ) -> list[GeocodedLocation]:
+        """Search for places matching `query`. Optionally bias results toward
+        a lat/lon (useful to prefer nearby Kathmandu results)."""
+        params = {
+            "q": query,
+            "format": "json",
+            "limit": limit,
+            "addressdetails": 1,
+        }
+        if bias_lat is not None and bias_lon is not None:
+            params["viewbox"] = f"{bias_lon - 0.5},{bias_lat + 0.5},{bias_lon + 0.5},{bias_lat - 0.5}"
+            params["bounded"] = 0
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(self.NOMINATIM_URL, params=params, headers=self.HEADERS)
+            resp.raise_for_status()
+            results = resp.json()
+
+        locations = []
+        for r in results:
+            try:
+                locations.append(GeocodedLocation(
+                    latitude=float(r["lat"]),
+                    longitude=float(r["lon"]),
+                    display_name=r.get("display_name", query),
+                    place_type=r.get("type", "unknown"),
+                ))
+            except (KeyError, ValueError, TypeError):
+                continue
+        return locations
+
+    async def geocode_single(
+        self,
+        query: str,
+        bias_lat: Optional[float] = None,
+        bias_lon: Optional[float] = None,
+    ) -> Optional[GeocodedLocation]:
+        """Return the best single geocoding match, or None."""
+        results = await self.geocode(query, bias_lat=bias_lat, bias_lon=bias_lon, limit=1)
+        return results[0] if results else None

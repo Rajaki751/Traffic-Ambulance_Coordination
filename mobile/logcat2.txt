@@ -1,0 +1,692 @@
+--------- beginning of main
+07-22 20:23:17.886   554   554 I adbd    : adbd service requested 'shell,v2,raw:am start -n com.ambulance.coordination.ambulance_coordination/.MainActivity'
+--------- beginning of system
+07-22 20:23:17.903   728  1762 W ActivityTaskManager: callingPackage for (uid=2000, pid=11844) has no WPC
+07-22 20:23:17.903   728  1762 V GrammaticalInflectionUtils: AttributionSource: AttributionSource { uid = 10228, packageName = null, attributionTag = null, token = android.os.Binder@2c05993, deviceId = 0, next = null } does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+07-22 20:23:17.907 10649 10649 D RecentsView: onTaskDisplayChanged: 214, new displayId = 0
+07-22 20:23:17.915 10649 10649 D BaseActivity: Launcher flags updated: [state_started|state_resumed|state_deferred_resumed|state_user_active] -[]
+07-22 20:23:17.921   728  1762 V ActivityTaskManager: TaskLaunchParamsModifier: phase=3 task=Task{ea6a4a1 #214 type=standard I=com.ambulance.coordination.ambulance_coordination/.MainActivity} activity=ActivityRecord{61826312 u0 com.ambulance.coordination.ambulance_coordination/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@62320405 inherit-from-task=fullscreen non-freeform-task-display-area display-area=DefaultTaskDisplayArea@62320405 skip-bounds-fullscreen
+07-22 20:23:17.915 11379 11395 V WindowManagerShell: Transition requested (#454): android.os.BinderProxy@9293a24 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=214 effectiveUid=10228 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.ambulance.coordination.ambulance_coordination/.MainActivity } baseActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} topActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} origActivity=null realActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} realActivityIsAppLockEnabled=false numActivities=1 lastActiveTime=29451841 supportsMultiWindow=true supportsMultiWindowWithoutConstraints=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.os.BinderProxy@21ce98d} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{5869742 com.ambulance.coordination.ambulance_coordination.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isInteractive=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=null leafTaskBoundsFromOptions= false capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=503 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false isLeafTask= true eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransitionInfo = null, displayChanges = null, requestedLocation = null, userChange = null, windowingLayerChange = null, fullscreenRequestChange = null, flags = 0, debugId = 454 }
+07-22 20:23:17.925   728  1762 I ActivityTaskManager: START u0 {flg=0x10000000 xflg=0x5 cmp=com.ambulance.coordination.ambulance_coordination/.MainActivity} with LAUNCH_SINGLE_TOP from uid 2000 (com.android.shell) (BAL_ALLOW_PERMISSION) result code=0
+07-22 20:23:17.919 11379 11395 W DisconnectHandler: No disconnect change found in the transition, not handling request.
+07-22 20:23:17.923 11379 11395 V ShellDesktopMode: DesktopTasksController: skipping handleRequest reason=triggerTask's display doesn't support desktop mode
+07-22 20:23:17.923 11379 11395 D ShellSplitScreen: logExit: no-op, mLoggerSessionId is null
+07-22 20:23:17.931   728   765 V GrammaticalInflectionUtils: AttributionSource: AttributionSource { uid = 10228, packageName = null, attributionTag = null, token = android.os.Binder@2c05993, deviceId = 0, next = null } does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+07-22 20:23:17.935 10649 10649 D BaseActivity: Launcher flags updated: [state_started|state_resumed|state_deferred_resumed] -[state_user_active]
+07-22 20:23:17.936 10649 10649 D BaseActivity: Launcher flags updated: [state_started] -[state_resumed|state_deferred_resumed]
+07-22 20:23:17.936 10649 10649 W SplitSelectStateCtor: Missing session instanceIds
+07-22 20:23:17.936 10649 10649 D StatsLog: LAUNCHER_SPLIT_SELECTION_EXIT_INTERRUPTED
+07-22 20:23:17.943   728  1353 V WindowManager: Defer transition id=454 for TaskFragmentTransaction=android.os.Binder@4e7e9dd
+07-22 20:23:17.944 11379 11395 V ShellTaskOrganizer: Task vanished taskId=213
+07-22 20:23:17.945 11379 11395 V ShellTaskOrganizer: Fullscreen Task Vanished: #213
+07-22 20:23:17.945 11379 11395 V ShellDesktopMode: Task Vanished: #213 closed=true
+07-22 20:23:17.945 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:17.946 11379 11395 D ShellDesktopMode: AppToWebRepository: Task 213 is vanishing. Removing task data from repository
+07-22 20:23:17.939   728  1762 W InputChannel-JNI: Channel already disposed.
+07-22 20:23:17.947 11379 11395 V AppCompat: SingleSurfaceLetterboxController: []
+07-22 20:23:17.948   552   757 I libbinder.BpBinder: onLastStrongRef automatically unlinking death recipients for binder (0x74a05e48f6d0) with descriptor: '(not cached)'
+07-22 20:23:17.948 11379 11395 V AppCompat: MultiSurfaceLetterboxController: []
+07-22 20:23:17.948 11379 11395 V AppCompat: LetterboxInputController: []
+07-22 20:23:17.948 11379 11395 V AppCompat: RoundedCornersLetterboxController: {}
+07-22 20:23:17.948 11379 11395 D WindowManagerShell: setLauncherKeepClearAreaHeight: visible=false, height=495
+07-22 20:23:17.951   491   491 D Zygote  : Forked child process 11847
+07-22 20:23:17.955   728   774 I ActivityManager: Start proc 11847:com.ambulance.coordination.ambulance_coordination/u0a228 for next-top-activity {com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity}
+07-22 20:23:17.951 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:17.960 11847 11847 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10228/pid_11847
+07-22 20:23:17.963 11379 11404 D SplashScreenView: Build android.window.SplashScreenView{38b81c0 V.E...... ......ID 0,0-0,0}
+07-22 20:23:17.963 11379 11404 D SplashScreenView: Icon: view: android.widget.ImageView{e6eeef9 V.ED..... ......I. 0,0-0,0 #1020575 android:id/splashscreen_icon_view} drawable: com.android.wm.shell.startingsurface.SplashscreenIconDrawableFactory$ImmobileIconDrawable@fa1ce3e size: 420
+07-22 20:23:17.963 11379 11404 D SplashScreenView: Branding: view: android.view.View{6afe49f G.ED..... ......I. 0,0-0,0 #1020574 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+07-22 20:23:17.959   489   531 I netd    : tetherGetStats() -> {[]} <4.00ms>
+07-22 20:23:17.963   728  1762 V WindowManager: Continue transition id=454 for TaskFragmentTransaction=android.os.Binder@4e7e9dd
+07-22 20:23:17.963   728  1762 D WindowManager: setClientSurface Surface(name=VRI-Splash Screen com.ambulance.coordination.ambulance_coordination#2465)/@0x5b0789e for 183f423 Splash Screen com.ambulance.coordination.ambulance_coordination
+07-22 20:23:17.963 11379 11403 I Surface : Creating surface for consumer unnamed-11379-7 with slotExpansion=1 for 64 slots
+07-22 20:23:17.963 11379 11403 I Surface : Creating surface for consumer VRI[ambulance_coordination]#6(BLAST Consumer)6 with slotExpansion=1 for 64 slots
+07-22 20:23:17.986 11847 11847 I Zygote  : Process 11847 created for com.ambulance.coordination.ambulance_coordination
+07-22 20:23:17.986 11847 11847 I ce_coordination: Late-enabling -Xcheck:jni
+07-22 20:23:18.013 11847 11847 I ce_coordination: Using generational CollectorTypeCMC GC.
+07-22 20:23:18.017 11847 11847 W ce_coordination: Unexpected CPU variant for x86: x86_64.
+07-22 20:23:18.017 11847 11847 W ce_coordination: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, pantherlake, default
+07-22 20:23:18.058 11379 11395 V RecentTasksController: generateList(getRecentTasks)
+07-22 20:23:18.058 11379 11395 V RecentTasksController: initializeDesksMap - allDeskIds: []
+07-22 20:23:18.058 11379 11395 V RecentTasksController: Task 214 is not an active desktop task
+07-22 20:23:18.059 11379 11395 V RecentTasksController: Added fullscreen task: 214
+07-22 20:23:18.059 11379 11395 V RecentTasksController: Task 181 is not an active desktop task
+07-22 20:23:18.060 11379 11395 V RecentTasksController: Added fullscreen task: 181
+07-22 20:23:18.060 11379 11395 V RecentTasksController: generateList - complete
+07-22 20:23:18.051 10649 10694 D PreloadThumbnailUseCase: Preloading thumbnails for task ids: [[id=181 windowingMode=1 user=0 lastActiveTime=28835235] null, [id=214 windowingMode=1 user=0 lastActiveTime=29451841] null]
+07-22 20:23:18.069 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:18.070 11379 11395 D ShellDesktopMode: DesktopRepository(0): Removes freeform task: taskId=213
+07-22 20:23:18.070 11379 11395 W ShellDesktopMode: DesktopRepository(0): No display id found for task: taskId=213
+07-22 20:23:18.070 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:18.077 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:18.090   992   992 D wpa_supplicant: nl80211: Drv Event 64 (NL80211_CMD_NOTIFY_CQM) received for wlan0
+07-22 20:23:18.091   992   992 D wpa_supplicant: nl80211: Beacon loss event
+07-22 20:23:18.091   992   992 D wpa_supplicant: wlan0: Event BEACON_LOSS (53) received
+07-22 20:23:18.091   992   992 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+07-22 20:23:18.106 11847 11847 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+07-22 20:23:18.147   728   896 D WifiClientModeImpl[16438:wlan0]: updateLinkLayerStatsRssiSpeedFrequencyCapabilities rssi=-50 TxLinkspeed=1 freq=2447 RxLinkSpeed=2
+07-22 20:23:18.147   728   896 D WifiDataStall: tx tput in kbps: 11000
+07-22 20:23:18.147   728   896 D WifiDataStall: rx tput in kbps: 11000
+07-22 20:23:18.147   728   896 V WifiConfigManager: Updating scan detail cache freq=2447 BSSID=00:13:10:85:fe:01 RSSI=-50 for "AndroidWifi"NONE
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:18.147   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:18.159   728   896 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+07-22 20:23:18.159   728   896 D WifiScoreCard: BSSID update SIGNAL_POLL ID: 1483220161 SSID: "AndroidWifi", BSSID: 00:13:10:85:fe:01, MAC: 02:15:b2:00:00:00, IP: /10.0.2.16, Security type: 0, Supplicant state: COMPLETED, Wi-Fi standard: legacy, RSSI: -50, Link speed: 1Mbps, Tx Link speed: 1Mbps, Max Supported Tx Link speed: 11Mbps, Calculated Tx : 0Mbps, Rx Link speed: 2Mbps, Max Supported Rx Link speed: 11Mbps, Calculated Rx : 0Mbps, Frequency: 2447MHz, Net ID: 0, Metered hint: false, score: 100, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: 1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none>"AndroidWifi"openMLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>
+07-22 20:23:18.159   728   896 D WifiScoreCard: txRate: 1 txSpeed: 1
+07-22 20:23:18.159   728   896 D WifiScoreCard: network update SIGNAL_POLL "AndroidWifi" ID: 1485497052 RSSI -50 txSpeed -1
+07-22 20:23:18.159   728   896 D WifiClientModeImpl[16438:wlan0]:  ClientModeImpl$L2ConnectedState screen=on 19 0 "AndroidWifi" 00:13:10:85:fe:01 rssi=-50 f=2447 sc=100 link=1 tx=0.0, 0.0, 0.0 rx=0.0 bcn=0 [on:0 tx:0 rx:0 period:3020] from screen [on:0 period:81424] score=100
+07-22 20:23:18.183   554   604 I adbd    : jdwp connection from 11847
+07-22 20:23:18.218 11847 11847 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+07-22 20:23:18.218 11847 11847 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+07-22 20:23:18.393 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:18.394 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:18.394 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:18.402   728   762 V WindowManager: Sent Transition (#454) createdAt=07-22 20:23:17.903 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=214 effectiveUid=10228 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.ambulance.coordination.ambulance_coordination/.MainActivity } baseActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} topActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} origActivity=null realActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} realActivityIsAppLockEnabled=false numActivities=1 lastActiveTime=29451841 supportsMultiWindow=true supportsMultiWindowWithoutConstraints=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{58a2038 Task{ea6a4a1 #214 type=standard I=com.ambulance.coordination.ambulance_coordination/.MainActivity}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{4f0f811 com.ambulance.coordination.ambulance_coordination.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isInteractive=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=null leafTaskBoundsFromOptions= false capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=503 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false isLeafTask= true eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransitionInfo = null, displayChanges = null, requestedLocation = null, userChange = null, windowingLayerChange = null, fullscreenRequestChange = null, flags = 0, debugId = 454 }
+07-22 20:23:18.402   728   762 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] flags= 0 errorCallbackToken=null taskFragmentOrganizer=null }
+07-22 20:23:18.407   728   762 V WindowManager:     info={id=454 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+07-22 20:23:18.407   728   762 V WindowManager:         {WCT{RemoteToken{58a2038 Task{ea6a4a1 #214 type=standard I=com.ambulance.coordination.ambulance_coordination/.MainActivity}}} m=OPEN f=MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0xaa780aa sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:18.407   728   762 V WindowManager:         {WCT{RemoteToken{7dcef5a Task{1f09f2a #206 type=home}}} m=TO_BACK f=SHOW_WALLPAPER|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0x324bba8 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:18.407   728   762 V WindowManager:         {m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0x3a4945d sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+07-22 20:23:18.407   728   762 V WindowManager:     ]}
+07-22 20:23:18.387 11379 11493 V WindowManagerShell: onTransitionReady(transaction=3126736208988)
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: onTransitionReady (#454) android.os.BinderProxy@9293a24: {id=454 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:         {m=OPEN f=MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0x4aadea2 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:         {m=TO_BACK f=SHOW_WALLPAPER|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0xfe25733 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:         {m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0xe62daf0 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:     ]}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: Playing animation for (#454) android.os.BinderProxy@9293a24@0
+07-22 20:23:18.407 11379 11395 D ShellSplitScreen: startAnimation: transition=454 isSplitActive=false
+07-22 20:23:18.407 11379 11395 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+07-22 20:23:18.407 11379 11395 V ShellDesktopMode: DesktopMixedTransitionHandler: No pending desktop transition
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=454 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=OPEN f=MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0x4aadea2 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=TO_BACK f=SHOW_WALLPAPER|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0xfe25733 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0xe62daf0 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x0 checks=[{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null taskFragmentToken=android.os.BinderProxy@3da7f07 windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@d266834, appThread = android.app.IApplicationThread$Stub$Proxy@952665d, debugName = overlayBackTransition, filter = {types=[] flags=0x0 notFlags=0x0 checks=[{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null taskFragmentToken=android.os.BinderProxy@3da7f07 windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=false modes=[CHANGE] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=true}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@c341bd2, appThread = android.app.IApplicationThread$Stub$Proxy@91604a3, debugName = QuickstepDisplayMove, filter = {types=[] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=false modes=[CHANGE] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=true}]} }}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@cdbd3a0, appThread = android.app.IApplicationThread$Stub$Proxy@1d40b59, debugName = QuickstepLaunchHome, filter = {types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@294231e, appThread = android.app.IApplicationThread$Stub$Proxy@2fa47ff, debugName = LauncherToDream, filter = {types=[] flags=0x0 notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[OPEN,TO_FRONT] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=freeform isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@4ba89cc, appThread = null, debugName = DesktopWindowLimitUnminimize, filter = {types=[OPEN,TO_FRONT] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=freeform isCrossDisplayMove=false}]} }}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  Delegate animation for (#454) to null
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: start default transition animation, info = {id=454 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=OPEN f=MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0x4aadea2 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=TO_BACK f=SHOW_WALLPAPER|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0xfe25733 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0xe62daf0 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@2e1338f animAttr=0x13 type=OPEN isEntrance=false
+07-22 20:23:18.407 11379 11395 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@732b61c animAttr=0x12 type=OPEN isEntrance=true
+07-22 20:23:18.407 11379 11395 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@6dff70d
+07-22 20:23:18.407 11379 11395 V ShellTaskOrganizer: Task appeared taskId=214 listener=FullscreenTaskListener
+07-22 20:23:18.407 11379 11395 V ShellTaskOrganizer: Fullscreen Task Appeared: #214
+07-22 20:23:18.407 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:18.478 11847 11847 D nativeloader: Configuring clns-9 for other apk /data/app/~~lgITGyjXuqKUBtcAILitvA==/com.ambulance.coordination.ambulance_coordination-HIkKUBSlKSuN-Z3qO8pnaw==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~lgITGyjXuqKUBtcAILitvA==/com.ambulance.coordination.ambulance_coordination-HIkKUBSlKSuN-Z3qO8pnaw==/lib/x86_64:/data/app/~~lgITGyjXuqKUBtcAILitvA==/com.ambulance.coordination.ambulance_coordination-HIkKUBSlKSuN-Z3qO8pnaw==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.ambulance.coordination.ambulance_coordination
+07-22 20:23:18.481 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:18.501 11847 11847 V GraphicsEnvironment: Currently set values for:
+07-22 20:23:18.502 11847 11847 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+07-22 20:23:18.502 11847 11847 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+07-22 20:23:18.502 11847 11847 V GraphicsEnvironment: com.ambulance.coordination.ambulance_coordination is not listed in per-application setting
+07-22 20:23:18.499 11379 11399 W Looper  : Slow delivery took 48ms wmshell.anim app=com.android.systemui main=false group=TOP_APP h=android.view.Choreographer$FrameHandler c=android.view.Choreographer$FrameDisplayEventReceiver@a513da0 m=0
+07-22 20:23:18.507 11847 11847 V GraphicsEnvironment: No special selections for ANGLE, returning default driver choice
+07-22 20:23:18.511 11847 11847 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+07-22 20:23:18.515 11379 11395 W Looper  : Slow delivery took 72ms wmshell.main app=com.android.systemui main=false group=TOP_APP h=android.os.Handler c=android.view.SurfaceControl$Transaction$$ExternalSyntheticLambda4@5c31808 m=0
+07-22 20:23:18.511 11379 11399 W Looper  : Drained
+07-22 20:23:18.532 11847 11847 W FirebaseApp: Default FirebaseApp failed to initialize because no default options were found. This usually means that com.google.gms:google-services was not applied to your gradle project.
+07-22 20:23:18.532 11847 11847 I FirebaseInitProvider: FirebaseApp initialization unsuccessful
+07-22 20:23:18.534 11847 11847 D FLTFireContextHolder: received application context.
+07-22 20:23:18.559   728   765 I ActivityManager: updateOomAdj start time is before than pendingPid added, don't delete it
+07-22 20:23:18.595 11847 11860 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+07-22 20:23:18.636   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:18.636   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:18.642 11379 11395 W Looper  : Drained
+07-22 20:23:18.643 11847 11864 D FlutterJNI: Beginning load of flutter...
+07-22 20:23:18.663 11847 11865 I ResourceExtractor: Found extracted resources res_timestamp-1-1784730957264
+07-22 20:23:18.739 11379 11395 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#454) android.os.BinderProxy@9293a24@0
+07-22 20:23:18.735 11847 11864 D nativeloader: Load /data/app/~~lgITGyjXuqKUBtcAILitvA==/com.ambulance.coordination.ambulance_coordination-HIkKUBSlKSuN-Z3qO8pnaw==/base.apk!/lib/x86_64/libflutter.so using class loader ns clns-9 (caller=/data/app/~~lgITGyjXuqKUBtcAILitvA==/com.ambulance.coordination.ambulance_coordination-HIkKUBSlKSuN-Z3qO8pnaw==/base.apk): ok
+07-22 20:23:18.735 11847 11864 D FlutterJNI: flutter (null) was loaded normally!
+07-22 20:23:18.750   728   762 V WindowManager: Finish Transition (#454): created at 07-22 20:23:17.903 collect-started=0.0ms request-sent=16.111ms started=23.97ms ready=484.0ms sent=484.0ms commit=44.984ms finished=845.249ms
+07-22 20:23:18.743   728  1762 D FileUtils: Rounded bytes from 2061824000 to 4000000000
+07-22 20:23:18.752 10649 10649 D VRI[NexusLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+07-22 20:23:18.753 11379 11490 D WallpaperService: onVisibilityChanged(false): com.android.systemui.wallpapers.ImageWallpaper$CanvasEngine@4a61c5
+07-22 20:23:18.747 11847 11866 D skia    : [SkFontMgr Android Parser] '/product/etc/fonts_customization.xml' could not be opened
+07-22 20:23:18.764 11379 11395 V WindowManagerShell: Track 0 became idle
+07-22 20:23:18.769 10649 10649 D SmartspaceInteractor: notifySmartspaceEvent: SmartspaceTargetEvent{mSmartspaceTarget=null, mSmartspaceActionId='null', mEventType=7}
+07-22 20:23:18.774 11379 11395 V WindowManagerShell: All active transition animations finished
+07-22 20:23:18.774 11379 11395 W Looper  : Slow dispatch took 35ms wmshell.main app=com.android.systemui main=false group=TOP_APP h=android.os.Handler c=com.android.wm.shell.transition.WindowAnimation$1$$ExternalSyntheticLambda0@393dba1 m=0
+07-22 20:23:18.783   552   757 W libbinder.Binder: Binder transaction to android.ui.ISurfaceComposer, function: UNKNOWN_FUNCTION_NAME, code: 8, took 18446744073709551608ms. Data bytes: 272 Reply bytes: 0 Flags: 17
+07-22 20:23:18.809 11847 11860 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv1_CM_emulation.so
+07-22 20:23:18.811 11847 11860 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv2_emulation.so
+07-22 20:23:18.960 11847 11860 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+07-22 20:23:18.969 11847 11860 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+07-22 20:23:18.969 11847 11860 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+07-22 20:23:18.987 11847 11847 W ce_coordination: type=1400 audit(0.0:187): avc:  denied  { read } for  name="max_map_count" dev="proc" ino=40805 scontext=u:r:untrusted_app_34:s0:c228,c256,c512,c768 tcontext=u:object_r:proc_max_map_count:s0 tclass=file permissive=0 app=com.ambulance.coordination.ambulance_coordination
+07-22 20:23:19.071 11847 11867 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+07-22 20:23:19.444 11847 11873 I flutter : The Dart VM service is listening on http://127.0.0.1:46475/LBnxJ43XteQ=/
+07-22 20:23:19.607   324   324 I lowmemorykiller: Kill 'com.google.android.gms.unstable' (11771), uid 10206, oom_score_adj 905 to free 160788kB rss, 37016kB anon rss, 34496kB swap, 0kB dmabuf_pss, 0kB dmabuf_rss; reason: min watermark is breached and swap is low (34368kB < 37744kB)
+07-22 20:23:19.631   324   324 I lowmemorykiller: Kill 'com.google.android.gms' (11662), uid 10206, oom_score_adj 905 to free 170940kB rss, 36112kB anon rss, 27664kB swap, 0kB dmabuf_pss, 0kB dmabuf_rss; reason: min watermark is breached even after kill
+07-22 20:23:19.631   728   812 D SensorService: Unregistering client listener for PID 11771
+07-22 20:23:19.640   491   491 I Zygote  : Process 11771 exited due to signal 9 (Killed)
+07-22 20:23:19.631   728  2020 I ActivityManager: Process com.google.android.gms.unstable (pid 11771) has died: cch CEM 
+07-22 20:23:19.656   728   775 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10206/pid_11771
+07-22 20:23:19.655 11847 11847 D FLTFireContextHolder: received application context.
+07-22 20:23:19.659   728  2023 I ActivityManager: Process com.google.android.gms (pid 11662) has died: cch CEM 
+07-22 20:23:19.663   491   491 I Zygote  : Process 11662 exited due to signal 9 (Killed)
+07-22 20:23:19.669   324   324 I lowmemorykiller: Kill 'com.google.android.apps.wellbeing' (11729), uid 10151, oom_score_adj 905 to free 137768kB rss, 34284kB anon rss, 34572kB swap, 0kB dmabuf_pss, 0kB dmabuf_rss; reason: min watermark is breached even after kill
+07-22 20:23:19.667 11847 11847 D FlutterGeolocator: Attaching Geolocator to activity
+07-22 20:23:19.680   728   775 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10206/pid_11662
+07-22 20:23:19.690   728  1123 D SensorService: Unregistering client listener for PID 11729
+07-22 20:23:19.683   728  2023 I ActivityManager: Process com.google.android.apps.wellbeing (pid 11729) has died: cch CEM 
+07-22 20:23:19.692 11611 11611 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.usagereporting.service.START xflg=0x4 pkg=com.google.android.gms }
+07-22 20:23:19.692 11611 11611 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.phenotype.service.START xflg=0x4 pkg=com.google.android.gms }
+07-22 20:23:19.691   491   491 I Zygote  : Process 11729 exited due to signal 9 (Killed)
+07-22 20:23:19.697   324   324 I lowmemorykiller: Kill 'com.google.android.gms.persistent' (11611), uid 10206, oom_score_adj 100 to free 229180kB rss, 54340kB anon rss, 27264kB swap, 0kB dmabuf_pss, 0kB dmabuf_rss; reason: min watermark is breached even after kill
+07-22 20:23:19.691   728   775 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10151/pid_11729
+07-22 20:23:19.708 11847 11867 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+07-22 20:23:19.731 11847 11847 I ce_coordination: hiddenapi: Accessing hidden method Landroid/view/accessibility/AccessibilityNodeInfo;->getSourceNodeId()J (runtime_flags=0, domain=platform, api=unsupported,test-api) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+07-22 20:23:19.731 11847 11847 I ce_coordination: hiddenapi: Accessing hidden method Landroid/view/accessibility/AccessibilityRecord;->getSourceNodeId()J (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+07-22 20:23:19.731 11847 11847 I ce_coordination: hiddenapi: Accessing hidden field Landroid/view/accessibility/AccessibilityNodeInfo;->mChildNodeIds:Landroid/util/LongArray; (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+07-22 20:23:19.731 11847 11847 I ce_coordination: hiddenapi: Accessing hidden method Landroid/util/LongArray;->get(I)J (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+07-22 20:23:19.735   728  1762 W libbinder.Binder: Binder transaction to android.content.IContentProvider, function: UNKNOWN_FUNCTION_NAME, code: 21, took 18446744073709551615ms. Data bytes: 416 Reply bytes: 340 Flags: 18
+07-22 20:23:19.739   728  1964 I ActivityManager: Process com.google.android.gms.persistent (pid 11611) has died: vis BFGS
+07-22 20:23:19.744   728  1279 D SensorService: Unregistering client listener for PID 11611
+07-22 20:23:19.744   728  1279 D SensorService: Unregistering client listener for PID 11611
+07-22 20:23:19.744   728  1279 D SensorService: Unregistering client listener for PID 11611
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentInternalBoundBrokerService in 30000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService in 70000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService in 110000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentBoundBrokerService in 150000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService in 190000ms for start-requested
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.network.NetworkLocationService in 230000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.gcm.GcmService in 270000ms for start-requested
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.auth.account.authenticator.GoogleAccountAuthenticatorService in 310000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.magictether.service.TetherService in 350000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.geotimezone.GeoTimeZoneService in 390000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.contextmanager.service.ContextManagerService in 430000ms for start-requested
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.geocode.GeocodeService in 470000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService in 510000ms for start-requested
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.gnssassistance.GnssAssistanceService in 550000ms for connection
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService in 590000ms for start-requested
+07-22 20:23:19.739   728  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.systemserviceacl.service.AclProviderService in 630000ms for connection
+07-22 20:23:19.746   728   762 I ServiceWatcher: [TrustManagerService] disconnected from 10206/com.google.android.gms/.chimera.PersistentInternalBoundBrokerService@-2147483648
+07-22 20:23:19.746   728   762 I ServiceWatcher: [HardwareActivityRecognitionProxy] disconnected from 10206/com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService@1
+07-22 20:23:19.746   728   762 I ServiceWatcher: [network] disconnected from 10206/com.google.android.gms/com.google.android.location.network.NetworkLocationService@2
+07-22 20:23:19.746   728   762 I ServiceWatcher: [RealLocationTimeZoneProviderProxy] disconnected from 10206/com.google.android.gms/.geotimezone.GeoTimeZoneService@1
+07-22 20:23:19.747   728   762 I ServiceWatcher: [GeocoderProxy] disconnected from 10206/com.google.android.gms/.location.geocode.GeocodeService@2
+07-22 20:23:19.747   728   762 I ServiceWatcher: [GnssAssistanceProxy] disconnected from 10206/com.google.android.gms/.location.gnssassistance.GnssAssistanceService@1
+07-22 20:23:19.747   728   762 I ServiceWatcher: [GeofenceProxy] disconnected from 10206/com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService@1
+07-22 20:23:19.747   728   762 I ServiceWatcher: [fused] disconnected from 10206/com.google.android.gms/com.google.android.location.fused.FusedLocationService@1
+07-22 20:23:19.747   728   772 I AppServiceConnection: Disconnected: com.google.android.gms/.systemserviceacl.service.AclProviderService u0
+07-22 20:23:19.743   728   775 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10206/pid_11611
+07-22 20:23:19.749 11379 11379 I SharedConnectivityManager: onServiceDisconnected
+07-22 20:23:19.743   491   491 I Zygote  : Process 11611 exited due to signal 9 (Killed)
+07-22 20:23:19.756 11379 11379 I SharedConnectivityManager: unbind
+07-22 20:23:19.751   728   902 I WifiScanningService: binder died: client listener: android.net.wifi.IWifiScannerListener$Stub$Proxy@b55ed1c
+07-22 20:23:19.751   728   902 I WifiScanningService: removeSingleScanRequests: ClientInfo[uid=10206, package=com.google.android.gms, attributionTag=network_location_provider, android.net.wifi.IWifiScannerListener$Stub$Proxy@b55ed1c]
+07-22 20:23:19.751   728   902 E Nl80211Native: getChannelsMhzForBand: Wiphy index not recorded for band 8
+07-22 20:23:19.751   728   902 E Nl80211Native: getChannelsMhzForBand: Wiphy index not recorded for band 16
+07-22 20:23:19.751   728   902 I WifiScanningService: Unregistering listener= android.net.wifi.IWifiScannerListener$Stub$Proxy@b55ed1c uid=10206 packageName=com.google.android.gms workSource=WorkSource{10206}
+07-22 20:23:19.751   728   902 I WifiScanningService: Successfully stopped all requests for client ClientInfo[uid=10206, package=com.google.android.gms, attributionTag=network_location_provider, android.net.wifi.IWifiScannerListener$Stub$Proxy@b55ed1c]
+07-22 20:23:19.767 11847 11847 D FlutterRenderer: Width is zero. 0,0
+07-22 20:23:19.779 11847 11847 D CompatChangeReporter: Compat change id reported: 377864165; UID 10228; state: ENABLED
+07-22 20:23:19.803 11847 11847 W HWUI    : Unknown dataspace 0
+--------- beginning of kernel
+07-22 20:23:19.500     0     0 I servicemanager: Caller(pid=11847,uid=10228,sid=u:r:untrusted_app_34:s0:c228,c256,c512,c768) Found android.hardware.graphics.allocator.IAllocator/default in device VINTF manifest.
+07-22 20:23:19.506     0     0 I servicemanager: Caller(pid=11847,uid=10228,sid=u:r:untrusted_app_34:s0:c228,c256,c512,c768) Found android.hardware.graphics.allocator.IAllocator/default in device VINTF manifest.
+07-22 20:23:19.509     0     0 I servicemanager: Caller(pid=11847,uid=10228,sid=u:r:untrusted_app_34:s0:c228,c256,c512,c768) Found mapper/ranchu in device VINTF manifest.
+07-22 20:23:19.820 11847 11868 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+07-22 20:23:19.823 11847 11882 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+07-22 20:23:19.828   728  2007 W InputChannel-JNI: Channel already disposed.
+07-22 20:23:21.161   728   896 D WifiClientModeImpl[16438:wlan0]: updateLinkLayerStatsRssiSpeedFrequencyCapabilities rssi=-50 TxLinkspeed=1 freq=2447 RxLinkSpeed=2
+07-22 20:23:21.162   728   896 D WifiDataStall: tx tput in kbps: 11000
+07-22 20:23:21.162   728   896 D WifiDataStall: rx tput in kbps: 11000
+07-22 20:23:21.162   728   896 V WifiConfigManager: Updating scan detail cache freq=2447 BSSID=00:13:10:85:fe:01 RSSI=-50 for "AndroidWifi"NONE
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+07-22 20:23:21.162   728   896 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 11
+07-22 20:23:21.169   728   896 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+07-22 20:23:21.170   728   896 D WifiScoreCard: BSSID update SIGNAL_POLL ID: 1483220161 SSID: "AndroidWifi", BSSID: 00:13:10:85:fe:01, MAC: 02:15:b2:00:00:00, IP: /10.0.2.16, Security type: 0, Supplicant state: COMPLETED, Wi-Fi standard: legacy, RSSI: -50, Link speed: 1Mbps, Tx Link speed: 1Mbps, Max Supported Tx Link speed: 11Mbps, Calculated Tx : 0Mbps, Rx Link speed: 2Mbps, Max Supported Rx Link speed: 11Mbps, Calculated Rx : 0Mbps, Frequency: 2447MHz, Net ID: 0, Metered hint: false, score: 100, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: 1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none>"AndroidWifi"openMLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>
+07-22 20:23:21.170   728   896 D WifiScoreCard: txRate: 2 txSpeed: 1
+07-22 20:23:21.170   728   896 D WifiScoreCard: network update SIGNAL_POLL "AndroidWifi" ID: 1485497052 RSSI -50 txSpeed -1
+07-22 20:23:21.170   728   896 D WifiClientModeImpl[16438:wlan0]:  ClientModeImpl$L2ConnectedState screen=on 19 0 "AndroidWifi" 00:13:10:85:fe:01 rssi=-50 f=2447 sc=100 link=1 tx=1.4, 0.0, 0.0 rx=1.4 bcn=0 [on:0 tx:0 rx:0 period:3011] from screen [on:0 period:84435] score=100
+07-22 20:23:21.171   489   531 I netd    : setProcSysNet(4, 2, wlan0, retrans_time_ms, 750) <0.00ms>
+07-22 20:23:21.171   489   531 I netd    : setProcSysNet(4, 2, wlan0, ucast_solicit, 5) <0.00ms>
+07-22 20:23:21.175   489   531 I netd    : setProcSysNet(6, 2, wlan0, retrans_time_ms, 750) <0.00ms>
+07-22 20:23:21.175   489   531 I netd    : setProcSysNet(6, 2, wlan0, ucast_solicit, 5) <0.00ms>
+07-22 20:23:21.188  1078  1265 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 16 up
+07-22 20:23:21.199   489   531 I netd    : setProcSysNet(4, 2, wlan0, retrans_time_ms, 750) <0.00ms>
+07-22 20:23:21.199   489   531 I netd    : setProcSysNet(4, 2, wlan0, ucast_solicit, 10) <0.00ms>
+07-22 20:23:21.199   489   531 I netd    : setProcSysNet(6, 2, wlan0, retrans_time_ms, 750) <0.00ms>
+07-22 20:23:21.199   489   531 I netd    : setProcSysNet(6, 2, wlan0, ucast_solicit, 10) <0.00ms>
+07-22 20:23:21.205  1078  1265 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 16 up
+07-22 20:23:21.236 11847 11847 D FlutterGeolocator: Creating service.
+07-22 20:23:21.267   552  1292 W libbinder.Binder: Binder transaction to android.gui.IDisplayEventConnection, function: requestNextVsync, code: 3, took 18446744073709551612ms. Data bytes: 88 Reply bytes: 0 Flags: 17
+07-22 20:23:21.273 11847 11847 D FlutterGeolocator: Binding to location service.
+07-22 20:23:21.275   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.PersistentInternalBoundBrokerService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.PersistentBoundBrokerService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.location.network.NetworkLocationService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.gcm.GcmService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.auth.account.authenticator.GoogleAccountAuthenticatorService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.geotimezone.GeoTimeZoneService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.contextmanager.service.ContextManagerService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.location.geocode.GeocodeService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.location.gnssassistance.GnssAssistanceService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService in 0ms for mem-pressure-event
+07-22 20:23:21.276   728   772 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.systemserviceacl.service.AclProviderService in 0ms for mem-pressure-event
+07-22 20:23:21.279 11847 11847 I Choreographer: Skipped 86 frames!  The application may be doing too much work on its main thread.
+07-22 20:23:21.281 11847 11847 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.app.Activity$$ExternalSyntheticLambda0@ef84bbb
+07-22 20:23:21.275   728   977 D CoreBackPreview: Window{a2d95f u0 com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@307d2f1, mPriority=-1, mIsAnimationCallback=false, mOverrideBehavior=0}
+07-22 20:23:21.279   491   491 D Zygote  : Forked child process 11885
+07-22 20:23:21.287   728   774 I ActivityManager: Start proc 11885:com.google.android.gms.persistent/u0a206 for bound-service {com.google.android.gms/com.google.android.gms.chimera.PersistentInternalBoundBrokerService}
+07-22 20:23:21.287 11885 11885 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10206/pid_11885
+07-22 20:23:21.291   489   531 I netd    : tetherGetStats() -> {[]} <0.00ms>
+07-22 20:23:21.299 11847 11847 I WindowExtensionsImpl: Initializing Window Extensions, vendor API level=10, activity embedding enabled=true
+07-22 20:23:21.308 11847 11847 W UiContextUtils: Requested context is a non-UI Context. Creating a UI-Context with display: 0. Context: Context=android.app.Application@c743882, of which baseContext=android.app.ContextImpl@8ca3e7f
+07-22 20:23:21.307 11885 11885 I Zygote  : Process 11885 created for com.google.android.gms.persistent
+07-22 20:23:21.312 11885 11885 I .gms.persistent: Using generational CollectorTypeCMC GC.
+07-22 20:23:21.316 11885 11885 W .gms.persistent: Unexpected CPU variant for x86: x86_64.
+07-22 20:23:21.316 11885 11885 W .gms.persistent: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, pantherlake, default
+07-22 20:23:21.328 11885 11885 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+07-22 20:23:21.330 11847 11847 D VRI[MainActivity]: WindowInsets changed: 1080x2400 statusBars:[0,128,0,0] navigationBars:[0,0,0,63] mandatorySystemGestures:[0,160,0,84] 
+07-22 20:23:21.332 11847 11847 D FlutterRenderer: Width is zero. 0,0
+07-22 20:23:21.335   728   977 D WindowManager: setClientSurface Surface(name=VRI-com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity#2469)/@0x7872ff3 for a2d95f com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity
+07-22 20:23:21.347 11847 11847 I Surface : Creating surface for consumer unnamed-11847-0 with slotExpansion=1 for 64 slots
+07-22 20:23:21.348 11847 11847 I Surface : Creating surface for consumer VRI[MainActivity]#0(BLAST Consumer)0 with slotExpansion=1 for 64 slots
+07-22 20:23:21.351 11847 11847 D FlutterJNI: Sending viewport metrics to the engine.
+07-22 20:23:21.364 11847 11847 I Surface : Creating surface for consumer unnamed-11847-1 with slotExpansion=1 for 64 slots
+07-22 20:23:21.366 11847 11847 I Surface : Creating surface for consumer c370f11 SurfaceView[com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity]#1(BLAST Consumer)1 with slotExpansion=1 for 64 slots
+07-22 20:23:21.370 11847 11851 I ce_coordination: Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals(long)
+07-22 20:23:21.371 11885 11885 D CompatChangeReporter: Compat change id reported: 333566037; UID 10206; state: ENABLED
+07-22 20:23:21.376 11885 11885 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+07-22 20:23:21.376 11885 11885 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.location.provider.jar
+07-22 20:23:21.376 11885 11885 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.media.remotedisplay.jar
+07-22 20:23:21.376 11885 11885 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+07-22 20:23:21.376 11885 11885 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+07-22 20:23:21.391 11885 11885 D nativeloader: Configuring clns-9 for other apk /apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk. target_sdk_version=37, uses_libraries=, library_path=/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/lib/x86_64:/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+07-22 20:23:21.393 11885 11885 D nativeloader: InitApexLibraries:
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_adservices: libhpke_jni.so:libtflite_support_classifiers_native.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_appsearch: libappsearchservice.so:libicing_anywhere.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_art: libartservice.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_bt: libbluetooth_jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_conscrypt: libjavacrypto.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_extservices: libtflite_support_classifiers_native.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_mediaprovider: libpdfclient.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_nfcservices: libnfc_nci_jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_npumanager: libnpumanager_service_jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_ondevicepersonalization: libfcp_cpp_dep_jni.so:libfcp_hpke_jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_os_statsd: libstats_jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_tethering: libandroid_net_connectivity_com_android_net_module_util_jni.so:libandroid_net_connectivity_com_android_net_module_util_jni_CommonConnectivityJni.so:libcrypto_httpengine.so:libframework-connectivity-jni.so:libframework-connectivity-tiramisu-jni.so:libhttpengine.so:libservice-connectivity.so:libservice-thread-jni.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_uwb: libuwb_uci_jni_rust.so
+07-22 20:23:21.393 11885 11885 D nativeloader:   com_android_virt: Mi
+07-22 20:23:21.409 11885 11885 V GraphicsEnvironment: Currently set values for:
+07-22 20:23:21.410 11885 11885 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+07-22 20:23:21.410 11885 11885 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+07-22 20:23:21.410 11885 11885 V GraphicsEnvironment: com.google.android.gms is not listed in per-application setting
+07-22 20:23:21.411 11885 11885 V GraphicsEnvironment: No special selections for ANGLE, returning default driver choice
+07-22 20:23:21.414 11885 11885 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+07-22 20:23:21.418 11885 11885 D CompatChangeReporter: Compat change id reported: 407952621; UID 10206; state: ENABLED
+07-22 20:23:21.419 11885 11885 D CompatChangeReporter: Compat change id reported: 419020719; UID 10206; state: ENABLED
+07-22 20:23:21.428 11885 11885 D CompatChangeReporter: Compat change id reported: 418924588; UID 10206; state: ENABLED
+07-22 20:23:21.431   728  1694 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+07-22 20:23:21.473 11885 11885 I Safeboot: Checking safeboot...
+07-22 20:23:21.482 11885 11885 W SQLiteCompatibilityWalFlags: Cannot read global setting sqlite_compatibility_wal_flags - Application state not available
+07-22 20:23:21.512 11885 11885 W ProviderHelper: Unknown dynamite feature providerinstaller.dynamite
+07-22 20:23:21.513 11885 11885 I DynamiteModule: Considering local module com.google.android.gms.providerinstaller.dynamite:1 and remote module com.google.android.gms.providerinstaller.dynamite:0
+07-22 20:23:21.519 11885 11885 I DynamiteModule: Selected local version of com.google.android.gms.providerinstaller.dynamite
+07-22 20:23:21.531 11885 11903 D CompatChangeReporter: Compat change id reported: 458413887; UID 10206; state: ENABLED
+07-22 20:23:21.547 11885 11885 D nativeloader: Load /apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk!/lib/x86_64/libconscrypt_gmscore_jni.so using class loader ns clns-9 (caller=/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk): ok
+07-22 20:23:21.547 11885 11885 V NativeCrypto: Registering com/google/android/gms/org/conscrypt/NativeCrypto's 334 native methods...
+07-22 20:23:21.555 11885 11885 I ProviderInstaller: Installed default security provider GmsCore_OpenSSL
+07-22 20:23:21.563 11885 11910 I GmsApplication: Registering the BackgroundBroadcastReceiverSupport receiver.
+07-22 20:23:21.571   728  1869 W libbinder.Binder: Binder transaction to android.app.IActivityManager, function: UNKNOWN_FUNCTION_NAME, code: 22, took 18446744073709551614ms. Data bytes: 484 Reply bytes: 8 Flags: 18
+07-22 20:23:21.571   728  1869 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:21.575 11885 11910 I GmsReceiverSupport: Registered Receiver for 15+1 IntentFilters
+07-22 20:23:21.575 11885 11910 I Watchcat: Started
+07-22 20:23:21.583 11885 11910 I GMS_MM_Logger: Start time: 80665
+07-22 20:23:21.583 11885 11910 I GMS_MM_Logger: Started.
+07-22 20:23:21.587 11885 11885 I GmsApplication: [gms_startup_benchmark] Static start time (ms): 29455348, Startup latency (ms): 161, Is system user: true
+07-22 20:23:21.665   728   762 I ServiceWatcher: [RealLocationTimeZoneProviderProxy] connected to {com.google.android.gms/com.google.android.gms.geotimezone.GeoTimeZoneService}
+07-22 20:23:21.672 11885 11895 W Auth    : [GaiaServicesFlagManager] Failed to convert account to GoogleAccount: MissingAccount. Returning false. [CONTEXT service_id=343 ]
+07-22 20:23:21.683 11885 11885 W ctxmgr  : [ContextManagerPersistentService]Received null intent [CONTEXT service_id=47 ]
+07-22 20:23:21.696 11885 11885 I DynamiteModule: Considering local module com.google.android.gms.googlecertificates:7 and remote module com.google.android.gms.googlecertificates:0
+07-22 20:23:21.696 11885 11885 I DynamiteModule: Selected local version of com.google.android.gms.googlecertificates
+07-22 20:23:21.698   491   491 D Zygote  : Forked child process 11919
+07-22 20:23:21.700   728   774 I ActivityManager: Start proc 11919:com.google.android.gms/u0a206 for bound-service {com.google.android.gms/com.google.android.gms.checkin.CheckinApiService}
+07-22 20:23:21.691 11919 11919 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10206/pid_11919
+07-22 20:23:21.725   728   762 I ServiceWatcher: [GeocoderProxy] connected to {com.google.android.gms/com.google.android.gms.location.geocode.GeocodeService}
+07-22 20:23:21.723 11919 11919 I Zygote  : Process 11919 created for com.google.android.gms
+07-22 20:23:21.723 11919 11919 I gle.android.gms: Using generational CollectorTypeCMC GC.
+07-22 20:23:21.723 11919 11919 W gle.android.gms: Unexpected CPU variant for x86: x86_64.
+07-22 20:23:21.723 11919 11919 W gle.android.gms: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, pantherlake, default
+07-22 20:23:21.730 11885 11898 I ggtn    : Shared storage file not found for com.google.android.gms.permissions
+07-22 20:23:21.739 11919 11919 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+07-22 20:23:21.746   728  2007 I WifiService: getVerboseLoggingLevel uid=10206
+07-22 20:23:21.760 11919 11919 D CompatChangeReporter: Compat change id reported: 333566037; UID 10206; state: ENABLED
+07-22 20:23:21.764 11919 11919 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+07-22 20:23:21.765 11919 11919 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.location.provider.jar
+07-22 20:23:21.771 11885 11931 D nativeloader: Load /apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk!/lib/x86_64/libleveldbjni.so using class loader ns clns-9 (caller=/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk): ok
+07-22 20:23:21.751 11919 11919 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/com.android.media.remotedisplay.jar
+07-22 20:23:21.751 11919 11919 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+07-22 20:23:21.751 11919 11919 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+07-22 20:23:21.779 11885 11885 I SystemMemoryMap: [geofence] starting initialization [CONTEXT service_id=6 ]
+07-22 20:23:21.783 11885 11885 I SystemMemoryMap: [geofence] recovering 0 entries [CONTEXT service_id=6 ]
+07-22 20:23:21.784 11885 11885 I SystemMemoryMap: [geofence] initialization complete [CONTEXT service_id=6 ]
+07-22 20:23:21.775 11885 11935 W TracingHelper: No RequestContext found in the trace or trace not available. [CONTEXT service_id=259 ratelimit_count=1410065408 ]
+07-22 20:23:21.775 11885 11935 W TracingHelper: Mismatched RequestContext found for module LOCATION_BASE. Module id from RequestContext is MODULEID_UNKNOWN [CONTEXT service_id=259 ratelimit_count=1410065408 ]
+07-22 20:23:21.788 11885 11885 I ChimeraSrvcProxy: com.google.android.location.internal.GoogleLocationManagerService returning NullBinder for action com.android.location.service.GeofenceProvider
+07-22 20:23:21.791 11885 11885 I ChimeraSrvcProxy: com.google.android.gms.location.gnssassistance.GnssAssistanceService returning NullBinder for action android.location.provider.action.GNSS_ASSISTANCE_PROVIDER
+07-22 20:23:21.791   728   762 I ServiceWatcher: [GeofenceProxy] connected to {com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService}
+07-22 20:23:21.791   728   762 I ServiceWatcher: [GnssAssistanceProxy] connected to {com.google.android.gms/com.google.android.gms.location.gnssassistance.GnssAssistanceService}
+07-22 20:23:21.795 11919 11919 D nativeloader: Configuring clns-9 for other apk /apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk. target_sdk_version=37, uses_libraries=, library_path=/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/lib/x86_64:/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+07-22 20:23:21.795 11919 11919 D nativeloader: InitApexLibraries:
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_adservices: libhpke_jni.so:libtflite_support_classifiers_native.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_appsearch: libappsearchservice.so:libicing_anywhere.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_art: libartservice.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_bt: libbluetooth_jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_conscrypt: libjavacrypto.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_extservices: libtflite_support_classifiers_native.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_mediaprovider: libpdfclient.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_nfcservices: libnfc_nci_jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_npumanager: libnpumanager_service_jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_ondevicepersonalization: libfcp_cpp_dep_jni.so:libfcp_hpke_jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_os_statsd: libstats_jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_tethering: libandroid_net_connectivity_com_android_net_module_util_jni.so:libandroid_net_connectivity_com_android_net_module_util_jni_CommonConnectivityJni.so:libcrypto_httpengine.so:libframework-connectivity-jni.so:libframework-connectivity-tiramisu-jni.so:libhttpengine.so:libservice-connectivity.so:libservice-thread-jni.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_uwb: libuwb_uci_jni_rust.so
+07-22 20:23:21.795 11919 11919 D nativeloader:   com_android_virt: Mi
+07-22 20:23:21.807 11885 11920 I AlarmManager: set [name: SystemMemoryCache type: 2 triggerAtMillis: 315389455697 windowMillis: -1 intervalMillis: 0]
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment: Currently set values for:
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment: com.google.android.gms is not listed in per-application setting
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment: No special selections for ANGLE, returning default driver choice
+07-22 20:23:21.815 11885 11895 I NullBinder: NullBinder for com.android.location.service.GeofenceProvider triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+07-22 20:23:21.816 11885 11895 W libbinder.Binder: Large reply transaction of 1056768 bytes, interface descriptor , function: UNKNOWN_FUNCTION_NAME, code: 1, flags: 17
+07-22 20:23:21.807 11919 11919 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+07-22 20:23:21.807 11919 11919 D CompatChangeReporter: Compat change id reported: 407952621; UID 10206; state: ENABLED
+07-22 20:23:21.807 11919 11919 D CompatChangeReporter: Compat change id reported: 419020719; UID 10206; state: ENABLED
+07-22 20:23:21.807 11919 11919 D CompatChangeReporter: Compat change id reported: 418924588; UID 10206; state: ENABLED
+07-22 20:23:21.824 11885 11885 I SystemMemoryMap: [activityrecognition] starting initialization [CONTEXT service_id=6 ]
+07-22 20:23:21.826 11885 11885 I SystemMemoryMap: [activityrecognition] recovering 0 entries [CONTEXT service_id=6 ]
+07-22 20:23:21.827 11885 11885 I SystemMemoryMap: [activityrecognition] initialization complete [CONTEXT service_id=6 ]
+07-22 20:23:21.829 11885 11885 I SystemMemoryMap: [activitytransition] starting initialization [CONTEXT service_id=6 ]
+07-22 20:23:21.827   324   324 I lowmemorykiller: Kill 'com.ambulance.coordination.ambulance_coordination' (11847), uid 10228, oom_score_adj 0 to free 335800kB rss, 159432kB anon rss, 31188kB swap, 0kB dmabuf_pss, 0kB dmabuf_rss; reason: min watermark is breached and swap is low (33344kB < 37744kB)
+07-22 20:23:21.832 11885 11885 I SystemMemoryMap: [activitytransition] recovering 0 entries [CONTEXT service_id=6 ]
+07-22 20:23:21.832 11885 11885 I SystemMemoryMap: [activitytransition] initialization complete [CONTEXT service_id=6 ]
+07-22 20:23:21.835 11885 11885 I SystemMemoryMap: [sleepsegment] starting initialization [CONTEXT service_id=6 ]
+07-22 20:23:21.836 11885 11885 I SystemMemoryMap: [sleepsegment] recovering 0 entries [CONTEXT service_id=6 ]
+07-22 20:23:21.837 11885 11885 I SystemMemoryMap: [sleepsegment] initialization complete [CONTEXT service_id=6 ]
+07-22 20:23:21.827   728  1976 D ContextHubService: Added callback, total callbacks 3
+07-22 20:23:21.843 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.android.trust.provider.SignificantPlaceProvider.BIND xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentInternalBoundBrokerService }
+07-22 20:23:21.843 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.android.trust.provider.SignificantPlaceProvider.BIND xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentInternalBoundBrokerService }
+07-22 20:23:21.827 11885 11928 I BluePixel: Created Null for FLP
+07-22 20:23:21.857   728   762 I ServiceWatcher: [TrustManagerService] connected to {com.google.android.gms/com.google.android.gms.chimera.PersistentInternalBoundBrokerService}
+07-22 20:23:21.548     0     0 I binder  : 11847:11862 ioctl c0306201 7de7b7bedd68 returned -14
+07-22 20:23:21.873   728   762 I ServiceWatcher: [fused] connected to {com.google.android.gms/com.google.android.location.fused.FusedLocationService}
+07-22 20:23:21.867   728  2020 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:21.875   728  2020 I LocationManagerService: fused provider loaded extra attribution tags: [activity_recognition_provider, awareness_provider, current_semantic_location, fused_location_provider, geofencer_provider, gnss_location_provider, network_location_calibration, network_location_provider, wearable_flp_shim]
+07-22 20:23:21.881   728   762 D LocationManagerService: allowedPackages=null
+07-22 20:23:21.875 11885 11885 I ChimeraSrvcProxy: com.google.android.location.internal.server.HardwareArProviderService returning NullBinder for action com.android.location.service.ActivityRecognitionProvider
+07-22 20:23:21.883   728   762 I ServiceWatcher: [HardwareActivityRecognitionProxy] connected to {com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService}
+07-22 20:23:21.875   728  1911 I WindowManager: WIN DEATH: Window{a2d95f u0 com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity}
+07-22 20:23:21.887   728  1856 I ActivityManager: Process com.ambulance.coordination.ambulance_coordination (pid 11847) has died: fg  TOP 
+07-22 20:23:21.886   554   554 I adbd    : Remote process closed the socket (on MSG_PEEK)
+07-22 20:23:21.887   728   762 E libbinder.Parcel: Reading a NULL string not supported here.
+07-22 20:23:21.887   728   762 E ARProxy : Unknown descriptor: 
+07-22 20:23:21.875 11885 11933 I SystemMemoryMap: [flp] starting initialization [CONTEXT service_id=6 ]
+07-22 20:23:21.875 11885 11933 I SystemMemoryMap: [flp] recovering 0 entries [CONTEXT service_id=6 ]
+07-22 20:23:21.875 11885 11933 I SystemMemoryMap: [flp] initialization complete [CONTEXT service_id=6 ]
+07-22 20:23:21.896   491   491 I Zygote  : Process 11847 exited due to signal 9 (Killed)
+07-22 20:23:21.897   728  1856 W ActivityTaskManager: Force removing ActivityRecord{61826312 u0 com.ambulance.coordination.ambulance_coordination/.MainActivity t214}: app died, no saved state
+07-22 20:23:21.875   728  1578 D ConnectivityService: requestNetwork for uid/pid:10206/11885 activeRequest: null callbackRequest: 2018 [NetworkRequest [ TRACK_DEFAULT id=2019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ], NetworkRequest [ REQUEST id=2020, [ Transports: SATELLITE Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOSING|LOST|UNAVAIL|NC|LP|BLK
+07-22 20:23:21.899   728   775 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10228/pid_11847
+07-22 20:23:21.904 11379 11395 V WindowManagerShell: Transition requested (#455): android.os.BinderProxy@265c1c6 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=214 effectiveUid=10228 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.ambulance.coordination.ambulance_coordination/.MainActivity } baseActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} topActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} origActivity=null realActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} realActivityIsAppLockEnabled=false numActivities=1 lastActiveTime=29452494 supportsMultiWindow=true supportsMultiWindowWithoutConstraints=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.os.BinderProxy@21ce98d} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 0 - 0, 0) topActivityInfo=ActivityInfo{b820587 com.ambulance.coordination.ambulance_coordination.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isInteractive=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=null leafTaskBoundsFromOptions= false capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=503 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false isLeafTask= true eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransitionInfo = null, displayChanges = null, requestedLocation = null, userChange = null, windowingLayerChange = null, fullscreenRequestChange = null, flags = 0, debugId = 455 }
+07-22 20:23:21.905 11379 11395 W DisconnectHandler: No disconnect change found in the transition, not handling request.
+07-22 20:23:21.905 11379 11395 V ShellDesktopMode: DesktopTasksController: skipping handleRequest reason=triggerTask's display doesn't support desktop mode
+07-22 20:23:21.906   728   904 D ConnectivityService: NetReassign [2019 : null ΓåÆ 100] [c 1] [a 0] [i 0]
+07-22 20:23:21.907   728   904 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+07-22 20:23:21.907   728   904 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+07-22 20:23:21.907   728   904 D InetDiagMessage: Destroyed live tcp sockets for uids={10228} in 1ms
+07-22 20:23:21.916   728   904 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+07-22 20:23:21.916   728   904 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+07-22 20:23:21.916   728   904 D InetDiagMessage: Destroyed live tcp sockets for uids={20228} in 9ms
+07-22 20:23:21.926   728  1856 V WindowManager: Defer transition id=455 for TaskFragmentTransaction=android.os.Binder@788e418
+07-22 20:23:21.923 10649 10649 D VRI[NexusLauncherActivity]: visibilityChanged oldVisibility=false newVisibility=true
+07-22 20:23:21.935  1152  1413 D PhoneInterfaceManager: getAllCellInfo: package=com.google.android.gms, uid=10206
+07-22 20:23:21.943   728  1856 I WifiService: getScanResults uid=10206
+07-22 20:23:21.943 11379 11395 W Looper  : Slow dispatch took 39ms wmshell.main app=com.android.systemui main=false group=TOP_APP h=android.os.Handler c=com.android.wm.shell.transition.Transitions$ShellTransitionImpl$$ExternalSyntheticLambda1@175acb4 m=0
+07-22 20:23:21.939   728   765 W ActivityManager: setHasOverlayUi called on unknown pid: 11847
+07-22 20:23:21.943   728  1578 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:21.950 11379 11395 V RecentTasksController: Notify recent tasks changed
+07-22 20:23:21.951   728  2023 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:21.955 10649 10649 D SmartspaceInteractor: notifySmartspaceEvent: SmartspaceTargetEvent{mSmartspaceTarget=null, mSmartspaceActionId='null', mEventType=6}
+07-22 20:23:21.959 10649 10649 I Surface : Creating surface for consumer unnamed-10649-14 with slotExpansion=1 for 64 slots
+07-22 20:23:21.963   728   762 I ServiceWatcher: [network] connected to {com.google.android.gms/com.google.android.location.network.NetworkLocationService}
+07-22 20:23:21.959 10649 10649 I Surface : Creating surface for consumer VRI[NexusLauncherActivity]#7(BLAST Consumer)7 with slotExpansion=1 for 64 slots
+07-22 20:23:21.959   728  1578 D WindowManager: setClientSurface Surface(name=VRI-com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#2474)/@0x33d05e1 for 2ce2529 com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity
+07-22 20:23:21.959   728  1278 I LocationManagerService: network provider loaded extra attribution tags: [activity_recognition_provider, awareness_provider, current_semantic_location, fused_location_provider, geofencer_provider, gnss_location_provider, network_location_calibration, network_location_provider, wearable_flp_shim]
+07-22 20:23:21.970   728  1856 V WifiPermissionsUtil: checkCallersLocationPermission(com.google.android.gms): ok because uid 10206 has app-op android:fine_location
+07-22 20:23:21.971   728   762 D LocationManagerService: allowedPackages=null
+07-22 20:23:21.975 11919 11948 D CompatChangeReporter: Compat change id reported: 458413887; UID 10206; state: ENABLED
+07-22 20:23:21.989 11885 11933 I BluePixel: Created Null for FOP
+07-22 20:23:21.987 11885 11920 I SignificantPlaces: significant places migrated to: {} [CONTEXT service_id=396 ]
+07-22 20:23:21.995   728  2007 D ConnectivityService: requestNetwork for uid/pid:10206/11885 activeRequest: null callbackRequest: 2022 [NetworkRequest [ TRACK_DEFAULT id=2023, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ], NetworkRequest [ REQUEST id=2024, [ Transports: SATELLITE Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOSING|LOST|UNAVAIL|NC|LP|BLK
+07-22 20:23:21.997   728   904 D ConnectivityService: NetReassign [no changes] [c 0] [a 2] [i 1]
+07-22 20:23:21.997   728   904 D ConnectivityService: NetReassign [2023 : null ΓåÆ 100] [c 0] [a 0] [i 0]
+07-22 20:23:22.011 11885 11885 I GmsCoreXrpcWrapper: Returning a channel provider with trafficStatsTag=67109895 trafficStatsUid=-1
+07-22 20:23:22.033 11919 11919 W ProviderHelper: Unknown dynamite feature providerinstaller.dynamite
+07-22 20:23:22.038 11919 11919 I DynamiteModule: Considering local module com.google.android.gms.providerinstaller.dynamite:1 and remote module com.google.android.gms.providerinstaller.dynamite:0
+07-22 20:23:22.042 11919 11919 I DynamiteModule: Selected local version of com.google.android.gms.providerinstaller.dynamite
+07-22 20:23:22.062 11919 11919 D nativeloader: Load /apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk!/lib/x86_64/libconscrypt_gmscore_jni.so using class loader ns clns-9 (caller=/apex/com.google.android.gmssystem/priv-app/PrebuiltGmsCoreVic@CP21.260330.005/PrebuiltGmsCoreVic.apk): ok
+07-22 20:23:22.051   728  2007 W system_server: Long monitor contention with owner binder:728_20 (2023) at android.app.ContentProviderHolder com.android.server.am.ContentProviderHelper.getContentProviderImpl(android.app.IApplicationThread, java.lang.String, android.os.IBinder, int, java.lang.String, java.lang.String, boolean, int)(ContentProviderHelper.java:649) waiters=0 in android.content.Intent com.android.server.am.BroadcastController.registerReceiverWithFeatureTraced(android.app.IApplicationThread, java.lang.String, java.lang.String, java.lang.String, android.content.IIntentReceiver, android.content.IntentFilter, java.lang.String, int, int) for 18446744073.698s
+07-22 20:23:22.051   728  2007 W libbinder.Binder: Binder transaction to android.app.IActivityManager, function: UNKNOWN_FUNCTION_NAME, code: 22, took 18446744073709551606ms. Data bytes: 672 Reply bytes: 8 Flags: 16
+07-22 20:23:22.072   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.075   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.083   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.083   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.111 11919 11919 V NativeCrypto: Registering com/google/android/gms/org/conscrypt/NativeCrypto's 334 native methods...
+07-22 20:23:22.107   728  2007 I WifiService: getVerboseLoggingLevel uid=10206
+07-22 20:23:22.123   489 11955 I resolv  : GetAddrInfoHandler::run: {100 983140 100 983140 10206 0}
+07-22 20:23:22.119 11885 11885 I ChimeraSrvcProxy: com.google.android.gms.systemserviceacl.service.AclProviderService returning NullBinder for action null
+07-22 20:23:22.129   489 11957 I resolv  : res_nmkquery: (QUERY, IN, A)
+07-22 20:23:22.129   489 11957 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0x732a1e405430
+07-22 20:23:22.123   489 11956 I resolv  : res_nmkquery: (QUERY, IN, AAAA)
+07-22 20:23:22.129   489 11957 I resolv  : doQuery: rcode=0, ancount=2, return value=79
+07-22 20:23:22.123   489 11956 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0x732a1e408ed0
+07-22 20:23:22.123   489 11956 I resolv  : doQuery: rcode=0, ancount=2, return value=91
+07-22 20:23:22.132   728   772 I AppServiceConnection: Connected: com.google.android.gms/.systemserviceacl.service.AclProviderService u0
+07-22 20:23:22.131 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.phenotype.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.131 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.phenotype.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.131 11885 11920 W ProviderHelper: Unknown dynamite feature providerinstaller.dynamite
+07-22 20:23:22.135 11885 11920 I DynamiteModule: Considering local module com.google.android.gms.providerinstaller.dynamite:1 and remote module com.google.android.gms.providerinstaller.dynamite:0
+07-22 20:23:22.135 11885 11920 I DynamiteModule: Selected local version of com.google.android.gms.providerinstaller.dynamite
+07-22 20:23:22.139 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.scheduler.ACTION_PROXY_SCHEDULE dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.139 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.scheduler.ACTION_PROXY_SCHEDULE dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.143 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.pseudonymous.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.143 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.pseudonymous.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.143 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.clearcut.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.143 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.clearcut.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.157 11919 11919 I ProviderInstaller: Installed default security provider GmsCore_OpenSSL
+07-22 20:23:22.151 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.usagereporting.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.151 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.usagereporting.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.163   728  1278 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.171 11885 11885 D WearableService: Creating wearable service asynchronously.
+07-22 20:23:22.185 11919 11961 I Watchcat: Started
+07-22 20:23:22.189 11919 11961 I GMS_MM_Logger: Start time: 245301
+07-22 20:23:22.195 11885 11885 W ctxmgr  : [ContextManagerPersistentService]Unable to start system_memory_cache. [CONTEXT service_id=47 ]
+07-22 20:23:22.209 11919 11919 I GmsApplication: [gms_startup_benchmark] Static start time (ms): 29455729, Startup latency (ms): 402, Is system user: true
+07-22 20:23:22.239 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.240 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.239 11885 11920 I TrafficStats: tagSocketFd(-1, 1031, -1) failed with errno-9
+07-22 20:23:22.253 11885 11907 I Wear_Controller: Wearable module requires a companion app to be installed.
+07-22 20:23:22.254 11885 11907 I WearableService: onCreate: Wearable Services not starting. Wear is not available on this device.
+07-22 20:23:22.258 11919 11961 I GMS_MM_Logger: Started.
+07-22 20:23:22.259 11885 11933 D DesktopExperienceFlags: Toggle override initialized to: false
+07-22 20:23:22.271 11919 11919 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.checkin.START xflg=0x4 pkg=com.google.android.gms }
+07-22 20:23:22.271 11919 11919 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.checkin.START xflg=0x4 pkg=com.google.android.gms }
+07-22 20:23:22.303 11885 11928 I FusedLocation: location delivery to 10206/com.google.android.gms[fused_location_provider]/2213fe5 blocked - too old [CONTEXT service_id=6 ]
+07-22 20:23:22.310 11885 11898 I ggtn    : Shared storage file not found for com.google.android.gms.usagereporting
+07-22 20:23:22.331 11919 11939 I ggtn    : Shared storage file not found for com.google.android.gms.permissions
+07-22 20:23:22.331 11885 11941 I NetworkScheduler: Using standalone scheduling engine [CONTEXT service_id=218 ]
+07-22 20:23:22.370 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.time.trustedtime.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.370 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.time.trustedtime.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+07-22 20:23:22.388 11885 11903 W WearableService: onGetService: Wear is not available on this device.
+07-22 20:23:22.389 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.significantplaces.api.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.389 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.significantplaces.api.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.383   728  1278 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.419   728  2007 I WifiService: getVerboseLoggingLevel uid=10206
+07-22 20:23:22.419   728  1278 I WifiService: getWifiEnabledState uid=10206 state=3
+07-22 20:23:22.419   728  2007 I WifiService: getWifiEnabledState uid=10206 state=3
+07-22 20:23:22.423 10649 10649 D BaseActivity: Launcher flags updated: [state_started|state_resumed|state_user_active] +[state_resumed|state_user_active]
+07-22 20:23:22.429   552  1127 I libbinder.BpBinder: onLastStrongRef automatically unlinking death recipients for binder (0x74a05e427450) with descriptor: '(not cached)'
+07-22 20:23:22.423 10649 10649 D BaseActivity: Launcher flags updated: [state_started|state_resumed|state_user_active] +[]
+07-22 20:23:22.427 10649 10649 D RecentTasksList: invalidateLoadedTasks - previous requestLoadId: -1
+07-22 20:23:22.427 10649 10649 D BaseActivity: Launcher flags updated: [state_started|state_resumed|state_deferred_resumed|state_user_active] +[state_deferred_resumed]
+07-22 20:23:22.427 10649 10649 D StatsLog: LAUNCHER_ONRESUME
+07-22 20:23:22.432 11379 11395 D WindowManagerShell: setLauncherKeepClearAreaHeight: visible=true, height=495
+07-22 20:23:22.427   728   754 V WindowManager: Continue transition id=455 for TaskFragmentTransaction=android.os.Binder@788e418
+07-22 20:23:22.427 11885 11917 I AlarmManager: setExactAndAllowWhileIdle [name: GCM_CONN_ALARM type: 2 triggerAtMillis: 29463349]
+07-22 20:23:22.435 10649 10696 D QuickstepModelDelegate: notifyAppTargetEvent action=1 launchLocation=workspace/0/[-1,-1]/[1,1]
+07-22 20:23:22.435 11379 11490 D WallpaperService: onVisibilityChanged(true): com.android.systemui.wallpapers.ImageWallpaper$CanvasEngine@4a61c5
+07-22 20:23:22.431   728  2007 I WifiService: getConnectionInfo uid=10206
+07-22 20:23:22.431   728  2007 V WifiService: Clearing REDACT_FOR_LOCAL_MAC_ADDRESS for com.google.android.gms(uid=10206)
+07-22 20:23:22.431   728  2007 V WifiPermissionsUtil: checkCallersLocationPermission(com.google.android.gms): ok because uid 10206 has app-op android:fine_location
+07-22 20:23:22.431   728  2007 V WifiService: Clearing REDACT_FOR_ACCESS_FINE_LOCATION for com.google.android.gms(uid=10206)
+07-22 20:23:22.435   728  1856 I WifiService: getConnectionInfo uid=10206
+07-22 20:23:22.435   728  1856 V WifiService: Clearing REDACT_FOR_LOCAL_MAC_ADDRESS for com.google.android.gms(uid=10206)
+07-22 20:23:22.435 11885 11937 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+07-22 20:23:22.438 11379 11486 V WindowManagerShell: onTransitionReady(transaction=3126736209023)
+07-22 20:23:22.439   728  1856 V WifiPermissionsUtil: checkCallersLocationPermission(com.google.android.gms): ok because uid 10206 has app-op android:fine_location
+07-22 20:23:22.439   728  1856 V WifiService: Clearing REDACT_FOR_ACCESS_FINE_LOCATION for com.google.android.gms(uid=10206)
+07-22 20:23:22.439 10475 10536 I AiAiEcho: Predicting[0]:  [CONTEXT sampling_count=5 ]
+07-22 20:23:22.439 10475 10536 I AiAiEcho: EchoTargets: 
+07-22 20:23:22.439 10475 10536 I AiAiEcho: Filtered by AiAi flag check: 
+07-22 20:23:22.439 10475 10536 I AiAiEcho: [CONTEXT ratelimit_period="10 SECONDS" ]
+07-22 20:23:22.439 10475 10536 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+07-22 20:23:22.439 10475 10536 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0 (types=[])
+07-22 20:23:22.445 11885 11903 W GoogleApiManager: Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=API_UNAVAILABLE, resolution=null, message=null, clientMethodKey=null}
+07-22 20:23:22.455 11379 11395 V WindowManagerShell: onTransitionReady (#455) android.os.BinderProxy@265c1c6: {id=455 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+07-22 20:23:22.455 11379 11395 V WindowManagerShell:         {m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0xf190dd sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:22.455 11379 11395 V WindowManagerShell:         {m=CLOSE f=FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0x8ec3452 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:22.455 11379 11395 V WindowManagerShell:         {m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0xdef7323 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+07-22 20:23:22.455 11379 11395 V WindowManagerShell:     ]}
+07-22 20:23:22.455 11379 11395 V WindowManagerShell: Playing animation for (#455) android.os.BinderProxy@265c1c6@0
+07-22 20:23:22.455 11379 11395 D ShellSplitScreen: startAnimation: transition=455 isSplitActive=false
+07-22 20:23:22.455 11379 11395 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+07-22 20:23:22.455 11379 11395 V ShellDesktopMode: DesktopMixedTransitionHandler: No pending desktop transition
+07-22 20:23:22.456 11379 11395 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=455 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0xf190dd sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=CLOSE f=FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0x8ec3452 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},{m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0xdef7323 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+07-22 20:23:22.455 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.455 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.459 11885 11950 I WearableLocationShim: paired wearable location unsupported - wearable APIs unavailable [CONTEXT service_id=6 ]
+07-22 20:23:22.459 11885 11937 W SystemServiceRegistry: No service published for: wifirtt
+07-22 20:23:22.466 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x0 checks=[{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null taskFragmentToken=android.os.BinderProxy@3da7f07 windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@d266834, appThread = android.app.IApplicationThread$Stub$Proxy@952665d, debugName = overlayBackTransition, filter = {types=[] flags=0x0 notFlags=0x0 checks=[{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null taskFragmentToken=android.os.BinderProxy@3da7f07 windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:22.466 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=false modes=[CHANGE] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=true}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@c341bd2, appThread = android.app.IApplicationThread$Stub$Proxy@91604a3, debugName = QuickstepDisplayMove, filter = {types=[] flags=0x0 notFlags=0x0 checks=[{atype=standard independent=false modes=[CHANGE] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=true}]} }}
+07-22 20:23:22.466 11379 11395 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@cdbd3a0, appThread = android.app.IApplicationThread$Stub$Proxy@1d40b59, debugName = QuickstepLaunchHome, filter = {types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:22.466 11379 11395 D RemoteTransitionHandler: Found filterPair{{types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@cdbd3a0, appThread = android.app.IApplicationThread$Stub$Proxy@1d40b59, debugName = QuickstepLaunchHome, filter = {types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} }}
+07-22 20:23:22.466 11379 11395 V WindowManagerShell:  Delegate animation for (#455) to RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@cdbd3a0, appThread = android.app.IApplicationThread$Stub$Proxy@1d40b59, debugName = QuickstepLaunchHome, filter = {types=[] flags=0x0 notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null windowingMode=undefined isCrossDisplayMove=false},{NOT atype=undefined independent=true modes=[] flags=NONE mustBeTask=true order=ANY topActivity=null launchCookie=null customAnim=true windowingMode=undefined isCrossDisplayMove=false}]} }
+07-22 20:23:22.479   728   952 I WifiService: getConnectionInfo uid=10206
+07-22 20:23:22.479   728   952 V WifiService: Clearing REDACT_FOR_LOCAL_MAC_ADDRESS for com.google.android.gms(uid=10206)
+07-22 20:23:22.479   728   952 V WifiPermissionsUtil: checkCallersLocationPermission(com.google.android.gms): ok because uid 10206 has app-op android:fine_location
+07-22 20:23:22.483   728   952 V WifiService: Clearing REDACT_FOR_ACCESS_FINE_LOCATION for com.google.android.gms(uid=10206)
+07-22 20:23:22.483   728   902 I WifiScanningService: Registering listener= android.net.wifi.IWifiScannerListener$Stub$Proxy@ac10b44 uid=10206 packageName=com.google.android.gms workSource=WorkSource{10206}
+07-22 20:23:22.483   728   902 I WifiScanningService: register scan listener: ClientInfo[uid=10206, package=com.google.android.gms, attributionTag=network_location_provider, android.net.wifi.IWifiScannerListener$Stub$Proxy@ac10b44] AttributionTag network_location_provider
+07-22 20:23:22.483   728   902 I WifiScanningService: registerScanListener: ClientInfo[uid=10206, package=com.google.android.gms, attributionTag=network_location_provider, android.net.wifi.IWifiScannerListener$Stub$Proxy@ac10b44]
+07-22 20:23:22.483   728   902 D WifiScanningService: replySucceeded onSuccess
+07-22 20:23:22.499 11919 11932 I Checkin : [CheckinApiChimeraService] onGetService
+07-22 20:23:22.511 11885 11888 I .gms.persistent: Compiler allocated 4771KB to compile void ezjk.run()
+07-22 20:23:22.511   728  2007 D ConnectivityService: requestNetwork for uid/pid:10206/11885 activeRequest: null callbackRequest: 2025 [NetworkRequest [ LISTEN_FOR_BEST id=2025, [ Transports: CELLULAR|WIFI|BLUETOOTH|ETHERNET|SATELLITE Capabilities: INTERNET&TRUSTED&NOT_VPN&NOT_VCN_MANAGED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms MatchNonThreadLocalNetworks UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOSING|LOST|UNAVAIL|NC|LP|BLK
+07-22 20:23:22.519   728  2007 I WifiService: getConnectionInfo uid=10206
+07-22 20:23:22.519   728  2007 V WifiService: Clearing REDACT_FOR_LOCAL_MAC_ADDRESS for com.google.android.gms(uid=10206)
+07-22 20:23:22.519   728  2007 V WifiPermissionsUtil: checkCallersLocationPermission(com.google.android.gms): ok because uid 10206 has app-op android:fine_location
+07-22 20:23:22.523   728  2007 V WifiService: Clearing REDACT_FOR_ACCESS_FINE_LOCATION for com.google.android.gms(uid=10206)
+07-22 20:23:22.523   728   904 D ConnectivityService: NetReassign [2025 : null ΓåÆ 100] [c 0] [a 0] [i 0]
+07-22 20:23:22.627 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.time.trustedtime.singleuserapi.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentSingleUserInternalApiService }
+07-22 20:23:22.627 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.time.trustedtime.singleuserapi.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentSingleUserInternalApiService }
+07-22 20:23:22.634   728  1578 D ConnectivityService: requestNetwork for uid/pid:10206/11885 activeRequest: null callbackRequest: 2026 [NetworkRequest [ TRACK_DEFAULT id=2027, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ], NetworkRequest [ REQUEST id=2028, [ Transports: SATELLITE Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10206 RequestorUid: 10206 RequestorPkg: com.google.android.gms UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+07-22 20:23:22.635   728   904 D ConnectivityService: NetReassign [2027 : null ΓåÆ 100] [c 0] [a 0] [i 0]
+07-22 20:23:22.643  1152  1296 D SatelliteController: isInCarrierRoamingNbIotNtn: satellite is disabled
+07-22 20:23:22.643  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: Checking connect type from PLMN config for subId: 1
+07-22 20:23:22.643  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.643  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.643  1152  1296 D SatelliteController: isSatelliteAttachSupportedViaConfigupdater: return null (satelliteConfig is null)
+07-22 20:23:22.643  1152  1296 D SatelliteController: getSatellitePerPlmnConfiguration: invalid subId or not supported via carrier.
+07-22 20:23:22.647  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: config: null
+07-22 20:23:22.647  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.647  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.647  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectTypeViaConfigUpdater: return null (satelliteConfig is null)
+07-22 20:23:22.647  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: Falling back to global carrier config connect type: 0
+07-22 20:23:22.647  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.647  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.647  1152  1296 D SatelliteController: isSatelliteAttachSupportedViaConfigupdater: return null (satelliteConfig is null)
+07-22 20:23:22.647  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: Checking connect type from PLMN config for subId: 1
+07-22 20:23:22.651  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.651  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.651  1152  1296 D SatelliteController: isSatelliteAttachSupportedViaConfigupdater: return null (satelliteConfig is null)
+07-22 20:23:22.651  1152  1296 D SatelliteController: getSatellitePerPlmnConfiguration: invalid subId or not supported via carrier.
+07-22 20:23:22.651  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: config: null
+07-22 20:23:22.651  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.655  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.655  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectTypeViaConfigUpdater: return null (satelliteConfig is null)
+07-22 20:23:22.655   728   762 V WindowManager: Sent Transition (#455) createdAt=07-22 20:23:21.897 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=214 effectiveUid=10228 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.ambulance.coordination.ambulance_coordination/.MainActivity } baseActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} topActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} origActivity=null realActivity=ComponentInfo{com.ambulance.coordination.ambulance_coordination/com.ambulance.coordination.ambulance_coordination.MainActivity} realActivityIsAppLockEnabled=false numActivities=1 lastActiveTime=29452494 supportsMultiWindow=true supportsMultiWindowWithoutConstraints=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{58a2038 Task{ea6a4a1 #214 type=standard I=com.ambulance.coordination.ambulance_coordination/.MainActivity}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 0 - 0, 0) topActivityInfo=ActivityInfo{4f0f811 com.ambulance.coordination.ambulance_coordination.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isInteractive=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=null leafTaskBoundsFromOptions= false capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=503 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false isLeafTask= true eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransitionInfo = null, displayChanges = null, requestedLocation = null, userChange = null, windowingLayerChange = null, fullscreenRequestChange = null, flags = 0, debugId = 455 }
+07-22 20:23:22.655   728   762 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] flags= 0 errorCallbackToken=null taskFragmentOrganizer=null }
+07-22 20:23:22.655   728   762 V WindowManager:     info={id=455 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+07-22 20:23:22.655   728   762 V WindowManager:         {WCT{RemoteToken{7dcef5a Task{1f09f2a #206 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=206#2389)/@0x324bba8 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:22.655   728   762 V WindowManager:         {WCT{RemoteToken{58a2038 Task{ea6a4a1 #214 type=standard I=com.ambulance.coordination.ambulance_coordination/.MainActivity}}} m=CLOSE f=FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=214#2462)/@0xaa780aa sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+07-22 20:23:22.655   728   762 V WindowManager:         {m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{4b91c2c}#54)/@0x3a4945d sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+07-22 20:23:22.655   728   762 V WindowManager:     ]}
+07-22 20:23:22.655  1152  1296 D SatelliteController: getCarrierRoamingNtnConnectType: Falling back to global carrier config connect type: 0
+07-22 20:23:22.655   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:22.655   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:22.659   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.659   728   773 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.675   728   765 W system_server: Long monitor contention with owner android.anim (766) at void com.android.server.wm.AbsAppSnapshotController.lambda$recordSnapshotInner$0(com.android.server.wm.WindowContainer, java.util.function.Consumer, android.window.TaskSnapshot)(AbsAppSnapshotController.java:204) waiters=1 in void com.android.server.wm.WindowManagerService$H.handleMessage(android.os.Message) for 240ms
+07-22 20:23:22.679  1152  1296 D TelephonyConfigUpdateInstallReceiver: getConfigParser: domain=satellite
+07-22 20:23:22.679  1152  1296 V SatelliteController: satelliteConfigParser is not ready
+07-22 20:23:22.679  1152  1296 D SatelliteController: isSatelliteAttachSupportedViaConfigupdater: return null (satelliteConfig is null)
+07-22 20:23:22.679   728  2023 W system_server: Long monitor contention with owner android.anim (766) at void com.android.server.wm.AbsAppSnapshotController.lambda$recordSnapshotInner$0(com.android.server.wm.WindowContainer, java.util.function.Consumer, android.window.TaskSnapshot)(AbsAppSnapshotController.java:204) waiters=3 in void com.android.server.wm.ActivityTaskManagerService.setRunningRemoteTransitionDelegate(android.os.IBinder) for 200ms
+07-22 20:23:22.679   728  2023 W ActivityTaskManager: setRunningRemoteTransition: no process for null
+07-22 20:23:22.687 10649 10649 D SsBaseTemplateCard: Passed-in item info is null
+07-22 20:23:22.688 10649 10649 D SsBaseTemplateCard: Passed-in item info is null
+07-22 20:23:22.686 11379 11395 V WindowManagerShell:  animated by com.android.wm.shell.transition.RemoteTransitionHandler@708a54e
+07-22 20:23:22.688 11379 11395 W Looper  : Slow dispatch took 245ms wmshell.main app=com.android.systemui main=false group=TOP_APP h=android.os.Handler c=com.android.wm.shell.transition.Transitions$TransitionPlayerImpl$$ExternalSyntheticLambda1@21dde4c m=0
+07-22 20:23:22.689 10649 10649 D SsBaseTemplateCard: Passed-in item info is null
+07-22 20:23:22.689 10649 10649 D SsBaseTemplateCard: Passed-in item info is null
+07-22 20:23:22.689 10649 10649 I SsBaseTemplateCard: Secondary card pane is null
+07-22 20:23:22.691   552  1292 W libbinder.Binder: Binder transaction to android.gui.IDisplayEventConnection, function: requestNextVsync, code: 3, took 18446744073709551614ms. Data bytes: 88 Reply bytes: 0 Flags: 17
+07-22 20:23:22.697 11379 11395 W Looper  : Slow delivery took 34ms wmshell.main app=com.android.systemui main=false group=TOP_APP h=android.os.Handler c=com.android.wm.shell.transition.Transitions$ShellTransitionImpl$$ExternalSyntheticLambda4@dedfbaa m=0
+07-22 20:23:22.807   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:22.807   552   667 W skia    : AGTM parsing failed flags.readFromStream(s) at 159
+07-22 20:23:22.844 11885 11965 I FrewleLevelDb: Initialized LevelDB, usingInMemoryImpl=false [CONTEXT service_id=6 ]
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: StateManager.cancelAnimation: animation ongoing: false, partial trace:
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.launcher3.statemanager.StateManager.setCurrentAnimation(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:59)
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.launcher3.QuickstepTransitionManager.createWallpaperOpenAnimations(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:734)
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.launcher3.QuickstepTransitionManager$WallpaperOpenLauncherAnimationRunner.onAnimationStart(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:135)
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: StateManager.createAtomicAnimation: fromState: Normal, toState: Normal, partial trace:
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.quickstep.util.WorkspaceRevealAnim.prepareToAnimate(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:19)
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.quickstep.util.WorkspaceRevealAnim.<init>(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:10)
+07-22 20:23:22.871 10649 10649 D LauncherStateManager: 	at com.android.launcher3.QuickstepTransitionManager.createWallpaperOpenAnimations(go/retraceme 965d8efa9f395b5ba3e7085bc5ad5e7c33d3efbb46183a6c8aa9f5fb996e6a11:775)
+07-22 20:23:22.871 10649 10649 D AllAppsTransitionController: shouldProtectHeader: false skipScrim: true state: Normal stateManager.getState(): Normal
+07-22 20:23:22.871 10649 10649 D KeyboardInsetsHandler: removePendingImeController: pendingImeController=null
+07-22 20:23:22.871 10649 10649 D b/311077782: LauncherAnimationRunner.setAnimation
+07-22 20:23:22.938   728  1856 W ActivityManager: Skipping manifest association check for null package. SourceUid: -1, SourcePkg: null, TargetUid: 10206, TargetPkg: com.google.android.gms
+07-22 20:23:22.962 11885 11885 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.962 11885 11885 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... xflg=0x4 cmp=com.google.android.gms/.chimera.PersistentApiService }
+07-22 20:23:22.983   728  1856 I WifiService: getWifiEnabledState uid=10206 state=3
+07-22 20:23:22.983   491   491 D Zygote  : Forked child process 11976
+07-22 20:23:22.989   728   774 I ActivityManager: Start proc 11976:com.google.android.apps.wellbeing/u0a151 for broadcast {com.google.android.apps.wellbeing/com.google.android.apps.wellbeing.fences.power.WirelessPowerFenceReceiver_Receiver}
+07-22 20:23:22.989   728  1856 I WifiService: getWifiEnabledState uid=10206 state=3
+07-22 20:23:22.987 11976 11976 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10151/pid_11976
+07-22 20:23:23.003 11976 11976 I Zygote  : Process 11976 created for com.google.android.apps.wellbeing
+07-22 20:23:23.003 11976 11976 I .apps.wellbeing: Using generational CollectorTypeCMC GC.
+07-22 20:23:23.007 11976 11976 W .apps.wellbeing: Unexpected CPU variant for x86: x86_64.
+07-22 20:23:23.007 11976 11976 W .apps.wellbeing: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, pantherlake, default
+07-22 20:23:23.014 11885 11937 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+07-22 20:23:23.033 11976 11976 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+07-22 20:23:23.042 11885 11937 W SystemServiceRegistry: No service published for: wifirtt
+07-22 20:23:23.078   554   554 I adbd    : adbd service requested 'shell,v2:export ANDROID_LOG_TAGS=''; exec logcat '-d''
+07-22 20:23:22.879     0     0 I logd    : logdr: UID=2000 GID=2000 PID=11985 n tail=0 logMask=99 pid=0 start=0ns deadline=0ns

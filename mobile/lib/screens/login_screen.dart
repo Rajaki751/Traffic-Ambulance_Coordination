@@ -29,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _serverConfig = ServerConfigService();
   bool _obscurePass = true;
   bool _advancedOpen = false;
-  bool _demoOpen = false;
 
   @override
   void initState() {
@@ -317,26 +316,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 8),
-                        _DisclosureBlock(
-                          title: 'View demo access',
-                          open: _demoOpen,
-                          onToggle: () =>
-                              setState(() => _demoOpen = !_demoOpen),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Text(
-                              'Driver: driver@ambulance.gov / Driver@12345\n'
-                              'Officer: officer@ambulance.gov / Officer@12345',
-                              textAlign: TextAlign.center,
-                              style: text.copyWith(
-                                fontSize: 11.5,
-                                height: 1.6,
-                                color: Colors.white.withOpacity(0.45),
-                              ),
-                            ),
-                          ),
                         ),
                         const SizedBox(height: 12),
                       ],
@@ -726,36 +705,6 @@ class _DisclosureRow extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DisclosureBlock extends StatelessWidget {
-  const _DisclosureBlock({
-    required this.title,
-    required this.open,
-    required this.onToggle,
-    required this.child,
-  });
-
-  final String title;
-  final bool open;
-  final VoidCallback onToggle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _DisclosureRow(title: title, open: open, onToggle: onToggle),
-        AnimatedCrossFade(
-          firstChild: const SizedBox(width: double.infinity),
-          secondChild: child,
-          crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 240),
-          sizeCurve: Curves.easeOutCubic,
-        ),
-      ],
     );
   }
 }

@@ -93,15 +93,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: const Border(bottom: BorderSide(color: kAuthBorder)),
-        title: Text(
-          'Driver dashboard',
-          style: text.copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.2,
-            color: kAuthText,
-          ),
-        ),
         actions: [
           if (emergency.isEmergencyActive)
             Container(
@@ -203,6 +194,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     NotificationProvider notifs,
   ) {
     final text = GoogleFonts.inter();
+    final auth = context.watch<AuthProvider>();
+    final driverName = auth.user?.name.trim() ?? '';
+    final firstName = driverName.isEmpty
+        ? 'Driver'
+        : driverName.split(' ').first;
     return RefreshIndicator(
       onRefresh: () async {
         await emergency.restoreActiveSession();
@@ -210,8 +206,28 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         await emergency.loadHistory();
       },
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Driver dashboard',
+                style: text.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.3,
+                  color: kAuthText,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Welcome, $firstName',
+                style: text.copyWith(fontSize: 14, color: kAuthMuted),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(

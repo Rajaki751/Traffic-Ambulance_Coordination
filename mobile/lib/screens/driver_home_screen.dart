@@ -63,7 +63,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
     final emergency = context.watch<EmergencyProvider>();
     final location = context.watch<DriverLocationProvider>();
     final notifs = context.watch<NotificationProvider>();
@@ -83,43 +82,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       const ProfileScreen(),
     ];
 
-    final text = GoogleFonts.inter();
-
     return Scaffold(
       backgroundColor: kAuthBg,
-      appBar: AppBar(
-        backgroundColor: kAuthCard,
-        foregroundColor: kAuthText,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        shape: const Border(bottom: BorderSide(color: kAuthBorder)),
-        actions: [
-          if (emergency.isEmergencyActive)
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: kAuthRedBadgeBg,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: kAuthRed.withOpacity(0.35)),
-              ),
-              child: Text(
-                'Emergency',
-                style: text.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: kAuthRedBadgeText,
-                ),
-              ),
-            ),
-          IconButton(
-            icon: const Icon(Icons.logout, size: 22),
-            color: kAuthMuted,
-            onPressed: () => auth.logout(),
-          ),
-        ],
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: pages[_selectedIndex],
       ),
-      body: pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: kAuthCard,

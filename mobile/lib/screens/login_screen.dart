@@ -61,15 +61,26 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: _kBase,
       body: Stack(
         children: [
-          const Positioned(
-            top: -180,
-            left: -140,
-            child: _Glow(color: _kEmber, size: 460, opacity: 0.14),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.3),
+                  radius: 1.35,
+                  colors: [
+                    _kEmber.withOpacity(0.10),
+                    _kEmber.withOpacity(0.045),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.55, 1.0],
+                ),
+              ),
+            ),
           ),
           const Positioned(
-            bottom: -220,
-            right: -160,
-            child: _Glow(color: _kEmber, size: 420, opacity: 0.07),
+            top: -240,
+            left: -180,
+            child: _Glow(color: _kEmber, size: 520, opacity: 0.09),
           ),
           SafeArea(
             child: SingleChildScrollView(

@@ -186,13 +186,23 @@ class EmergencyService:
             officer_data,
         )
         if nearby_ids:
-            await NotificationService.create_emergency_alert(
+            alerts = await NotificationService.create_emergency_alert(
                 db,
                 nearby_ids,
                 session.id,
                 ambulance.vehicle_number,
                 payload.destination,
             )
+            from app.websocket.manager import ws_manager
+
+            for alert in alerts:
+                await ws_manager.notify_officer(
+                    alert.officer_id,
+                    {
+                        "type": "notification",
+                        "data": alert.model_dump(mode="json"),
+                    },
+                )
 
         await db.refresh(session)
         # Build response and attach OSRM route steps/coordinates for client

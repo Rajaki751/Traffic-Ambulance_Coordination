@@ -7,12 +7,17 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import RequireDriver, RequireOfficer, get_db
+from app.api.deps import (
+    RequireAnyAuth,
+    RequireDriver,
+    RequireOfficer,
+    get_db,
+)
 from app.models.ambulance import Ambulance
 from app.models.emergency import EmergencySession
 from app.schemas.notification import NotificationAcknowledge, NotificationResponse
 from app.services.notification_service import NotificationService
-from app.websocket.manager import ws_manager
+from app.websocket.manager import ChannelType, ws_manager
 
 router = APIRouter()
 
@@ -52,7 +57,7 @@ async def list_driver_notifications(
 @router.patch("/{notification_id}/read", response_model=NotificationResponse)
 async def mark_notification_read(
     notification_id: int,
-    current_user: RequireOfficer,
+    current_user: RequireAnyAuth,
     db: AsyncSession = Depends(get_db),
 ):
     success = await NotificationService.mark_read(db, notification_id, current_user.id)
@@ -116,5 +121,17 @@ async def send_to_driver(
         emergency_session_id=session.id,
         title=payload.title,
         message=payload.message,
+    )
+    await db.commit()
+
+    await ws_manager.broadcast_to_channel(
+        ChannelType.DRIVER,
+        {
+            "type": "notification",
+            "data": NotificationResponse.model_validate(notif).model_dump(
+                mode="json"
+            ),
+        },
+        str(ambulance.id),
     )
     return notif

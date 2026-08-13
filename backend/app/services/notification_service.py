@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
@@ -95,11 +95,14 @@ class NotificationService:
         return list(result.scalars().all())
 
     @staticmethod
-    async def mark_read(db: AsyncSession, notification_id: int, officer_id: int) -> bool:
+    async def mark_read(db: AsyncSession, notification_id: int, user_id: int) -> bool:
         result = await db.execute(
             select(Notification).where(
                 Notification.id == notification_id,
-                Notification.officer_id == officer_id,
+                or_(
+                    Notification.user_id == user_id,
+                    Notification.officer_id == user_id,
+                ),
             )
         )
         notif = result.scalar_one_or_none()

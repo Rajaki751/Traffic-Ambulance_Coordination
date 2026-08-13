@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../core/theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/emergency_provider.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../providers/notification_provider.dart';
 import '../utils/route_utils.dart';
+import '../widgets/auth_widgets.dart';
 import '../widgets/directions_panel.dart';
 import '../widgets/ambulance_map.dart';
 import '../widgets/emergency_button.dart';
@@ -14,6 +15,12 @@ import 'emergency_activate_screen.dart';
 import 'navigation_screen.dart';
 import 'driver_updates_screen.dart';
 import 'profile_screen.dart';
+
+const _kGreenBadgeBg = Color(0xFFE8F5EC);
+const _kGreenBadgeText = Color(0xFF1F7A44);
+const _kBlue = Color(0xFF2E6FD8);
+const _kGreen = Color(0xFF2F9E63);
+const _kOrange = Color(0xFFE8833A);
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -76,55 +83,113 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       const ProfileScreen(),
     ];
 
+    final text = GoogleFonts.inter();
+
     return Scaffold(
+      backgroundColor: kAuthBg,
       appBar: AppBar(
-        title: const Text('Driver Dashboard'),
+        backgroundColor: kAuthCard,
+        foregroundColor: kAuthText,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        shape: const Border(bottom: BorderSide(color: kAuthBorder)),
+        title: Text(
+          'Driver dashboard',
+          style: text.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+            color: kAuthText,
+          ),
+        ),
         actions: [
           if (emergency.isEmergencyActive)
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(12),
+                color: kAuthRedBadgeBg,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: kAuthRed.withOpacity(0.35)),
               ),
-              child: const Text('EMERGENCY', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11)),
+              child: Text(
+                'Emergency',
+                style: text.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: kAuthRedBadgeText,
+                ),
+              ),
             ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, size: 22),
+            color: kAuthMuted,
             onPressed: () => auth.logout(),
           ),
         ],
       ),
       body: pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (i) {
-          if (i == 1 && !emergency.isEmergencyActive) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
-            ).then((_) async {
-              if (!context.mounted) return;
-              if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-                await context.read<DriverLocationProvider>().startTracking(
-                      emergency.activeEmergency!.id,
-                      onTick: emergency.refreshActiveEmergency,
-                    );
-                if (!context.mounted) return;
-                setState(() => _driverStatus = 'Busy');
-              }
-            });
-            return;
-          }
-          setState(() => _selectedIndex = i);
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: kAuthCard,
+          border: Border(top: BorderSide(color: kAuthBorder)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 62,
+            child: Row(
+              children: [
+                _navItem(
+                  index: 0,
+                  icon: Icons.home_rounded,
+                  label: 'Home',
+                ),
+                _navItem(
+                  index: 1,
+                  icon: Icons.route_rounded,
+                  label: 'Trips',
+                ),
+                _navItem(
+                  index: 2,
+                  icon: Icons.notifications_rounded,
+                  label: 'Alerts',
+                ),
+                _navItem(
+                  index: 3,
+                  icon: Icons.person_rounded,
+                  label: 'Profile',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _navItem({
+    required int index,
+    required IconData icon,
+    required String label,
+  }) {
+    final active = _selectedIndex == index;
+    final color = active ? kAuthRedLink : kAuthIcon;
+    final text = GoogleFonts.inter();
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _selectedIndex = index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 22, color: color),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: text.copyWith(fontSize: 11, color: color),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -137,6 +202,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     int todayTrips,
     NotificationProvider notifs,
   ) {
+    final text = GoogleFonts.inter();
     return RefreshIndicator(
       onRefresh: () async {
         await emergency.restoreActiveSession();
@@ -146,151 +212,183 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'My Status',
-                        style: Theme.of(context).textTheme.titleMedium,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: kAuthCard,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kAuthBorder),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x0A1A1A18),
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'My status',
+                      style: text.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: kAuthText,
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: emergency.isEmergencyActive
+                            ? kAuthRedBadgeBg
+                            : _kGreenBadgeBg,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        emergency.isEmergencyActive ? 'Busy' : _driverStatus,
+                        style: text.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                           color: emergency.isEmergencyActive
-                              ? Colors.red.shade100
-                              : Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(16),
+                              ? kAuthRedBadgeText
+                              : _kGreenBadgeText,
                         ),
-                        child: Text(
-                          emergency.isEmergencyActive ? 'Busy' : _driverStatus,
-                          style: TextStyle(
-                            color: emergency.isEmergencyActive ? Colors.red : Colors.green.shade800,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (!emergency.isEmergencyActive) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _statusPill(
+                        icon: Icons.check_circle_outline,
+                        label: 'Available',
+                        active: _driverStatus == 'Available',
+                        onTap: () => _setStatus('Available', 'available'),
+                      ),
+                      const SizedBox(width: 8),
+                      _statusPill(
+                        icon: Icons.work_outline,
+                        label: 'On duty',
+                        active: _driverStatus == 'On Duty',
+                        onTap: () => _setStatus('On Duty', 'on_duty'),
+                      ),
+                      const SizedBox(width: 8),
+                      _statusPill(
+                        icon: Icons.offline_bolt_outlined,
+                        label: 'Offline',
+                        active: _driverStatus == 'Offline',
+                        onTap: () => _setStatus('Offline', 'offline'),
                       ),
                     ],
                   ),
-                  if (!emergency.isEmergencyActive) ...[
-                    const SizedBox(height: 12),
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(value: 'Available', label: Text('Available'), icon: Icon(Icons.check_circle_outline)),
-                        ButtonSegment(value: 'On Duty', label: Text('On Duty'), icon: Icon(Icons.work_outline)),
-                        ButtonSegment(value: 'Offline', label: Text('Offline'), icon: Icon(Icons.offline_bolt_outlined)),
-                      ],
-                      selected: {_driverStatus},
-                      onSelectionChanged: (s) async {
-                        final newStatus = s.first;
-                        setState(() => _driverStatus = newStatus);
-                        final apiStatus = newStatus == 'Available'
-                            ? 'available'
-                            : newStatus == 'On Duty'
-                                ? 'on_duty'
-                                : 'offline';
-                        await context.read<AuthProvider>().updateAmbulanceStatus(apiStatus);
-                      },
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: _statCard(
-                  context,
-                  icon: Icons.local_shipping,
-                  label: 'Active Emergency',
-                  value: emergency.isEmergencyActive ? 'Yes' : 'No',
-                  color: emergency.isEmergencyActive ? Colors.red : Colors.grey,
-                ),
+              _statCard(
+                icon: Icons.local_shipping,
+                label: 'Active emergency',
+                value: emergency.isEmergencyActive ? 'Yes' : 'No',
+                iconColor: emergency.isEmergencyActive
+                    ? kAuthRed
+                    : kAuthIcon,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _statCard(
-                  context,
-                  icon: Icons.check_circle,
-                  label: 'Today\'s Trips',
-                  value: '$todayTrips',
-                  color: Colors.blue,
-                ),
+              const SizedBox(width: 12),
+              _statCard(
+                icon: Icons.check_circle,
+                label: "Today's trips",
+                value: '$todayTrips',
+                iconColor: _kBlue,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: _statCard(
-                  context,
-                  icon: Icons.notifications,
-                  label: 'Notifications',
-                  value: '${notifs.unreadCount}',
-                  color: notifs.unreadCount > 0 ? Colors.orange : Colors.grey,
-                ),
+              _statCard(
+                icon: Icons.notifications,
+                label: 'Notifications',
+                value: '${notifs.unreadCount}',
+                iconColor: notifs.unreadCount > 0 ? _kOrange : kAuthIcon,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _statCard(
-                  context,
-                  icon: Icons.speed,
-                  label: 'Speed',
-                  value: active != null
-                      ? '${location.speedKmh != null ? location.speedKmh!.toStringAsFixed(0) : "—"} km/h'
-                      : '— km/h',
-                  color: Colors.teal,
-                ),
+              const SizedBox(width: 12),
+              _statCard(
+                icon: Icons.speed,
+                label: 'Speed',
+                value: active != null
+                    ? '${location.speedKmh != null ? location.speedKmh!.toStringAsFixed(0) : "—"} km/h'
+                    : '— km/h',
+                iconColor: _kGreen,
               ),
             ],
           ),
           const SizedBox(height: 16),
 
           if (emergency.isEmergencyActive && active != null) ...[
-            Card(
-              color: Colors.red.shade50,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.emergency, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Active Emergency',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kAuthRedBadgeBg,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: kAuthRed.withOpacity(0.35)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.emergency, size: 20, color: kAuthRed),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Active emergency',
+                        style: text.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: kAuthRedBadgeText,
                         ),
-                      ],
-                    ),
-                    const Divider(),
-                    _infoRow('Destination', active.destination),
-                    _infoRow('ETA', '${formatEta(active.etaMinutes)} min'),
-                    _infoRow('Type', active.incidentType ?? 'general'),
-                    _infoRow('Priority', active.priorityLevel ?? 'standard'),
-                    if (active.patientName != null) _infoRow('Patient', active.patientName!),
-                    if (active.hospitalName != null) _infoRow('Hospital', active.hospitalName!),
-                    if (active.tripStage != null) _infoRow('Stage', active.tripStage!.replaceAll('_', ' ').toUpperCase()),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(
+                    height: 1,
+                    color: kAuthRed.withOpacity(0.25),
+                  ),
+                  const SizedBox(height: 6),
+                  _infoRow('Destination', active.destination),
+                  _infoRow('ETA', '${formatEta(active.etaMinutes)} min'),
+                  _infoRow('Type', active.incidentType ?? 'general'),
+                  _infoRow('Priority', active.priorityLevel ?? 'standard'),
+                  if (active.patientName != null)
+                    _infoRow('Patient', active.patientName!),
+                  if (active.hospitalName != null)
+                    _infoRow('Hospital', active.hospitalName!),
+                  if (active.tripStage != null)
+                    _infoRow('Stage', _capitalize(active.tripStage!)),
+                ],
               ),
             ),
             const SizedBox(height: 12),
           ],
 
-          Text('Quick Actions', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Quick actions',
+            style: text.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: kAuthText,
+            ),
+          ),
           const SizedBox(height: 8),
           if (!emergency.isEmergencyActive)
             EmergencyButton(
@@ -298,10 +396,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               onPressed: () async {
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const EmergencyActivateScreen()),
                 );
                 if (!context.mounted) return;
-                if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
+                if (emergency.isEmergencyActive &&
+                    emergency.activeEmergency != null) {
                   await context.read<DriverLocationProvider>().startTracking(
                         emergency.activeEmergency!.id,
                         onTick: emergency.refreshActiveEmergency,
@@ -318,6 +418,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.navigation),
                 label: const Text('Open Navigation'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _kBlue,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                ),
                 onPressed: active != null
                     ? () {
                         Navigator.push(
@@ -337,6 +443,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.list),
                     label: const Text('Directions'),
+                    style: _outlineStyle(),
                     onPressed: () => showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -352,21 +459,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.stop),
-                    label: const Text('End Emergency'),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                    label: const Text('End emergency'),
+                    style: _outlineStyle(
+                      foregroundColor: kAuthRed,
+                      borderColor: kAuthRed.withOpacity(0.4),
+                    ),
                     onPressed: emergency.loading
                         ? null
                         : () async {
                             final ok = await emergency.endEmergency();
                             if (!context.mounted) return;
                             if (ok) {
-                              context.read<DriverLocationProvider>().stopTracking();
+                              context
+                                  .read<DriverLocationProvider>()
+                                  .stopTracking();
                               setState(() => _driverStatus = 'Available');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    emergency.error ?? 'Failed to end emergency',
+                                    emergency.error ??
+                                        'Failed to end emergency',
                                   ),
                                 ),
                               );
@@ -381,14 +494,128 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _stageButton(context, emergency, 'arrived_patient', 'Arrived at Patient'),
-                _stageButton(context, emergency, 'patient_picked_up', 'Patient Picked Up'),
-                _stageButton(context, emergency, 'arrived_hospital', 'Reached Hospital'),
+                _stageButton(context, emergency, 'arrived_patient',
+                    'Arrived at Patient'),
+                _stageButton(context, emergency, 'patient_picked_up',
+                    'Patient Picked Up'),
+                _stageButton(context, emergency, 'arrived_hospital',
+                    'Reached Hospital'),
               ],
             ),
           ],
         ],
       ),
+    );
+  }
+
+  Future<void> _setStatus(String display, String api) async {
+    setState(() => _driverStatus = display);
+    await context.read<AuthProvider>().updateAmbulanceStatus(api);
+  }
+
+  Widget _statusPill({
+    required IconData icon,
+    required String label,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
+    final text = GoogleFonts.inter();
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          height: 40,
+          decoration: BoxDecoration(
+            color: active ? kAuthRedBadgeBg : kAuthCard,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: active ? kAuthRed : kAuthBorder,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: active ? kAuthRedBadgeText : kAuthFaint,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: text.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: active ? kAuthRedBadgeText : kAuthFaint,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _statCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color iconColor,
+  }) {
+    final text = GoogleFonts.inter();
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+        decoration: BoxDecoration(
+          color: kAuthCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: kAuthBorder),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A1A1A18),
+              blurRadius: 2,
+              offset: Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 26, color: iconColor),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: text.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                letterSpacing: -0.2,
+                color: kAuthText,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: text.copyWith(fontSize: 11, color: kAuthFaint),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ButtonStyle _outlineStyle({
+    Color? foregroundColor,
+    Color? borderColor,
+  }) {
+    return OutlinedButton.styleFrom(
+      foregroundColor: foregroundColor ?? kAuthText,
+      backgroundColor: kAuthCard,
+      side: BorderSide(color: borderColor ?? kAuthBorder),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12),
     );
   }
 
@@ -403,7 +630,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         if (emergency.isEmergencyActive)
           Container(
             width: double.infinity,
-            color: AppTheme.emergencyRed,
+            color: kAuthRed,
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
@@ -411,8 +638,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'EN ROUTE — ETA ${formatEta(active?.etaMinutes)} min',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    'En route — ETA ${formatEta(active?.etaMinutes)} min',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -442,8 +672,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           icon: const Icon(Icons.navigation),
                           label: const Text('Start Navigation'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
+                            backgroundColor: _kBlue,
                             foregroundColor: Colors.white,
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           onPressed: () {
@@ -463,10 +695,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             child: OutlinedButton.icon(
                               icon: const Icon(Icons.list, size: 18),
                               label: const Text('Directions'),
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                              ),
+                              style: _outlineStyle(),
                               onPressed: () => showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
@@ -483,23 +712,25 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             child: OutlinedButton.icon(
                               icon: const Icon(Icons.stop, size: 18),
                               label: const Text('End'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              style: _outlineStyle(
+                                foregroundColor: kAuthRed,
+                                borderColor: kAuthRed.withOpacity(0.4),
                               ),
                               onPressed: emergency.loading
                                   ? null
                                   : () async {
-                                      final ok = await emergency.endEmergency();
+                                      final ok = await emergency
+                                          .endEmergency();
                                       if (!context.mounted) return;
                                       if (ok) {
                                         context
                                             .read<DriverLocationProvider>()
                                             .stopTracking();
-                                        setState(() => _driverStatus = 'Available');
+                                        setState(
+                                            () => _driverStatus = 'Available');
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
                                           SnackBar(
                                             content: Text(
                                               emergency.error ??
@@ -525,20 +756,28 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.emergency),
-                      label: const Text('ACTIVATE EMERGENCY'),
+                      label: const Text('Activate emergency'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.emergencyRed,
+                        backgroundColor: kAuthRed,
                         foregroundColor: Colors.white,
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       onPressed: () async {
                         await Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const EmergencyActivateScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const EmergencyActivateScreen()),
                         );
                         if (!context.mounted) return;
-                        if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
-                          await context.read<DriverLocationProvider>().startTracking(
+                        if (emergency.isEmergencyActive &&
+                            emergency.activeEmergency != null) {
+                          await context.read<DriverLocationProvider>()
+                              .startTracking(
                                 emergency.activeEmergency!.id,
                                 onTick: emergency.refreshActiveEmergency,
                               );
@@ -556,37 +795,52 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
-  Widget _statCard(BuildContext context, {required IconData icon, required String label, required String value, required Color color}) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 4),
-            Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
-            Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade700), textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _infoRow(String label, String value) {
+    final text = GoogleFonts.inter();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label, style: TextStyle(color: Colors.grey.shade700, fontSize: 13))),
-          Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))),
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: text.copyWith(color: kAuthFaint, fontSize: 13),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: text.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+                color: kAuthText,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _stageButton(BuildContext context, EmergencyProvider emergency, String stage, String label) {
+  String _capitalize(String input) {
+    final parts = input.replaceAll('_', ' ').split(' ');
+    return parts
+        .map((p) => p.isEmpty ? p : p[0].toUpperCase() + p.substring(1))
+        .join(' ');
+  }
+
+  Widget _stageButton(
+    BuildContext context,
+    EmergencyProvider emergency,
+    String stage,
+    String label,
+  ) {
     return OutlinedButton(
-      onPressed: emergency.loading ? null : () => context.read<EmergencyProvider>().updateTripStage(stage),
+      onPressed: emergency.loading
+          ? null
+          : () => context.read<EmergencyProvider>().updateTripStage(stage),
+      style: _outlineStyle(),
       child: Text(label),
     );
   }

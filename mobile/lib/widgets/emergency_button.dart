@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme.dart';
+import '../widgets/auth_widgets.dart';
 
 class EmergencyButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -10,35 +10,45 @@ class EmergencyButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     this.loading = false,
-    this.label = 'ACTIVATE EMERGENCY',
+    this.label = 'Activate emergency',
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 72,
+      height: 52,
       child: ElevatedButton(
         onPressed: loading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.emergencyRed,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          elevation: 8,
-          shadowColor: AppTheme.emergencyRed.withOpacity(0.5),
+          backgroundColor: kAuthRed,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: loading
-            ? const CircularProgressIndicator(color: Colors.white)
+            ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: Colors.white,
+                ),
+              )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.emergency, size: 32),
-                  const SizedBox(width: 12),
+                  const Icon(Icons.emergency, size: 20),
+                  const SizedBox(width: 8),
                   Text(
                     label,
                     style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.1,
                     ),
                   ),
                 ],

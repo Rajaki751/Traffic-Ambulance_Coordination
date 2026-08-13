@@ -87,13 +87,15 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
       ),
     );
     if (picked == null || !mounted) return;
+    final coordText =
+        '${picked.latitude.toStringAsFixed(6)}, ${picked.longitude.toStringAsFixed(6)}';
     setState(() {
       _pinned = true;
       _pinnedLat = picked.latitude;
       _pinnedLon = picked.longitude;
       _latCtrl.text = picked.latitude.toStringAsFixed(6);
       _lonCtrl.text = picked.longitude.toStringAsFixed(6);
-      _destCtrl.text = picked.label ?? 'Pinned location';
+      _destCtrl.text = coordText;
     });
   }
 

@@ -17,7 +17,9 @@ export default function StatCard({ title, value, icon: Icon, color = 'red' }) {
   };
 
   return (
-    <div className={`rounded-xl border p-5 transition-shadow hover:shadow-sm ${colors[color]}`}>
+    <div
+      className={`rounded-2xl border p-5 shadow-sm transition-shadow hover:shadow-md ${colors[color]}`}
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-medium opacity-80">{title}</p>

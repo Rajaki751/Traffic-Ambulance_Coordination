@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  IconAmbulance,
   IconAlarm,
+  IconAmbulance,
   IconCircleCheck,
   IconClock,
   IconMapPin,
+  IconMapPin2,
   IconShieldCheck,
 } from '@tabler/icons-react';
 import LiveMap from '../components/LiveMap';
 import StatCard from '../components/StatCard';
+import Card from '../components/Card';
+import PageHeader from '../components/PageHeader';
+import StatusPill from '../components/StatusPill';
 import ErrorBanner from '../components/ErrorBanner';
 import { analyticsApi, emergencyApi, gpsApi } from '../services/api';
 import { useWebSocketContext } from '../hooks/useWebSocket';
@@ -30,6 +34,12 @@ function upsertLocation(prev, next) {
 
 function mergeLocations(prev, incoming) {
   return incoming.reduce((acc, next) => upsertLocation(acc, next), prev);
+}
+
+function formatTime(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export default function DashboardPage() {
@@ -90,7 +100,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Real-Time Dashboard</h1>
+      <PageHeader
+        title="Real-Time Dashboard"
+        subtitle="Live status of the fleet, active emergencies and response performance"
+      />
       {error && <ErrorBanner message={error} onRetry={loadData} />}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -121,57 +134,94 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <div className="mb-3 flex items-center gap-2">
-            <IconMapPin className="h-5 w-5 text-emergency" stroke={1.7} />
-            <h2 className="text-lg font-semibold tracking-tight">Live Ambulance Map</h2>
+        <Card
+          className="lg:col-span-2"
+          title="Live Map"
+          subtitle="Ambulance positions updated in real time"
+          icon={IconMapPin}
+          bodyClassName="p-3"
+          action={
+            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1.5">
+                <IconAmbulance className="h-4 w-4 text-emergency" stroke={1.7} />
+                Ambulance
+              </span>
+              <span className="flex items-center gap-1.5">
+                <IconMapPin2 className="h-4 w-4 text-green-600" stroke={1.7} />
+                Destination
+              </span>
+            </div>
+          }
+        >
+          <div className="h-[440px] overflow-hidden rounded-xl">
+            <LiveMap ambulances={liveLocations} center={mapCenter} />
           </div>
-          <LiveMap ambulances={liveLocations} center={mapCenter} />
-        </div>
-        <div>
-          <h2 className="mb-3 text-lg font-semibold tracking-tight">Active Sessions</h2>
-          <div className="space-y-3">
+        </Card>
+
+        <div className="space-y-6">
+          <Card
+            title="Active Sessions"
+            subtitle={`${emergencies.length} running right now`}
+            icon={IconAlarm}
+            bodyClassName="space-y-3 p-4"
+          >
             {emergencies.length === 0 ? (
-              <div className="rounded-lg border border-dashed p-6 text-center dark:border-gray-700">
-                <IconAlarm className="mx-auto h-6 w-6 text-gray-300 dark:text-gray-600" stroke={1.5} />
-                <p className="mt-2 text-sm text-gray-500">No active emergencies</p>
+              <div className="rounded-xl border border-dashed p-8 text-center dark:border-gray-700">
+                <IconAlarm
+                  className="mx-auto h-7 w-7 text-gray-300 dark:text-gray-600"
+                  stroke={1.5}
+                />
+                <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                  No active emergencies
+                </p>
               </div>
             ) : (
               emergencies.map((e) => (
                 <div
                   key={e.id}
-                  className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
+                  className="rounded-xl border border-red-100 bg-red-50/60 p-3.5 transition-shadow hover:shadow-sm dark:border-red-900/40 dark:bg-red-900/15"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-emergency">Session #{e.id}</p>
-                    <span className="flex items-center gap-1.5 rounded-full bg-emergency px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                      Active
-                    </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold tracking-tight">
+                      Session <span className="font-mono">#{e.id}</span>
+                    </p>
+                    <StatusPill tone="red" label="Active" pulse />
                   </div>
-                  <div className="mt-2 flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+                  <p className="mt-2 flex items-center gap-1.5 truncate text-sm text-gray-700 dark:text-gray-300">
                     <IconMapPin className="h-4 w-4 shrink-0 text-emergency/70" stroke={1.7} />
-                    <span className="line-clamp-1">{e.destination}</span>
-                  </div>
-                  <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="truncate">{e.destination}</span>
+                  </p>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                     <IconClock className="h-3.5 w-3.5" stroke={1.7} />
                     ETA {e.eta_minutes?.toFixed(0) ?? '?'} min
-                  </div>
+                    <span className="text-gray-300 dark:text-gray-600">·</span>
+                    since {formatTime(e.started_at)}
+                  </p>
                 </div>
               ))
             )}
-          </div>
-          <div className="mt-6 flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
-            <div>
-              <p className="text-sm text-gray-500">Avg Response Time</p>
-              <p className="mt-0.5 text-2xl font-bold tabular-nums tracking-tight">
-                {summary?.avg_response_time_minutes ?? 0} min
-              </p>
-            </div>
-            <IconClock className="h-6 w-6 text-gray-300 dark:text-gray-600" stroke={1.7} />
-          </div>
-          <div className="mt-6 rounded-lg border p-4 dark:border-gray-700">
-            <p className="mb-3 text-sm font-medium text-gray-500">Ambulance Stats</p>
+          </Card>
+
+          <Card
+            title="Response Time"
+            subtitle="Average across today's responses"
+            icon={IconClock}
+            bodyClassName="p-5"
+          >
+            <p className="text-4xl font-bold tabular-nums tracking-tight text-emergency">
+              {summary?.avg_response_time_minutes ?? 0}
+              <span className="ml-1 text-base font-medium text-gray-500 dark:text-gray-400">
+                min
+              </span>
+            </p>
+          </Card>
+
+          <Card
+            title="Fleet Activity"
+            subtitle="Emergency count per ambulance"
+            icon={IconAmbulance}
+            bodyClassName="p-4"
+          >
             {ambulances.length === 0 ? (
               <p className="text-sm text-gray-500">No ambulance data</p>
             ) : (
@@ -182,13 +232,15 @@ export default function DashboardPage() {
                     className="flex items-center justify-between gap-3 text-sm"
                   >
                     <span className="flex min-w-0 items-center gap-2 font-medium">
-                      <IconAmbulance
-                        className={`h-4 w-4 shrink-0 ${a.active_session_id ? 'text-emergency' : 'text-gray-300 dark:text-gray-600'}`}
-                        stroke={1.7}
-                      />
-                      <span className="truncate">{a.vehicle_number}</span>
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-700/60">
+                        <IconAmbulance
+                          className={`h-4 w-4 ${a.active_session_id ? 'text-emergency' : 'text-gray-400 dark:text-gray-500'}`}
+                          stroke={1.7}
+                        />
+                      </span>
+                      <span className="truncate font-mono text-xs">{a.vehicle_number}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-gray-500">
+                    <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
                       {a.total_emergencies} emergencies
                       {a.active_session_id && (
                         <span className="ml-1.5 inline-flex items-center gap-1 text-emergency">
@@ -201,7 +253,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       </div>
     </div>

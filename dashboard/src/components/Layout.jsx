@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { IconActivity, IconLogout } from '@tabler/icons-react';
 import Sidebar from './Sidebar';
 import { useAdminWebSocket, WebSocketContext } from '../hooks/useWebSocket';
 
@@ -44,17 +45,23 @@ export default function Layout() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="text-lg font-semibold">System Monitor</h2>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-2 text-sm">
-              <span className={`h-2 w-2 animate-pulse rounded-full ${statusStyles[status] || 'bg-gray-400'}`} />
-              {statusLabels[status] || status}
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-white/90 px-6 py-4 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
+          <h2 className="text-lg font-semibold tracking-tight">System Monitor</h2>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm dark:border-gray-700">
+              <span
+                className={`h-2 w-2 animate-pulse rounded-full ${statusStyles[status] || 'bg-gray-400'}`}
+              />
+              <span className="flex items-center gap-1.5">
+                <IconActivity className="h-4 w-4 text-gray-400" stroke={1.7} />
+                {statusLabels[status] || status}
+              </span>
             </span>
             <button
               onClick={logout}
-              className="rounded-lg bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200 dark:bg-gray-700"
+              className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
             >
+              <IconLogout className="h-4 w-4" stroke={1.7} />
               Logout
             </button>
           </div>

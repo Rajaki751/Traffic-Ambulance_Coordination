@@ -10,6 +10,7 @@
     "lint": "eslint . --ext js,jsx"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.46.0",
     "axios": "^1.7.9",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",

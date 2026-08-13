@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { IconEdit, IconPlus, IconTrash, IconUsers } from '@tabler/icons-react';
 import ErrorBanner from '../components/ErrorBanner';
 import { usersApi } from '../services/api';
 
@@ -10,6 +11,9 @@ const emptyForm = {
   vehicle_number: '',
   assigned_zone: '',
 };
+
+const inputClass =
+  'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-emergency focus:outline-none focus:ring-2 focus:ring-emergency/20 dark:border-gray-600 dark:bg-gray-700 dark:focus:border-emergency-light';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -93,7 +97,7 @@ export default function UsersPage() {
       officer: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
     };
     return (
-      <span className={`rounded-full px-3 py-1 text-xs font-medium ${colors[role] || ''}`}>
+      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${colors[role] || ''}`}>
         {role}
       </span>
     );
@@ -102,12 +106,13 @@ export default function UsersPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">User Management</h1>
+        <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="flex items-center gap-2 rounded-lg bg-emergency px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emergency-dark"
         >
-          + Add User
+          <IconPlus className="h-4 w-4" stroke={2} />
+          Add User
         </button>
       </div>
 
@@ -116,33 +121,38 @@ export default function UsersPage() {
       <div className="overflow-hidden rounded-xl border dark:border-gray-700">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-100 dark:bg-gray-800">
-            <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Name</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Role</th>
-              <th className="p-4 text-right">Actions</th>
+            <tr className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th className="p-4 font-medium">ID</th>
+              <th className="p-4 font-medium">Name</th>
+              <th className="p-4 font-medium">Email</th>
+              <th className="p-4 font-medium">Role</th>
+              <th className="p-4 text-right font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-t dark:border-gray-700">
-                <td className="p-4">{u.id}</td>
+              <tr
+                key={u.id}
+                className="border-t transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/60"
+              >
+                <td className="p-4 font-mono text-xs">{u.id}</td>
                 <td className="p-4 font-medium">{u.name}</td>
-                <td className="p-4">{u.email}</td>
+                <td className="p-4 text-gray-600 dark:text-gray-300">{u.email}</td>
                 <td className="p-4">{roleBadge(u.role)}</td>
                 <td className="p-4 text-right">
                   <button
                     onClick={() => openEdit(u)}
-                    className="mr-2 rounded bg-gray-100 px-3 py-1 text-xs font-medium hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    title="Edit user"
+                    className="mr-2 inline-flex items-center justify-center rounded-lg border p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   >
-                    Edit
+                    <IconEdit className="h-4 w-4" stroke={1.7} />
                   </button>
                   <button
                     onClick={() => handleDelete(u)}
-                    className="rounded bg-red-100 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                    title="Delete user"
+                    className="inline-flex items-center justify-center rounded-lg border border-red-200 p-2 text-red-600 transition-colors hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/30"
                   >
-                    Delete
+                    <IconTrash className="h-4 w-4" stroke={1.7} />
                   </button>
                 </td>
               </tr>
@@ -150,14 +160,17 @@ export default function UsersPage() {
           </tbody>
         </table>
         {!loadError && users.length === 0 && (
-          <p className="p-8 text-center text-gray-500">No users found</p>
+          <div className="p-10 text-center">
+            <IconUsers className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" stroke={1.5} />
+            <p className="mt-3 text-sm text-gray-500">No users found</p>
+          </div>
         )}
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
-            <h2 className="mb-4 text-lg font-bold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl border bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+            <h2 className="mb-4 text-lg font-bold tracking-tight">
               {editingUser ? 'Edit User' : 'Create User'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,7 +180,7 @@ export default function UsersPage() {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                  className={inputClass}
                   required
                   minLength={2}
                 />
@@ -178,7 +191,7 @@ export default function UsersPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                  className={inputClass}
                   required
                 />
               </div>
@@ -190,7 +203,7 @@ export default function UsersPage() {
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                  className={inputClass}
                   {...(!editingUser ? { required: true, minLength: 8 } : { minLength: 8 })}
                 />
               </div>
@@ -199,7 +212,7 @@ export default function UsersPage() {
                 <select
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                  className={inputClass}
                 >
                   <option value="driver">Driver</option>
                   <option value="officer">Traffic Officer</option>
@@ -213,7 +226,7 @@ export default function UsersPage() {
                     type="text"
                     value={form.vehicle_number}
                     onChange={(e) => setForm({ ...form, vehicle_number: e.target.value })}
-                    className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                    className={inputClass}
                     required={!editingUser}
                   />
                 </div>
@@ -225,24 +238,28 @@ export default function UsersPage() {
                     type="text"
                     value={form.assigned_zone}
                     onChange={(e) => setForm({ ...form, assigned_zone: e.target.value })}
-                    className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                    className={inputClass}
                     required={!editingUser}
                   />
                 </div>
               )}
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <div className="flex justify-end gap-3">
+              {error && (
+                <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-300">
+                  {error}
+                </p>
+              )}
+              <div className="flex justify-end gap-3 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-lg bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  className="rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-lg bg-emergency px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emergency-dark disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : editingUser ? 'Update' : 'Create'}
                 </button>

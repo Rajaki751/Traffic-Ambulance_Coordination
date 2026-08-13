@@ -1,4 +1,4 @@
-# AI-Driven Traffic Ambulance Coordination System
+# Emergency Route Coordinator
 
 Production-ready full-stack system for coordinating ambulances through traffic during emergencies with real-time GPS tracking, route optimization, and traffic officer alerts.
 

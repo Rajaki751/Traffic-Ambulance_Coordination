@@ -134,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: BoxDecoration(
               color: kAuthRedBadgeBg,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: kAuthRed.withOpacity(0.25)),
+              border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
             ),
             child: Center(
               child: Text(
@@ -172,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     color: kAuthRedBadgeBg,
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: kAuthRed.withOpacity(0.25)),
+                    border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
                   ),
                   child: Text(
                     _roleLabel(role),
@@ -486,7 +486,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: _kGreenBadgeBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _kGreen.withOpacity(0.35)),
+        border: Border.all(color: _kGreen.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [

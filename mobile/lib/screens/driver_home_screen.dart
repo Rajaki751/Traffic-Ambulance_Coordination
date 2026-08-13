@@ -257,7 +257,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 decoration: BoxDecoration(
                   color: kAuthRedBadgeBg,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: kAuthRed.withOpacity(0.25)),
+                  border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
                 ),
                 child: Center(
                   child: Text(
@@ -440,7 +440,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               decoration: BoxDecoration(
                 color: kAuthRedBadgeBg,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: kAuthRed.withOpacity(0.35)),
+                border: Border.all(color: kAuthRed.withValues(alpha: 0.35)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +462,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   const SizedBox(height: 12),
                   Divider(
                     height: 1,
-                    color: kAuthRed.withOpacity(0.25),
+                    color: kAuthRed.withValues(alpha: 0.25),
                   ),
                   const SizedBox(height: 6),
                   _infoRow('Destination', active.destination),
@@ -570,7 +570,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     label: const Text('End emergency'),
                     style: _outlineStyle(
                       foregroundColor: kAuthRed,
-                      borderColor: kAuthRed.withOpacity(0.4),
+                      borderColor: kAuthRed.withValues(alpha: 0.4),
                     ),
                     onPressed: emergency.loading
                         ? null
@@ -850,7 +850,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               label: const Text('End'),
                               style: _outlineStyle(
                                 foregroundColor: kAuthRed,
-                                borderColor: kAuthRed.withOpacity(0.4),
+                                borderColor: kAuthRed.withValues(alpha: 0.4),
                               ),
                               onPressed: emergency.loading
                                   ? null

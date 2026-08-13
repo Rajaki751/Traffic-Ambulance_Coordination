@@ -364,7 +364,7 @@ class AuthErrorBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: kAuthRedBadgeBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: kAuthRed.withOpacity(0.35)),
+        border: Border.all(color: kAuthRed.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [

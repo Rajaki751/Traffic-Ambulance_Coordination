@@ -90,7 +90,7 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
             child: Column(
               children: [
                 DropdownButtonFormField<JunctionPoint>(
-                  value: _selectedJunction,
+                  initialValue: _selectedJunction,
                   decoration: const InputDecoration(
                     labelText: 'Kathmandu junction to clear',
                     border: OutlineInputBorder(),

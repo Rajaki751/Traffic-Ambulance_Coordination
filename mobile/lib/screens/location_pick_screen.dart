@@ -185,11 +185,11 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
                       width: 58,
                       height: 58,
                       decoration: BoxDecoration(
-                        color: kAuthCard.withOpacity(0.92),
+                        color: kAuthCard.withValues(alpha: 0.92),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.18),
+                            color: Colors.black.withValues(alpha: 0.18),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -213,7 +213,7 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
               color: kAuthCard,
               shape: const CircleBorder(),
               elevation: 2,
-              shadowColor: Colors.black.withOpacity(0.2),
+              shadowColor: Colors.black.withValues(alpha: 0.2),
               child: IconButton(
                 tooltip: 'My location',
                 onPressed: _locate,

@@ -339,7 +339,7 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
               decoration: BoxDecoration(
                 color: kAuthRedBadgeBg,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kAuthRed.withOpacity(0.25)),
+                border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
               ),
               child: Row(
                 children: [
@@ -900,7 +900,7 @@ class _PreviewButtonState extends State<_PreviewButton> {
           decoration: BoxDecoration(
             color: _hover || _pressed ? kAuthRedBadgeBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: kAuthRed.withOpacity(0.6)),
+            border: Border.all(color: kAuthRed.withValues(alpha: 0.6)),
           ),
           child: Material(
             color: Colors.transparent,

@@ -218,7 +218,7 @@ class _DisclosureRow extends StatelessWidget {
       child: InkWell(
         onTap: onToggle,
         borderRadius: BorderRadius.circular(8),
-        hoverColor: kAuthBorder.withOpacity(0.35),
+        hoverColor: kAuthBorder.withValues(alpha: 0.35),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
           child: Row(

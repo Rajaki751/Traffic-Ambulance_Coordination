@@ -316,7 +316,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<int>(
-                value: selectedSessionId,
+                initialValue: selectedSessionId,
                 decoration: const InputDecoration(
                   labelText: 'Select Ambulance',
                   border: OutlineInputBorder(),

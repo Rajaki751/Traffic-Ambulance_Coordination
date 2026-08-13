@@ -78,7 +78,7 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
         final radius = 18.0 + p.index * 32.0; // radius in pixels
         return CircleMarker(
           point: LatLng(p.lat, p.lon),
-          color: color.withOpacity(0.55),
+          color: color.withValues(alpha: 0.55),
           radius: radius,
           useRadiusInMeter: false,
         );
@@ -265,7 +265,7 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(

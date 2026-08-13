@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           visualDensity: VisualDensity.compact,
                           style: IconButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            hoverColor: kAuthBorder.withOpacity(0.4),
+                            hoverColor: kAuthBorder.withValues(alpha: 0.4),
                             foregroundColor: kAuthMuted,
                           ),
                           icon: Icon(

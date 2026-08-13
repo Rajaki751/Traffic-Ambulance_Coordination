@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/emergency_provider.dart';
 import '../providers/notification_provider.dart';
+import '../widgets/auth_widgets.dart';
+
+const _kGreen = Color(0xFF2F9E63);
+const _kOrange = Color(0xFFE8833A);
 
 class DriverUpdatesScreen extends StatefulWidget {
   const DriverUpdatesScreen({super.key});
@@ -26,16 +31,40 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
   Widget build(BuildContext context) {
     final notifs = context.watch<NotificationProvider>();
     final emergency = context.watch<EmergencyProvider>();
+    final text = GoogleFonts.inter();
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: kAuthBg,
         appBar: AppBar(
-          title: const Text('Driver Updates'),
-          bottom: const TabBar(
-            tabs: [
+          backgroundColor: kAuthCard,
+          foregroundColor: kAuthText,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          shape: const Border(bottom: BorderSide(color: kAuthBorder)),
+          title: Text(
+            'Alerts',
+            style: text.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+              color: kAuthText,
+            ),
+          ),
+          bottom: TabBar(
+            indicatorColor: kAuthRed,
+            dividerColor: kAuthBorder,
+            labelColor: kAuthRedLink,
+            unselectedLabelColor: kAuthFaint,
+            labelStyle: text.copyWith(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            unselectedLabelStyle: text.copyWith(fontSize: 13),
+            tabs: const [
               Tab(text: 'Notifications'),
-              Tab(text: 'Trip History'),
+              Tab(text: 'Trip history'),
             ],
           ),
         ),
@@ -44,26 +73,79 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
             RefreshIndicator(
               onRefresh: notifs.load,
               child: notifs.notifications.isEmpty
-                  ? const Center(child: Text('No notifications yet'))
+                  ? Center(
+                      child: Text(
+                        'No notifications yet',
+                        style: text.copyWith(
+                          fontSize: 14,
+                          color: kAuthMuted,
+                        ),
+                      ),
+                    )
                   : ListView.builder(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       itemCount: notifs.notifications.length,
                       itemBuilder: (_, i) {
                         final n = notifs.notifications[i];
                         return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          margin:
+                              const EdgeInsets.symmetric(vertical: 6),
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          color: kAuthCard,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: const BorderSide(color: kAuthBorder),
+                          ),
                           child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 4),
                             leading: Icon(
-                              n.isRead ? Icons.notifications_off : Icons.notifications,
-                              color: n.isRead ? Colors.grey : Colors.orange,
+                              n.isRead
+                                  ? Icons.notifications_off
+                                  : Icons.notifications,
+                              color: n.isRead ? kAuthIcon : _kOrange,
                             ),
-                            title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                            subtitle: Text(n.message, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            title: Text(
+                              n.title,
+                              style: text.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: kAuthText,
+                              ),
+                            ),
+                            subtitle: Text(
+                              n.message,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: text.copyWith(
+                                fontSize: 13,
+                                color: kAuthMuted,
+                              ),
+                            ),
                             trailing: n.isRead
-                                ? const Icon(Icons.done, color: Colors.green, size: 20)
+                                ? Icon(
+                                    Icons.done,
+                                    color: _kGreen,
+                                    size: 20,
+                                  )
                                 : TextButton(
                                     onPressed: () => notifs.markRead(n.id),
-                                    child: const Text('Read'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: kAuthRedLink,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'Read',
+                                      style: text.copyWith(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                           ),
                         );
@@ -73,37 +155,77 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
             RefreshIndicator(
               onRefresh: emergency.loadHistory,
               child: emergency.history.isEmpty
-                  ? const Center(child: Text('No trip history yet'))
+                  ? Center(
+                      child: Text(
+                        'No trip history yet',
+                        style: text.copyWith(
+                          fontSize: 14,
+                          color: kAuthMuted,
+                        ),
+                      ),
+                    )
                   : ListView.builder(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       itemCount: emergency.history.length,
                       itemBuilder: (_, i) {
                         final h = emergency.history[i];
                         return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          margin:
+                              const EdgeInsets.symmetric(vertical: 6),
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          color: kAuthCard,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: const BorderSide(color: kAuthBorder),
+                          ),
                           child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 4),
                             leading: Icon(
-                              h.endedAt != null ? Icons.check_circle : Icons.access_time,
-                              color: h.endedAt != null ? Colors.green : Colors.orange,
+                              h.endedAt != null
+                                  ? Icons.check_circle
+                                  : Icons.access_time,
+                              color:
+                                  h.endedAt != null ? _kGreen : _kOrange,
                             ),
-                            title: Text(h.destination, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('${h.status} • ${h.incidentType ?? "general"}'),
+                            title: Text(
+                              h.destination,
+                              style: text.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: kAuthText,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${h.status} • ${h.incidentType ?? "general"}',
+                              style: text.copyWith(
+                                fontSize: 13,
+                                color: kAuthMuted,
+                              ),
+                            ),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
                                   h.endedAt != null ? 'Done' : 'Open',
-                                  style: TextStyle(
-                                    color: h.endedAt != null ? Colors.green : Colors.orange,
+                                  style: text.copyWith(
+                                    color: h.endedAt != null
+                                        ? _kGreen
+                                        : _kOrange,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
                                   ),
                                 ),
                                 if (h.endedAt != null)
                                   Text(
-                                    h.endedAt!.toIso8601String().substring(0, 10),
-                                    style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+                                    h.endedAt!.toIso8601String().substring(
+                                        0, 10),
+                                    style: text.copyWith(
+                                      fontSize: 10,
+                                      color: kAuthFaint,
+                                    ),
                                   ),
                               ],
                             ),

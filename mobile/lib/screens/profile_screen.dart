@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             AuthErrorBanner(message: profileProvider.error!),
           ],
           const SizedBox(height: 20),
-          _LogoutButton(onPressed: () => auth.logout()),
+          _LogoutButton(onPressed: () => _confirmLogout(context, auth)),
         ],
       ],
     );
@@ -521,6 +521,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       default:
         return role.isEmpty ? '—' : role[0].toUpperCase() + role.substring(1);
     }
+  }
+
+  void _confirmLogout(BuildContext context, AuthProvider auth) {
+    final text = GoogleFonts.inter();
+    showDialog(
+      context: context,
+      builder: (ctx) => _styledDialog(
+        title: 'Log out?',
+        content: Text(
+          "You'll need your credentials to sign back in.",
+          style: text.copyWith(
+            fontSize: 13.5,
+            color: kAuthMuted,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          _dialogButton('Cancel', kAuthMuted, () => Navigator.pop(ctx)),
+          _dialogButton('Log out', kAuthRed, () {
+            Navigator.pop(ctx);
+            auth.logout();
+          }),
+        ],
+      ),
+    );
   }
 
   void _showEditNameDialog(BuildContext context) {

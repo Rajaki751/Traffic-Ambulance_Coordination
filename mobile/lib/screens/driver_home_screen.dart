@@ -25,6 +25,47 @@ const _kNeutralTint = Color(0xFFF2F1ED);
 const _kBlueTint = Color(0xFFEAF1FC);
 const _kOrangeTint = Color(0xFFFDF1E7);
 
+class StatusColors {
+  final Color bg;
+  final Color fg;
+  final Color border;
+  const StatusColors({
+    required this.bg,
+    required this.fg,
+    required this.border,
+  });
+}
+
+StatusColors _statusColors(String display, {bool emergency = false}) {
+  if (emergency) {
+    return const StatusColors(
+      bg: kAuthRedBadgeBg,
+      fg: kAuthRedBadgeText,
+      border: kAuthRed,
+    );
+  }
+  switch (display) {
+    case 'On Duty':
+      return const StatusColors(
+        bg: _kBlueTint,
+        fg: _kBlue,
+        border: _kBlue,
+      );
+    case 'Offline':
+      return const StatusColors(
+        bg: _kNeutralTint,
+        fg: kAuthMuted,
+        border: kAuthBorder,
+      );
+    default:
+      return const StatusColors(
+        bg: _kGreenBadgeBg,
+        fg: _kGreenBadgeText,
+        border: _kGreen,
+      );
+  }
+}
+
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
 
@@ -251,25 +292,31 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: emergency.isEmergencyActive
-                            ? kAuthRedBadgeBg
-                            : _kGreenBadgeBg,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        emergency.isEmergencyActive
-                            ? Icons.local_hospital_rounded
-                            : Icons.check_circle_rounded,
-                        size: 20,
-                        color: emergency.isEmergencyActive
-                            ? kAuthRedBadgeText
-                            : _kGreenBadgeText,
-                      ),
-                    ),
+                    Builder(builder: (context) {
+                      final colors = _statusColors(
+                        _driverStatus,
+                        emergency: emergency.isEmergencyActive,
+                      );
+                      return Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: colors.bg,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          emergency.isEmergencyActive
+                              ? Icons.local_hospital_rounded
+                              : _driverStatus == 'Offline'
+                                  ? Icons.power_settings_new
+                                  : _driverStatus == 'On Duty'
+                                      ? Icons.work_outline
+                                      : Icons.check_circle_rounded,
+                          size: 20,
+                          color: colors.fg,
+                        ),
+                      );
+                    }),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -283,16 +330,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          Text(
-                            emergency.isEmergencyActive
-                                ? 'Busy'
-                                : _driverStatus,
-                            style: text.copyWith(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              color: kAuthText,
-                            ),
-                          ),
+                          Builder(builder: (context) {
+                            final colors = _statusColors(
+                              _driverStatus,
+                              emergency: emergency.isEmergencyActive,
+                            );
+                            return Text(
+                              emergency.isEmergencyActive
+                                  ? 'Busy'
+                                  : _driverStatus,
+                              style: text.copyWith(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: colors.fg,
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -307,6 +360,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         label: 'Available',
                         active: _driverStatus == 'Available',
                         onTap: () => _setStatus('Available', 'available'),
+                        activeColors: _statusColors('Available'),
                       ),
                       const SizedBox(width: 8),
                       _statusPill(
@@ -314,6 +368,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         label: 'On duty',
                         active: _driverStatus == 'On Duty',
                         onTap: () => _setStatus('On Duty', 'on_duty'),
+                        activeColors: _statusColors('On Duty'),
                       ),
                       const SizedBox(width: 8),
                       _statusPill(
@@ -321,6 +376,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         label: 'Offline',
                         active: _driverStatus == 'Offline',
                         onTap: () => _setStatus('Offline', 'offline'),
+                        activeColors: _statusColors('Offline'),
                       ),
                     ],
                   ),
@@ -588,6 +644,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     required String label,
     required bool active,
     required VoidCallback onTap,
+    required StatusColors activeColors,
   }) {
     final text = GoogleFonts.inter();
     return Expanded(
@@ -597,10 +654,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         child: Container(
           height: 40,
           decoration: BoxDecoration(
-            color: active ? kAuthRedBadgeBg : kAuthCard,
+            color: active ? activeColors.bg : kAuthCard,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: active ? kAuthRed : kAuthBorder,
+              color: active ? activeColors.border : kAuthBorder,
             ),
           ),
           child: Row(
@@ -609,7 +666,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               Icon(
                 icon,
                 size: 16,
-                color: active ? kAuthRedBadgeText : kAuthFaint,
+                color: active ? activeColors.fg : kAuthFaint,
               ),
               const SizedBox(width: 6),
               Text(
@@ -617,7 +674,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 style: text.copyWith(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: active ? kAuthRedBadgeText : kAuthFaint,
+                  color: active ? activeColors.fg : kAuthFaint,
                 ),
               ),
             ],

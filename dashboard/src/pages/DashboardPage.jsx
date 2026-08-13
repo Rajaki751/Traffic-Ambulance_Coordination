@@ -1,27 +1,58 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LiveMap from '../components/LiveMap';
 import StatCard from '../components/StatCard';
+import ErrorBanner from '../components/ErrorBanner';
 import { analyticsApi, emergencyApi, gpsApi } from '../services/api';
-import { useAdminWebSocket } from '../hooks/useWebSocket';
+import { useWebSocketContext } from '../hooks/useWebSocket';
+
+function timestampMs(location) {
+  return location?.updated_at ? new Date(location.updated_at).getTime() : 0;
+}
+
+function upsertLocation(prev, next) {
+  const idx = prev.findIndex((a) => a.ambulance_id === next.ambulance_id);
+  if (idx >= 0) {
+    if (timestampMs(next) < timestampMs(prev[idx])) return prev;
+    const merged = [...prev];
+    merged[idx] = next;
+    return merged;
+  }
+  return [...prev, next];
+}
+
+function mergeLocations(prev, incoming) {
+  return incoming.reduce((acc, next) => upsertLocation(acc, next), prev);
+}
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState(null);
   const [ambulances, setAmbulances] = useState([]);
   const [liveLocations, setLiveLocations] = useState([]);
   const [emergencies, setEmergencies] = useState([]);
+  const [error, setError] = useState('');
+  const pollInFlight = useRef(false);
+  const { subscribe } = useWebSocketContext();
 
   const loadData = useCallback(async () => {
+    if (pollInFlight.current) return;
+    pollInFlight.current = true;
     try {
-      const [sumRes, liveRes, emergRes] = await Promise.all([
+      const [sumRes, liveRes, emergRes, ambStatsRes] = await Promise.all([
         analyticsApi.summary(),
         gpsApi.liveAll(),
         emergencyApi.active(),
+        analyticsApi.ambulances(),
       ]);
       setSummary(sumRes.data);
-      setLiveLocations(liveRes.data);
+      setLiveLocations((prev) => mergeLocations(prev, liveRes.data));
       setEmergencies(emergRes.data);
+      setAmbulances(ambStatsRes.data);
+      setError('');
     } catch (e) {
       console.error(e);
+      setError('Failed to load dashboard data');
+    } finally {
+      pollInFlight.current = false;
     }
   }, []);
 
@@ -31,31 +62,18 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [loadData]);
 
-  useAdminWebSocket(
-    useCallback(
-      (msg) => {
+  useEffect(
+    () =>
+      subscribe((msg) => {
         if (msg.type === 'gps_update') {
-          setLiveLocations((prev) => {
-            const updated = [...prev];
-            const idx = updated.findIndex(
-              (a) => a.ambulance_id === msg.data.ambulance_id
-            );
-            if (idx >= 0) updated[idx] = msg.data;
-            else updated.push(msg.data);
-            return updated;
-          });
+          setLiveLocations((prev) => upsertLocation(prev, msg.data));
         }
         if (msg.type === 'emergency_activated' || msg.type === 'emergency_ended') {
           loadData();
         }
-      },
-      [loadData]
-    )
+      }),
+    [subscribe, loadData]
   );
-
-  useEffect(() => {
-    analyticsApi.ambulances().then((r) => setAmbulances(r.data)).catch(() => {});
-  }, []);
 
   const mapCenter =
     liveLocations.length > 0
@@ -65,6 +83,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Real-Time Dashboard</h1>
+      {error && <ErrorBanner message={error} onRetry={loadData} />}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -123,6 +142,27 @@ export default function DashboardPage() {
             <p className="text-2xl font-bold">
               {summary?.avg_response_time_minutes ?? 0} min
             </p>
+          </div>
+          <div className="mt-6 rounded-lg border p-4 dark:border-gray-700">
+            <p className="mb-3 text-sm font-medium text-gray-500">Ambulance Stats</p>
+            {ambulances.length === 0 ? (
+              <p className="text-sm text-gray-500">No ambulance data</p>
+            ) : (
+              <div className="space-y-2">
+                {ambulances.map((a) => (
+                  <div
+                    key={a.ambulance_id}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="font-medium">{a.vehicle_number}</span>
+                    <span className="text-gray-500">
+                      {a.total_emergencies} emergencies
+                      {a.active_session_id ? ' · active' : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

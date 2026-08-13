@@ -1,12 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import ErrorBanner from '../components/ErrorBanner';
 import { ambulancesApi } from '../services/api';
 
 export default function AmbulancesPage() {
   const [ambulances, setAmbulances] = useState([]);
+  const [error, setError] = useState('');
+
+  const loadAmbulances = useCallback(() => {
+    setError('');
+    ambulancesApi.list()
+      .then((r) => setAmbulances(r.data))
+      .catch(() => setError('Failed to load ambulances'));
+  }, []);
 
   useEffect(() => {
-    ambulancesApi.list().then((r) => setAmbulances(r.data)).catch(() => {});
-  }, []);
+    loadAmbulances();
+  }, [loadAmbulances]);
 
   const statusColor = {
     available: 'bg-green-100 text-green-700',
@@ -18,6 +27,7 @@ export default function AmbulancesPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold">Ambulance Fleet</h1>
+      {error && <ErrorBanner message={error} onRetry={loadAmbulances} />}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {ambulances.map((a) => (
           <div
@@ -36,6 +46,9 @@ export default function AmbulancesPage() {
           </div>
         ))}
       </div>
+      {!error && ambulances.length === 0 && (
+        <p className="p-8 text-center text-gray-500">No ambulances found</p>
+      )}
     </div>
   );
 }

@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import ErrorBanner from '../components/ErrorBanner';
 import { usersApi } from '../services/api';
 
-const emptyForm = { name: '', email: '', password: '', role: 'driver' };
+const emptyForm = {
+  name: '',
+  email: '',
+  password: '',
+  role: 'driver',
+  vehicle_number: '',
+  assigned_zone: '',
+};
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -9,13 +17,17 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const loadUsers = () => {
-    usersApi.list().then((r) => setUsers(r.data)).catch(() => {});
-  };
+  const loadUsers = useCallback(() => {
+    setLoadError('');
+    usersApi.list()
+      .then((r) => setUsers(r.data))
+      .catch(() => setLoadError('Failed to load users'));
+  }, []);
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => { loadUsers(); }, [loadUsers]);
 
   const openCreate = () => {
     setEditingUser(null);
@@ -46,7 +58,15 @@ export default function UsersPage() {
           setLoading(false);
           return;
         }
-        await usersApi.create(form);
+        const payload = {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        };
+        if (form.role === 'driver') payload.vehicle_number = form.vehicle_number;
+        if (form.role === 'officer') payload.assigned_zone = form.assigned_zone;
+        await usersApi.create(payload);
       }
       setShowModal(false);
       loadUsers();
@@ -91,6 +111,8 @@ export default function UsersPage() {
         </button>
       </div>
 
+      {loadError && <ErrorBanner message={loadError} onRetry={loadUsers} />}
+
       <div className="overflow-hidden rounded-xl border dark:border-gray-700">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-100 dark:bg-gray-800">
@@ -127,7 +149,7 @@ export default function UsersPage() {
             ))}
           </tbody>
         </table>
-        {users.length === 0 && (
+        {!loadError && users.length === 0 && (
           <p className="p-8 text-center text-gray-500">No users found</p>
         )}
       </div>
@@ -184,6 +206,30 @@ export default function UsersPage() {
                   <option value="admin">Admin</option>
                 </select>
               </div>
+              {form.role === 'driver' && (
+                <div>
+                  <label className="mb-1 block text-sm font-medium">Vehicle Number</label>
+                  <input
+                    type="text"
+                    value={form.vehicle_number}
+                    onChange={(e) => setForm({ ...form, vehicle_number: e.target.value })}
+                    className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                    required={!editingUser}
+                  />
+                </div>
+              )}
+              {form.role === 'officer' && (
+                <div>
+                  <label className="mb-1 block text-sm font-medium">Assigned Zone</label>
+                  <input
+                    type="text"
+                    value={form.assigned_zone}
+                    onChange={(e) => setForm({ ...form, assigned_zone: e.target.value })}
+                    className="w-full rounded-lg border px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                    required={!editingUser}
+                  />
+                </div>
+              )}
               {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="flex justify-end gap-3">
                 <button

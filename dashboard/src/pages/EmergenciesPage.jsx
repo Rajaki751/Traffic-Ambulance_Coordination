@@ -1,16 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import ErrorBanner from '../components/ErrorBanner';
 import { emergencyApi } from '../services/api';
+
+function formatDate(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString();
+}
 
 export default function EmergenciesPage() {
   const [emergencies, setEmergencies] = useState([]);
+  const [error, setError] = useState('');
+
+  const loadEmergencies = useCallback(() => {
+    setError('');
+    emergencyApi.active()
+      .then((r) => setEmergencies(r.data))
+      .catch(() => setError('Failed to load active emergency sessions'));
+  }, []);
 
   useEffect(() => {
-    emergencyApi.active().then((r) => setEmergencies(r.data)).catch(() => {});
-  }, []);
+    loadEmergencies();
+  }, [loadEmergencies]);
 
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold">Active Emergency Sessions</h1>
+      {error && <ErrorBanner message={error} onRetry={loadEmergencies} />}
       <div className="overflow-hidden rounded-xl border dark:border-gray-700">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-100 dark:bg-gray-800">
@@ -35,12 +51,12 @@ export default function EmergenciesPage() {
                     {e.status}
                   </span>
                 </td>
-                <td className="p-4">{new Date(e.started_at).toLocaleString()}</td>
+                <td className="p-4">{formatDate(e.started_at)}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {emergencies.length === 0 && (
+        {!error && emergencies.length === 0 && (
           <p className="p-8 text-center text-gray-500">No active emergencies</p>
         )}
       </div>

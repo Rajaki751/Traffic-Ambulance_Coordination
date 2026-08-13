@@ -1,9 +1,16 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 const ambulanceIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+const destinationIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -35,35 +42,65 @@ function decodePolyline(encoded) {
   return points;
 }
 
-function FitBounds({ positions }) {
-  const map = useMap();
-  if (positions.length > 0) {
-    const bounds = L.latLngBounds(positions);
-    map.fitBounds(bounds, { padding: [50, 50] });
+function parseRoutePolyline(polyline) {
+  if (!polyline) return [];
+  try {
+    const parsed = JSON.parse(polyline);
+    if (
+      Array.isArray(parsed) &&
+      parsed.every(
+        (p) =>
+          Array.isArray(p) &&
+          p.length >= 2 &&
+          typeof p[0] === 'number' &&
+          typeof p[1] === 'number'
+      )
+    ) {
+      return parsed.map((p) => [p[0], p[1]]);
+    }
+  } catch {
+    // fall through to encoded polyline decode
   }
+  return decodePolyline(polyline);
+}
+
+function FitBounds({ ambulances }) {
+  const map = useMap();
+  const ambulancesRef = useRef(ambulances);
+  ambulancesRef.current = ambulances;
+
+  const signature = useMemo(
+    () =>
+      JSON.stringify(
+        ambulances.map((amb) => [
+          amb.ambulance_id ?? amb.id,
+          Number((amb.latitude ?? 0).toFixed(2)),
+          Number((amb.longitude ?? 0).toFixed(2)),
+        ])
+      ),
+    [ambulances]
+  );
+
+  useEffect(() => {
+    const current = ambulancesRef.current;
+    if (!map || current.length === 0) return;
+    const positions = [];
+    current.forEach((amb) => {
+      if (amb.route_polyline) {
+        positions.push(...parseRoutePolyline(amb.route_polyline));
+      }
+      positions.push([amb.latitude, amb.longitude]);
+      if (amb.dest_latitude && amb.dest_longitude) {
+        positions.push([amb.dest_latitude, amb.dest_longitude]);
+      }
+    });
+    map.fitBounds(L.latLngBounds(positions), { padding: [50, 50] });
+  }, [map, signature]);
+
   return null;
 }
 
 export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }) {
-  const routePositions = useMemo(() => {
-    const allPositions = [];
-    ambulances.forEach((amb) => {
-      if (amb.route_polyline) {
-        try {
-          const decoded = decodePolyline(amb.route_polyline);
-          decoded.forEach((p) => allPositions.push(p));
-        } catch (e) {
-          // skip invalid polyline
-        }
-      }
-      allPositions.push([amb.latitude, amb.longitude]);
-      if (amb.dest_latitude && amb.dest_longitude) {
-        allPositions.push([amb.dest_latitude, amb.dest_longitude]);
-      }
-    });
-    return allPositions;
-  }, [ambulances]);
-
   return (
     <div className="h-[400px] w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
       <MapContainer center={center} zoom={13} className="h-full w-full">
@@ -71,33 +108,21 @@ export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {routePositions.length > 0 && <FitBounds positions={routePositions} />}
+        {ambulances.length > 0 && <FitBounds ambulances={ambulances} />}
         {ambulances.map((amb) => {
-          const positions = [];
-          if (amb.route_polyline) {
-            try {
-              positions.push(...decodePolyline(amb.route_polyline));
-            } catch (e) {
-              // skip
-            }
-          }
+          const routePositions = parseRoutePolyline(amb.route_polyline);
           return (
-            <div key={amb.ambulance_id || amb.id}>
-              {positions.length > 1 && (
+            <div key={amb.ambulance_id ?? amb.id}>
+              {routePositions.length > 1 && (
                 <Polyline
-                  positions={positions}
+                  positions={routePositions}
                   pathOptions={{ color: '#ef4444', weight: 4, opacity: 0.8 }}
                 />
               )}
               {amb.dest_latitude && amb.dest_longitude && (
                 <Marker
                   position={[amb.dest_latitude, amb.dest_longitude]}
-                  icon={new L.Icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                  })}
+                  icon={destinationIcon}
                 >
                   <Popup>
                     <strong>Destination</strong><br />

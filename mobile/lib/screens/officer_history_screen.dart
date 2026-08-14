@@ -29,11 +29,12 @@ class _OfficerHistoryScreenState extends State<OfficerHistoryScreen> {
       body: junctions.loading
           ? const Center(child: CircularProgressIndicator())
           : junctions.clearanceHistory.isEmpty
-              ? const Center(
-                  child: Text(
-                    'No junction clearances yet.\nClear junctions from the Map tab to see history here.',
-                    textAlign: TextAlign.center,
-                  ),
+              ? const AuthEmptyState(
+                  icon: Icons.traffic_rounded,
+                  title: 'No clearances yet',
+                  hint:
+                      'Mark junctions cleared from the Live map tab and they '
+                      'will show up here with timestamps.',
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(12),

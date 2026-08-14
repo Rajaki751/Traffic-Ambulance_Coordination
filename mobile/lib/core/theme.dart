@@ -248,6 +248,8 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: Colors.transparent,
         side: BorderSide(color: scheme.outline),
+        selectedColor: scheme.primaryContainer,
+        checkmarkColor: scheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

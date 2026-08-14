@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
 import '../providers/junction_provider.dart';
 import '../providers/live_ambulance_provider.dart';
@@ -8,6 +10,13 @@ import '../widgets/auth_widgets.dart';
 import 'officer_map_screen.dart';
 import 'officer_history_screen.dart';
 import 'profile_screen.dart';
+
+const _kBlue = Color(0xFF2E6FD8);
+const _kGreen = Color(0xFF2F9E63);
+const _kOrange = Color(0xFFE8833A);
+const _kNeutralTint = Color(0xFFF2F1ED);
+const _kBlueTint = Color(0xFFEAF1FC);
+const _kOrangeTint = Color(0xFFFDF1E7);
 
 class OfficerHomeScreen extends StatefulWidget {
   const OfficerHomeScreen({super.key});
@@ -38,60 +47,76 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
     final notifs = context.watch<NotificationProvider>();
     final live = context.watch<LiveAmbulanceProvider>();
     final junctions = context.watch<JunctionProvider>();
 
     final pages = <Widget>[
-      _buildHomePage(context, live, notifs, junctions),
+      SafeArea(top: true, bottom: false, child: _buildHomePage(context, live, notifs, junctions)),
       const OfficerMapScreen(),
       _buildAlertsPage(context, notifs),
       const OfficerHistoryScreen(),
-      const ProfileScreen(),
+      const SafeArea(top: true, bottom: false, child: ProfileScreen()),
     ];
 
+    final badgeVisible = notifs.unreadCount > 0;
+    final alertsIcon = Badge(
+      isLabelVisible: badgeVisible,
+      label: Text('${notifs.unreadCount}'),
+      child: const Icon(Icons.warning_amber_outlined),
+    );
+    final alertsIconSelected = Badge(
+      isLabelVisible: badgeVisible,
+      label: Text('${notifs.unreadCount}'),
+      child: const Icon(Icons.warning_amber_rounded),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Traffic Officer'),
-        actions: [
-          if (notifs.unreadCount > 0)
-            Badge(
-              label: Text('${notifs.unreadCount}'),
-              child: IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () => setState(() => _selectedIndex = 2),
-              ),
-            ),
-          IconButton(icon: const Icon(Icons.logout), onPressed: auth.logout),
-        ],
+      backgroundColor: kAuthBg,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 240),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.012),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        ),
+        child: KeyedSubtree(
+          key: ValueKey(_selectedIndex),
+          child: pages[_selectedIndex],
+        ),
       ),
-      body: pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.map_outlined),
             selectedIcon: Icon(Icons.map_rounded),
             label: 'Map',
           ),
           NavigationDestination(
-            icon: Icon(Icons.warning_amber_outlined),
-            selectedIcon: Icon(Icons.warning_amber_rounded),
+            icon: alertsIcon,
+            selectedIcon: alertsIconSelected,
             label: 'Alerts',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history_rounded),
             label: 'History',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.person_outline_rounded),
             selectedIcon: Icon(Icons.person_rounded),
             label: 'Profile',
@@ -107,8 +132,15 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     NotificationProvider notifs,
     JunctionProvider junctions,
   ) {
+    final text = GoogleFonts.inter();
+    final auth = context.watch<AuthProvider>();
+    final officerName = auth.user?.name.trim() ?? '';
+    final firstName = officerName.isEmpty
+        ? 'Officer'
+        : officerName.split(' ').first;
     final activeAmbulances = live.ambulances.length;
-    final activeEmergencies = live.ambulances.where((a) => a.status == 'emergency').length;
+    final activeEmergencies =
+        live.ambulances.where((a) => a.status == 'emergency').length;
     final clearedToday = junctions.clearanceHistory.length;
 
     return RefreshIndicator(
@@ -118,76 +150,230 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         await junctions.loadClearanceHistory();
       },
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Dashboard Overview', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _statCard(
-                          icon: Icons.local_shipping,
-                          label: 'Active\nAmbulances',
-                          value: '$activeAmbulances',
-                          color: kAuthBlue,
-                        ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dispatch desk',
+                      style: text.copyWith(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.6,
+                        color: kAuthFaint,
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _statCard(
-                          icon: Icons.emergency,
-                          label: 'Active\nEmergencies',
-                          value: '$activeEmergencies',
-                          color: kAuthRed,
-                        ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${_greetingPrefix(DateTime.now())}, $firstName',
+                      style: text.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.5,
+                        color: kAuthText,
+                        height: 1.15,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _statCard(
-                          icon: Icons.traffic,
-                          label: 'Junctions\nCleared',
-                          value: '$clearedToday',
-                          color: kAuthGreen,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _statCard(
-                          icon: Icons.notifications_active,
-                          label: 'Pending\nAlerts',
-                          value: '${notifs.unreadCount}',
-                          color: kAuthOrange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: kAuthRedBadgeBg,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
+                  boxShadow: kCardShadow,
+                ),
+                child: Center(
+                  child: Text(
+                    firstName.isEmpty ? 'O' : firstName[0].toUpperCase(),
+                    style: text.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: kAuthRedLink,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-
-          if (notifs.unreadCount > 0) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: kAuthCard,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kAuthBorder),
+              boxShadow: kCardShadow,
+            ),
+            child: Row(
               children: [
-                Text('Recent Alerts', style: Theme.of(context).textTheme.titleMedium),
-                TextButton(
-                  onPressed: () => setState(() => _selectedIndex = 2),
-                  child: const Text('View All'),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: activeEmergencies > 0
+                        ? kAuthRedBadgeBg
+                        : _kNeutralTint,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    activeEmergencies > 0
+                        ? Icons.emergency_rounded
+                        : Icons.local_shipping_rounded,
+                    size: 20,
+                    color: activeEmergencies > 0 ? kAuthRed : kAuthMuted,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Live operations',
+                        style: text.copyWith(
+                          fontSize: 12.5,
+                          color: kAuthFaint,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        activeEmergencies > 0
+                            ? '$activeAmbulances ambulances • '
+                                '$activeEmergencies emergency'
+                            : 'No active emergencies',
+                        style: text.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: activeEmergencies > 0
+                              ? kAuthRedBadgeText
+                              : kAuthMuted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _statCard(
+                icon: Icons.local_shipping_rounded,
+                label: 'Active ambulances',
+                value: '$activeAmbulances',
+                iconColor: _kBlue,
+                tint: _kBlueTint,
+              ),
+              const SizedBox(width: 12),
+              _statCard(
+                icon: Icons.emergency_rounded,
+                label: 'Emergencies',
+                value: '$activeEmergencies',
+                iconColor: kAuthRed,
+                tint: kAuthRedBadgeBg,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _statCard(
+                icon: Icons.traffic_rounded,
+                label: 'Junctions cleared',
+                value: '$clearedToday',
+                iconColor: _kGreen,
+                tint: kAuthGreenBg,
+              ),
+              const SizedBox(width: 12),
+              _statCard(
+                icon: Icons.notifications_rounded,
+                label: 'Pending alerts',
+                value: '${notifs.unreadCount}',
+                iconColor: notifs.unreadCount > 0 ? _kOrange : kAuthMuted,
+                tint: notifs.unreadCount > 0 ? _kOrangeTint : _kNeutralTint,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Text(
+                'Quick actions',
+                style: text.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: kAuthText,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(child: Divider(color: kAuthBorder, height: 1)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _actionCard(
+                  text,
+                  icon: Icons.map_rounded,
+                  iconColor: _kBlue,
+                  tint: _kBlueTint,
+                  label: 'Live map',
+                  sub: 'Track fleet & clear junctions',
+                  onTap: () => setState(() => _selectedIndex = 1),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _actionCard(
+                  text,
+                  icon: Icons.message_rounded,
+                  iconColor: _kOrange,
+                  tint: _kOrangeTint,
+                  label: 'Message driver',
+                  sub: 'Send a dispatch update',
+                  onTap: () => _showSendMessageDialog(context),
+                ),
+              ),
+            ],
+          ),
+          if (notifs.unreadCount > 0) ...[
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  'Recent alerts',
+                  style: text.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: kAuthText,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => setState(() => _selectedIndex = 2),
+                  child: Text(
+                    'View all',
+                    style: text.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: kAuthRedLink,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             ...notifs.notifications.take(3).map(
               (n) => Card(
                 margin: const EdgeInsets.only(bottom: 6),
@@ -196,93 +382,122 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                     : Theme.of(context).colorScheme.errorContainer,
                 child: ListTile(
                   leading: Icon(
-                    Icons.emergency,
+                    Icons.emergency_rounded,
                     color: n.isAcknowledged
                         ? Theme.of(context).colorScheme.outline
                         : kAuthRed,
                   ),
-                  title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  subtitle: Text(n.message, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  title: Text(
+                    n.title,
+                    style: text.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: kAuthText,
+                    ),
+                  ),
+                  subtitle: Text(
+                    n.message,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.copyWith(
+                      fontSize: 13,
+                      color: kAuthMuted,
+                    ),
+                  ),
                   trailing: n.isAcknowledged
                       ? const Icon(Icons.check, color: kAuthGreen, size: 20)
                       : TextButton(
                           onPressed: () => notifs.acknowledge(n.id),
-                          child: const Text('ACK'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: kAuthRedLink,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            minimumSize: Size.zero,
+                            tapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'ACK',
+                            style: text.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                 ),
               ),
             ),
           ],
-
-          const SizedBox(height: 16),
-          Text('Quick Actions', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: Card(
-                  child: InkWell(
-                    onTap: () => setState(() => _selectedIndex = 1),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Icon(Icons.map, size: 32, color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(height: 8),
-                          const Text('View Map', style: TextStyle(fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Card(
-                  child: InkWell(
-                    onTap: () => _showSendMessageDialog(context),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Icon(Icons.message, size: 32, color: Theme.of(context).colorScheme.primary),
-                          const SizedBox(height: 8),
-                          const Text('Message\nDriver', style: TextStyle(fontWeight: FontWeight.w600), textAlign: TextAlign.center),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
           if (live.ambulances.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text('Active Ambulances', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  'Active ambulances',
+                  style: text.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: kAuthText,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(child: Divider(color: kAuthBorder, height: 1)),
+              ],
+            ),
             const SizedBox(height: 8),
             ...live.ambulances.map(
               (a) => Card(
                 margin: const EdgeInsets.only(bottom: 6),
                 child: ListTile(
-                  leading: const Icon(Icons.local_shipping, color: kAuthRed),
-                  title: Text(a.vehicleNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text('To: ${a.destination}'),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: kAuthRedBadgeBg,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.local_shipping_rounded,
+                      size: 18,
+                      color: kAuthRed,
+                    ),
+                  ),
+                  title: Text(
+                    a.vehicleNumber,
+                    style: text.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: kAuthText,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'To: ${a.destination}',
+                    style: text.copyWith(fontSize: 13, color: kAuthMuted),
+                  ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         '${a.etaMinutes?.toStringAsFixed(0) ?? "?"} min',
-                        style: const TextStyle(fontWeight: FontWeight.w600, color: kAuthRed),
+                        style: text.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: kAuthRed,
+                          fontFeatures: const [
+                            FontFeature.tabularFigures(),
+                          ],
+                        ),
                       ),
                       Text(
                         '${a.speedKmh?.toStringAsFixed(0) ?? "?"} km/h',
-                        style: TextStyle(
+                        style: text.copyWith(
                           fontSize: 11,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: kAuthFaint,
+                          fontFeatures: const [
+                            FontFeature.tabularFigures(),
+                          ],
                         ),
                       ),
                     ],
@@ -297,39 +512,194 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   }
 
   Widget _buildAlertsPage(BuildContext context, NotificationProvider notifs) {
-    return notifs.loading
-        ? const Center(child: CircularProgressIndicator())
-        : notifs.notifications.isEmpty
-            ? const Center(child: Text('No alerts'))
-            : RefreshIndicator(
-                onRefresh: notifs.load,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: notifs.notifications.length,
-                  itemBuilder: (_, i) {
-                    final n = notifs.notifications[i];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: n.isAcknowledged
-                          ? null
-                          : Theme.of(context).colorScheme.errorContainer,
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.emergency,
-                          color: n.isAcknowledged
-                              ? Theme.of(context).colorScheme.outline
-                              : kAuthRed,
+    final text = GoogleFonts.inter();
+    return Scaffold(
+      backgroundColor: kAuthBg,
+      appBar: AppBar(
+        shape: const Border(bottom: BorderSide(color: kAuthBorder)),
+        title: Text(
+          'Alerts',
+          style: text.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+            color: kAuthText,
+          ),
+        ),
+      ),
+      body: notifs.loading
+          ? const Center(child: CircularProgressIndicator())
+          : notifs.notifications.isEmpty
+              ? const AuthEmptyState(
+                  icon: Icons.notifications_none_rounded,
+                  title: 'No alerts yet',
+                  hint:
+                      'Emergency alerts appear here as soon as a driver '
+                      'starts a trip.',
+                )
+              : RefreshIndicator(
+                  onRefresh: notifs.load,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: notifs.notifications.length,
+                    itemBuilder: (_, i) {
+                      final n = notifs.notifications[i];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        color: n.isAcknowledged
+                            ? null
+                            : Theme.of(context).colorScheme.errorContainer,
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.emergency_rounded,
+                            color: n.isAcknowledged
+                                ? Theme.of(context).colorScheme.outline
+                                : kAuthRed,
+                          ),
+                          title: Text(
+                            n.title,
+                            style: text.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: kAuthText,
+                            ),
+                          ),
+                          subtitle: Text(
+                            n.message,
+                            style: text.copyWith(
+                              fontSize: 13,
+                              color: kAuthMuted,
+                            ),
+                          ),
+                          trailing: n.isAcknowledged
+                              ? const Icon(Icons.check, color: kAuthGreen)
+                              : TextButton(
+                                  onPressed: () => notifs.acknowledge(n.id),
+                                  child: Text(
+                                    'ACK',
+                                    style: text.copyWith(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: kAuthRedLink,
+                                    ),
+                                  ),
+                                ),
                         ),
-                        title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        subtitle: Text(n.message),
-                        trailing: n.isAcknowledged
-                            ? const Icon(Icons.check, color: kAuthGreen)
-                            : TextButton(onPressed: () => notifs.acknowledge(n.id), child: const Text('ACK')),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              );
+    );
+  }
+
+  String _greetingPrefix(DateTime now) {
+    final hour = now.hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  Widget _actionCard(
+    TextStyle text, {
+    required IconData icon,
+    required Color iconColor,
+    required Color tint,
+    required String label,
+    required String sub,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: kAuthCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: kAuthBorder),
+          boxShadow: kCardShadow,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: tint,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: text.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: kAuthText,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              sub,
+              style: text.copyWith(fontSize: 11, color: kAuthFaint),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color iconColor,
+    required Color tint,
+  }) {
+    final text = GoogleFonts.inter();
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
+        decoration: BoxDecoration(
+          color: kAuthCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: kAuthBorder),
+          boxShadow: kCardShadow,
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: tint,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: text.copyWith(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.5,
+                color: kAuthText,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: text.copyWith(fontSize: 11, color: kAuthFaint),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSendMessageDialog(BuildContext context) {
@@ -387,19 +757,22 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel')),
             ElevatedButton(
-              onPressed: selectedSessionId == null || messageCtrl.text.trim().isEmpty
-                  ? null
-                  : () async {
-                      Navigator.pop(ctx);
-                      await _sendDriverMessage(
-                        context,
-                        selectedSessionId!,
-                        titleCtrl.text.trim(),
-                        messageCtrl.text.trim(),
-                      );
-                    },
+              onPressed:
+                  selectedSessionId == null || messageCtrl.text.trim().isEmpty
+                      ? null
+                      : () async {
+                          Navigator.pop(ctx);
+                          await _sendDriverMessage(
+                            context,
+                            selectedSessionId!,
+                            titleCtrl.text.trim(),
+                            messageCtrl.text.trim(),
+                          );
+                        },
               child: const Text('Send'),
             ),
           ],
@@ -408,7 +781,8 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     );
   }
 
-  Future<void> _sendDriverMessage(BuildContext context, int sessionId, String title, String message) async {
+  Future<void> _sendDriverMessage(BuildContext context, int sessionId,
+      String title, String message) async {
     try {
       final notifProvider = context.read<NotificationProvider>();
       await notifProvider.sendToDriver(
@@ -428,22 +802,5 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         );
       }
     }
-  }
-
-  Widget _statCard({required IconData icon, required String label, required String value, required Color color}) {
-    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 4),
-            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: color)),
-            Text(label, style: TextStyle(fontSize: 11, color: muted), textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -86,8 +86,15 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
                   ),
           ),
           if (selected != null) _buildDirectionsCard(selected),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+          Container(
+            margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: kAuthCard,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kAuthBorder),
+              boxShadow: kCardShadow,
+            ),
             child: Column(
               children: [
                 DropdownButtonFormField<JunctionPoint>(
@@ -125,7 +132,10 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       junctions.message!,
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
               ],
@@ -170,9 +180,13 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
             ),
             const SizedBox(height: 4),
             Text('Heading to: ${a.destination}'),
-            Text('ETA: ${formatEta(a.etaMinutes)} min'),
+            Text(
+              'ETA: ${formatEta(a.etaMinutes)} min',
+              style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
+            ),
             Text(
               'Speed: ${a.speedKmh?.toStringAsFixed(0) ?? "?"} km/h',
+              style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
             ),
             const SizedBox(height: 8),
             Text(

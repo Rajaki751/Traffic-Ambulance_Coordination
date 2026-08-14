@@ -219,10 +219,23 @@ class EmergencyService:
             payload.current_longitude,
             officer_data,
         )
-        if nearby_ids:
+        nearby_set = set(nearby_ids)
+        # Officers without a configured zone are not area-limited: always alert them.
+        unzoned_ids = [
+            o.user_id
+            for o in officers
+            if o.zone_latitude is None or o.zone_longitude is None
+        ]
+        if nearby_set or unzoned_ids:
+            target_ids = sorted(nearby_set | set(unzoned_ids))
+        else:
+            # No zone-based match: never silently drop an emergency alert.
+            # Fall back to notifying every officer.
+            target_ids = sorted(o.user_id for o in officers)
+        if target_ids:
             alerts = await NotificationService.create_emergency_alert(
                 db,
-                nearby_ids,
+                target_ids,
                 session.id,
                 ambulance.vehicle_number,
                 payload.destination,

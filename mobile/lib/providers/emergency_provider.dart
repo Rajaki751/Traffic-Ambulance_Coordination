@@ -120,7 +120,11 @@ class EmergencyProvider extends ChangeNotifier {
     } on DioException catch (e) {
       final detail = e.response?.data;
       if (detail is Map && detail['detail'] != null) {
-        _error = detail['detail'].toString();
+        if (detail['detail'] is List && (detail['detail'] as List).isNotEmpty) {
+          _error = detail['detail'][0]['msg'].toString();
+        } else {
+          _error = detail['detail'].toString();
+        }
       } else {
         _error = 'Failed to activate emergency. Check server connection.';
       }

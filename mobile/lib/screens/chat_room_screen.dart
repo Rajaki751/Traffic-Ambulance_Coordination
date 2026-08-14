@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import '../core/map_cache.dart';
@@ -76,6 +77,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   void _scrollToBottom() {
     if (!_scroll.hasClients) return;
+    if (!mounted) return;
     _scroll.animateTo(
       _scroll.position.maxScrollExtent,
       duration: const Duration(milliseconds: 200),
@@ -181,7 +183,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         }
         return;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     if (!mounted) return;
     showDialog(
@@ -233,15 +237,17 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   }
 
   Future<void> _pickAndSendLocation() async {
-    double lat = 28.6139;
-    double lon = 77.2090;
+    double lat = 27.7172;
+    double lon = 85.3240;
     try {
       final last = await Geolocator.getLastKnownPosition();
       if (last != null) {
         lat = last.latitude;
         lon = last.longitude;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     if (!mounted) return;
     final picked = await Navigator.of(context).push<PickedLocation>(
       MaterialPageRoute(

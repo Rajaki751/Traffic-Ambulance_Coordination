@@ -93,33 +93,28 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               children: [
                 _navItem(
                   index: 0,
-                  icon: Icons.home_outlined,
-                  selectedIcon: Icons.home_rounded,
+                  icon: Icons.home_rounded,
                   label: 'Home',
                 ),
                 _navItem(
                   index: 1,
-                  icon: Icons.map_outlined,
-                  selectedIcon: Icons.map_rounded,
+                  icon: Icons.map_rounded,
                   label: 'Map',
                 ),
                 _navItem(
                   index: 2,
-                  icon: Icons.warning_amber_outlined,
-                  selectedIcon: Icons.warning_amber_rounded,
+                  icon: Icons.warning_rounded,
                   label: 'Alerts',
                   badgeCount: notifs.unreadCount,
                 ),
                 _navItem(
                   index: 3,
-                  icon: Icons.history_outlined,
-                  selectedIcon: Icons.history_rounded,
+                  icon: Icons.history_rounded,
                   label: 'History',
                 ),
                 _navItem(
                   index: 4,
-                  icon: Icons.person_outline_rounded,
-                  selectedIcon: Icons.person_rounded,
+                  icon: Icons.person_rounded,
                   label: 'Profile',
                 ),
               ],
@@ -133,7 +128,6 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   Widget _navItem({
     required int index,
     required IconData icon,
-    required IconData selectedIcon,
     required String label,
     int badgeCount = 0,
   }) {
@@ -143,14 +137,14 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
       clipBehavior: Clip.none,
       children: [
         Icon(
-          active ? selectedIcon : icon,
+          icon,
           size: 21,
           color: active ? kAuthRedLink : kAuthIcon,
         ),
         if (badgeCount > 0)
           Positioned(
-            right: -6,
-            top: -7,
+            right: 2,
+            top: 1,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(

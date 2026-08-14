@@ -6,6 +6,7 @@ import {
   IconChevronsRight,
   IconLayoutDashboard,
   IconUsers,
+  IconActivity,
 } from '@tabler/icons-react';
 
 const navGroups = [
@@ -18,6 +19,7 @@ const navGroups = [
     links: [
       { to: '/emergencies', label: 'Emergencies', icon: IconAlarm },
       { to: '/ambulances', label: 'Ambulances', icon: IconAmbulance },
+      { to: '/fleet', label: 'Fleet Activity', icon: IconActivity },
     ],
   },
   {

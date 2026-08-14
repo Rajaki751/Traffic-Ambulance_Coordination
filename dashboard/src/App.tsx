@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import EmergenciesPage from './pages/EmergenciesPage';
 import AmbulancesPage from './pages/AmbulancesPage';
 import UsersPage from './pages/UsersPage';
+import FleetActivityPage from './pages/FleetActivityPage';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -42,6 +43,7 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="emergencies" element={<EmergenciesPage />} />
         <Route path="ambulances" element={<AmbulancesPage />} />
+        <Route path="fleet" element={<FleetActivityPage />} />
         <Route path="users" element={<UsersPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

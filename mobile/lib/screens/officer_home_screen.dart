@@ -254,7 +254,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         await junctions.loadClearanceHistory();
       },
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

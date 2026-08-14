@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final text = GoogleFonts.inter();
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
       children: [
         Text(
           'My account',

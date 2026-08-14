@@ -82,7 +82,7 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
                             'dispatch will appear here.',
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
                         itemCount: notifs.notifications.length,
                         itemBuilder: (_, i) {
                           final n = notifs.notifications[i];
@@ -161,7 +161,7 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
                             'status and date.',
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
                         itemCount: emergency.history.length,
                         itemBuilder: (_, i) {
                           final h = emergency.history[i];

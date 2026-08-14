@@ -101,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : RefreshIndicator(
                     onRefresh: chat.loadSessions,
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.only(top: 6, bottom: 110),
                       itemCount: chat.sessions.length,
                       separatorBuilder: (_, __) => Divider(
                         height: 1,

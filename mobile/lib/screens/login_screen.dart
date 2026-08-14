@@ -16,8 +16,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _serverCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController(text: 'driver@ambulance.gov');
-  final _passCtrl = TextEditingController(text: 'Driver@12345');
+  final _emailCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _serverConfig = ServerConfigService();
   bool _obscurePass = true;

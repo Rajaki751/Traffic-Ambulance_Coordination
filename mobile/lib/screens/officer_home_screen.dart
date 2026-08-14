@@ -59,18 +59,6 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
       const SafeArea(top: true, bottom: false, child: ProfileScreen()),
     ];
 
-    final badgeVisible = notifs.unreadCount > 0;
-    final alertsIcon = Badge(
-      isLabelVisible: badgeVisible,
-      label: Text('${notifs.unreadCount}'),
-      child: const Icon(Icons.warning_amber_outlined),
-    );
-    final alertsIconSelected = Badge(
-      isLabelVisible: badgeVisible,
-      label: Text('${notifs.unreadCount}'),
-      child: const Icon(Icons.warning_amber_rounded),
-    );
-
     return Scaffold(
       backgroundColor: kAuthBg,
       body: AnimatedSwitcher(
@@ -92,36 +80,125 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
           child: pages[_selectedIndex],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
-        destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: kAuthCard,
+          border: Border(top: BorderSide(color: kAuthBorder)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 62,
+            child: Row(
+              children: [
+                _navItem(
+                  index: 0,
+                  icon: Icons.home_outlined,
+                  selectedIcon: Icons.home_rounded,
+                  label: 'Home',
+                ),
+                _navItem(
+                  index: 1,
+                  icon: Icons.map_outlined,
+                  selectedIcon: Icons.map_rounded,
+                  label: 'Map',
+                ),
+                _navItem(
+                  index: 2,
+                  icon: Icons.warning_amber_outlined,
+                  selectedIcon: Icons.warning_amber_rounded,
+                  label: 'Alerts',
+                  badgeCount: notifs.unreadCount,
+                ),
+                _navItem(
+                  index: 3,
+                  icon: Icons.history_outlined,
+                  selectedIcon: Icons.history_rounded,
+                  label: 'History',
+                ),
+                _navItem(
+                  index: 4,
+                  icon: Icons.person_outline_rounded,
+                  selectedIcon: Icons.person_rounded,
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.map_outlined),
-            selectedIcon: Icon(Icons.map_rounded),
-            label: 'Map',
+        ),
+      ),
+    );
+  }
+
+  Widget _navItem({
+    required int index,
+    required IconData icon,
+    required IconData selectedIcon,
+    required String label,
+    int badgeCount = 0,
+  }) {
+    final active = _selectedIndex == index;
+    final text = GoogleFonts.inter();
+    final glyph = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(
+          active ? selectedIcon : icon,
+          size: 21,
+          color: active ? kAuthRedLink : kAuthIcon,
+        ),
+        if (badgeCount > 0)
+          Positioned(
+            right: -6,
+            top: -7,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              decoration: BoxDecoration(
+                color: kAuthRed,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '$badgeCount',
+                style: text.copyWith(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ),
-          NavigationDestination(
-            icon: alertsIcon,
-            selectedIcon: alertsIconSelected,
-            label: 'Alerts',
-          ),
-          const NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history_rounded),
-            label: 'History',
-          ),
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
+      ],
+    );
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _selectedIndex = index),
+        borderRadius: BorderRadius.circular(12),
+        hoverColor: kAuthBorder.withValues(alpha: 0.3),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              width: 44,
+              height: 28,
+              decoration: BoxDecoration(
+                color: active ? kAuthRedBadgeBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: glyph,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: text.copyWith(
+                fontSize: 10.5,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                color: active ? kAuthRedLink : kAuthIcon,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

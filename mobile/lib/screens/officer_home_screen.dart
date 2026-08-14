@@ -216,7 +216,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                 Icon(
                   active ? selectedIcon : icon,
                   size: 21,
-                  color: active ? kAuthRedLink : kAuthIcon,
+                  color: active ? kAuthRedLink : kAuthInk,
                 ),
                 if (badgeCount > 0)
                   Positioned(
@@ -247,7 +247,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               style: text.copyWith(
                 fontSize: 10.5,
                 fontWeight: active ? FontWeight.w600 : FontWeight.w500,
-                color: active ? kAuthRedLink : kAuthIcon,
+                color: active ? kAuthRedLink : kAuthInk,
               ),
             ),
           ],

@@ -172,26 +172,24 @@ class EmergencyProvider extends ChangeNotifier {
   Future<void> updateTripStage(String stage) async {
     if (_activeEmergency == null) return;
     _loading = true;
+    final previous = _activeEmergency;
+    _activeEmergency = previous!.copyWith(tripStage: stage);
     notifyListeners();
     try {
-      double? lat;
-      double? lon;
-      try {
-        final pos = await _gpsService.getCurrentPosition();
-        lat = pos?.latitude;
-        lon = pos?.longitude;
-      } catch (_) {}
+      final pos = _gpsService.lastKnownPosition;
       _activeEmergency = await _emergencyService.updateTripStage(
         _activeEmergency!.id,
         stage,
-        currentLat: lat,
-        currentLon: lon,
+        currentLat: pos?.latitude,
+        currentLon: pos?.longitude,
       );
     } catch (e) {
+      _activeEmergency = previous;
       _error = 'Failed to update trip stage: $e';
+    } finally {
+      _loading = false;
+      notifyListeners();
     }
-    _loading = false;
-    notifyListeners();
   }
 
   Future<void> loadHistory() async {

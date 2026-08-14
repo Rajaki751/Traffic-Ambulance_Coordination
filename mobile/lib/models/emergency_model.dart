@@ -79,9 +79,38 @@ class EmergencyModel {
           : null,
       routeCoordinates: json['route_coordinates'] != null
           ? (json['route_coordinates'] as List)
-              .map((e) => (e as List).map((n) => (n as num).toDouble()).toList())
+              .map(
+                  (e) => (e as List).map((n) => (n as num).toDouble()).toList())
               .toList()
           : null,
+    );
+  }
+
+  EmergencyModel copyWith({String? tripStage}) {
+    return EmergencyModel(
+      id: id,
+      ambulanceId: ambulanceId,
+      destination: destination,
+      destLat: destLat,
+      destLon: destLon,
+      status: status,
+      routePolyline: routePolyline,
+      etaMinutes: etaMinutes,
+      useAiPrediction: useAiPrediction,
+      incidentType: incidentType,
+      predictionConfidence: predictionConfidence,
+      trafficFactor: trafficFactor,
+      tripStage: tripStage ?? this.tripStage,
+      patientName: patientName,
+      patientContact: patientContact,
+      priorityLevel: priorityLevel,
+      pickupLatitude: pickupLatitude,
+      pickupLongitude: pickupLongitude,
+      hospitalName: hospitalName,
+      hospitalLatitude: hospitalLatitude,
+      hospitalLongitude: hospitalLongitude,
+      routeSteps: routeSteps,
+      routeCoordinates: routeCoordinates,
     );
   }
 }
@@ -91,7 +120,10 @@ class RouteStepModel {
   final double distanceM;
   final double durationS;
 
-  RouteStepModel({required this.instruction, required this.distanceM, required this.durationS});
+  RouteStepModel(
+      {required this.instruction,
+      required this.distanceM,
+      required this.durationS});
 
   factory RouteStepModel.fromJson(Map<String, dynamic> json) {
     return RouteStepModel(

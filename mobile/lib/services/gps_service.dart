@@ -8,6 +8,7 @@ class GpsTrackingService {
   StreamSubscription<Position>? _subscription;
   int? _sessionId;
   Future<void> _lastSend = Future.value();
+  Position? _lastPosition;
   final _positionController = StreamController<Position>.broadcast();
   late final AppLifecycleListener _lifecycleListener;
 
@@ -19,6 +20,8 @@ class GpsTrackingService {
   }
 
   Stream<Position> get positionStream => _positionController.stream;
+
+  Position? get lastKnownPosition => _lastPosition;
 
   Future<bool> requestPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -48,6 +51,7 @@ class GpsTrackingService {
       ),
     ).listen(
       (position) {
+        _lastPosition = position;
         _positionController.add(position);
         _sendUpdate(position);
       },

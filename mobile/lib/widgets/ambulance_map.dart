@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import '../core/map_cache.dart';
@@ -86,7 +87,8 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
         );
       }).toList();
       setState(() => _trafficCircles = circles);
-    } catch (_) {
+    } catch (e) {
+      debugPrint(e.toString());
       if (!mounted) return;
       setState(() => _trafficCircles = []);
     }
@@ -166,7 +168,9 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
           padding: const EdgeInsets.all(48),
         ),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   @override

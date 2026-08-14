@@ -12,6 +12,9 @@ import json as _json
 from app.core.config import get_settings
 from app.schemas.route import RouteOptimizeResponse, RouteStep
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _decode_polyline(encoded: str) -> List[List[float]]:
@@ -97,8 +100,8 @@ class DirectionsService:
                 val = await self._redis.get(key)
                 if val:
                     return RouteOptimizeResponse.model_validate(_json.loads(val))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error: {e}")
 
         cached = self._cache.get(key)
         now = time.time()
@@ -174,6 +177,6 @@ class DirectionsService:
         if self._redis is not None:
             try:
                 await self._redis.set(key, _json.dumps(resp.model_dump()), ex=self.CACHE_TTL)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error: {e}")
         return resp

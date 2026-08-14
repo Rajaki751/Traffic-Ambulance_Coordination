@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 
 from app.ai.eta_predictor import ETAPredictor
 from app.ai.route_prediction import RoutePredictionService
-from app.core.logging import get_logger
+import logging
 from app.models.ambulance import Ambulance, AmbulanceStatus
 from app.models.emergency import EmergencySession, EmergencyStatus, TripStage
 from app.models.officer import TrafficOfficer
@@ -19,7 +19,7 @@ from app.services.geocoding_service import GeocodingService
 from app.services.gps_service import gps_service
 from app.services.notification_service import NotificationService
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def _as_utc(value: Optional[datetime]) -> Optional[datetime]:
@@ -69,8 +69,8 @@ class EmergencyService:
             )
             if result:
                 return result.latitude, result.longitude
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Error: {e}")
 
         return None, None
 
@@ -257,9 +257,9 @@ class EmergencyService:
         try:
             resp.route_steps = route.steps
             resp.route_coordinates = route.coordinates
-        except Exception:
+        except Exception as e:
             # best-effort: if steps can't be attached, still return the session
-            pass
+            logger.warning(f"Error: {e}")
         return resp
 
     async def end_session(
@@ -343,8 +343,8 @@ class EmergencyService:
                         for s in route.steps
                     ]
                     session.eta_minutes = route.eta_minutes
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(f"Error: {e}")
 
         if stage == TripStage.ARRIVED_HOSPITAL:
             session.status = EmergencyStatus.COMPLETED

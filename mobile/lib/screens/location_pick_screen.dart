@@ -88,7 +88,9 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
         LatLng(position.latitude, position.longitude),
         _mapController.camera.zoom < 15 ? 16 : _mapController.camera.zoom,
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   void _onPositionChanged(MapCamera camera, bool hasGesture) {
@@ -108,7 +110,8 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
     String? name;
     try {
       name = await _geocoding?.reverse(lat, lon);
-    } catch (_) {
+    } catch (e) {
+      debugPrint(e.toString());
       name = null;
     }
     if (!mounted) return;

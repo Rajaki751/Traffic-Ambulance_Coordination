@@ -506,12 +506,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircleAvatar(
-                  radius: 9,
+                  radius: 16,
                   backgroundColor: m.isFromDriver ? kAuthGreen : kAuthRed,
                   child: Text(
                     m.initials,
                     style: text.copyWith(
-                      fontSize: 7,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -521,7 +521,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 Text(
                   m.senderName,
                   style: text.copyWith(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: kAuthText,
                   ),
@@ -529,16 +529,16 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 const SizedBox(width: 5),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: (m.isFromDriver ? kAuthGreen : kAuthRed)
                         .withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     m.isFromDriver ? 'Driver' : 'Officer',
                     style: text.copyWith(
-                      fontSize: 9.5,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: m.isFromDriver ? kAuthGreen : kAuthRed,
                     ),
@@ -551,10 +551,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         Align(
           alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 3),
+            margin: const EdgeInsets.symmetric(vertical: 4),
             padding: m.isLocation
-                ? const EdgeInsets.all(6)
-                : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ? const EdgeInsets.all(8)
+                : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             constraints: const BoxConstraints(maxWidth: 310),
             decoration: BoxDecoration(
               color: mine ? kAuthRedBadgeBg : Colors.white,
@@ -600,7 +600,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: text.copyWith(
-                                    fontSize: 13,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w500,
                                     color: kAuthText,
                                   ),
@@ -609,7 +609,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                               Text(
                                 'View map',
                                 style: text.copyWith(
-                                  fontSize: 11.5,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: kAuthRedLink,
                                 ),
@@ -624,7 +624,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   Text(
                     m.message,
                     style: text.copyWith(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: kAuthText,
                       height: 1.35,
                     ),
@@ -636,7 +636,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     Text(
                       _timeLabel(m.createdAt),
                       style: text.copyWith(
-                        fontSize: 10,
+                        fontSize: 11,
                         color: kAuthFaint,
                       ),
                     ),

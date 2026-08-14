@@ -23,9 +23,9 @@ const kGlassBorder = Color(0xB8FFFFFF);
 const kGlassOverlay = Color(0x66FFFFFF);
 
 final Color kGlassTint =
-    kIsWeb ? const Color(0xBDFFFFFF) : const Color(0x8CFFFFFF);
+    kIsWeb ? const Color(0xDDFFFFFF) : const Color(0xCCFFFFFF);
 
-const double kGlassBlur = 14.0;
+const double kGlassBlur = 24.0;
 
 const kAuthBlue = Color(0xFF2E6FD8);
 const kAuthBlueTint = Color(0xFFEAF1FC);

@@ -4,15 +4,18 @@ AI-Driven Traffic Ambulance Coordination System - FastAPI Application Entry Poin
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1 import api_router
 from app.core.config import get_settings
 from app.core.logging import get_logger, setup_logging
-from app.database.session import init_db
+from app.database.session import get_db, init_db
 from app.database.migrate import run_dev_migrations
+from app.websocket.manager import ws_manager
 from app.websocket.routes import router as ws_router
 
 setup_logging()
@@ -45,7 +48,9 @@ async def lifespan(app: FastAPI):
             )
     except Exception as exc:
         logger.warning("ML model not loaded at startup: %s", exc)
+    ws_manager.start_heartbeat()
     yield
+    await ws_manager.stop_heartbeat()
     logger.info("Shutting down application")
 
 
@@ -107,13 +112,20 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 @app.get("/health")
-async def health_check():
+async def health_check(db: AsyncSession = Depends(get_db)):
     """Health check endpoint for deployment probes."""
+    db_ok = False
+    try:
+        await db.execute(text("SELECT 1"))
+        db_ok = True
+    except Exception:
+        db_ok = False
     return {
         "status": "healthy",
         "app": settings.app_name,
         "version": settings.app_version,
         "environment": settings.environment,
+        "database": "ok" if db_ok else "error",
     }
 
 

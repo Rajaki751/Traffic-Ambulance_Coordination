@@ -36,7 +36,7 @@ class AppTheme {
         titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          letterSpacing: -0.2,
+          letterSpacing: -0.5,
           color: isDark ? scheme.onSurface : kAuthText,
         ),
       ),
@@ -52,9 +52,9 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           side: BorderSide(color: scheme.outline),
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+          shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 14,
@@ -68,20 +68,20 @@ class AppTheme {
         style: TextButton.styleFrom(
           foregroundColor: isDark ? const Color(0xFFF2A3A2) : kAuthRedLink,
           overlayColor: scheme.primaryContainer.withValues(alpha: 0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
       cardTheme: CardThemeData(
         color: scheme.surface,
-        elevation: 0,
-        shadowColor: Colors.transparent,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         surfaceTintColor: Colors.transparent,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: scheme.outline),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(32),
+          side: BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -126,8 +126,8 @@ class AppTheme {
         height: 68,
         surfaceTintColor: Colors.transparent,
         indicatorColor: scheme.primaryContainer,
-        indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+        indicatorShape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
         ),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -160,8 +160,8 @@ class AppTheme {
           fontSize: 13.5,
           color: isDark ? kAuthText : Colors.white,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
         ),
         insetPadding: const EdgeInsets.all(12),
       ),
@@ -201,16 +201,16 @@ class AppTheme {
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: const Color(0xEBFFFFFF),
         surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        shape: const ContinuousRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: const Color(0xEBFFFFFF),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: scheme.outline),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(32),
+          side: BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
         ),
         titleTextStyle: GoogleFonts.inter(
           fontSize: 17,
@@ -229,9 +229,9 @@ class AppTheme {
       popupMenuTheme: PopupMenuThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: scheme.outline),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
         ),
         textStyle: GoogleFonts.inter(
           fontSize: 13.5,
@@ -366,9 +366,9 @@ class AppTheme {
       }),
       elevation: const WidgetStatePropertyAll(0),
       shadowColor: const WidgetStatePropertyAll(Colors.transparent),
-      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 14)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16, horizontal: 24)),
       shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ContinuousRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       textStyle: WidgetStatePropertyAll(
         GoogleFonts.inter(

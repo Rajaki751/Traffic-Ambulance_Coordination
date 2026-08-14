@@ -926,7 +926,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               ),
               if (emergency.isEmergencyActive && active != null)
                 Positioned(
-                  bottom: 16,
+                  bottom: 104,
                   left: 16,
                   right: 16,
                   child: Column(
@@ -1018,7 +1018,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 ),
               if (!emergency.isEmergencyActive)
                 Positioned(
-                  bottom: 16,
+                  bottom: 104,
                   left: 16,
                   right: 16,
                   child: SizedBox(

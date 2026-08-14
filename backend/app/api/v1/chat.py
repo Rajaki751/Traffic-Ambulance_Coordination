@@ -53,10 +53,19 @@ async def send_chat_message(
 ):
     """Send a message to the session's group chat."""
     text = payload.message.strip()
-    if not text:
+    has_location = (
+        payload.latitude is not None and payload.longitude is not None
+    )
+    if not text and not has_location:
         raise HTTPException(status_code=422, detail="Message cannot be empty")
     msg = await ChatService.send_message(
-        db, session_id, current_user.id, current_user.role.value, text
+        db,
+        session_id,
+        current_user.id,
+        current_user.role.value,
+        text,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
     )
     if not msg:
         raise HTTPException(status_code=403, detail="Not a participant of this session")
@@ -78,6 +87,8 @@ async def send_chat_message(
                 sender_name=current_user.name or "",
                 sender_role=current_user.role.value,
                 message=text,
+                latitude=payload.latitude,
+                longitude=payload.longitude,
                 created_at=msg.created_at,
             ).model_dump(mode="json"),
         }
@@ -94,6 +105,8 @@ async def send_chat_message(
         sender_name=current_user.name or "",
         sender_role=current_user.role.value,
         message=text,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
         created_at=msg.created_at,
     )
 

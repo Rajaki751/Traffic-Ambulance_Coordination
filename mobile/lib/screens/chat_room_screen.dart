@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/chat_models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/auth_widgets.dart';
-
-
+import 'location_pick_screen.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key, required this.session});
@@ -43,7 +46,19 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     final msg = _composer.text.trim();
     if (msg.isEmpty || chat.sending) return;
     _composer.clear();
-    chat.sendMessage(widget.session.emergencySessionId, msg).catchError((_) {
+    _sendMessage(chat, msg);
+  }
+
+  void _sendMessage(ChatProvider chat, String message,
+      {double? latitude, double? longitude}) {
+    chat
+        .sendMessage(
+          widget.session.emergencySessionId,
+          message,
+          latitude: latitude,
+          longitude: longitude,
+        )
+        .catchError((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to send message')),
@@ -65,6 +80,174 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   }
 
   String _timeLabel(DateTime dt) => DateFormat('HH:mm').format(dt.toLocal());
+
+  void _showAttachSheet(ChatProvider chat) {
+    final text = GoogleFonts.inter();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kAuthCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Share',
+                    style: text.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: kAuthText,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        color: kAuthFaint, size: 20),
+                    onPressed: () => Navigator.pop(ctx),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: kAuthRed.withValues(alpha: 0.12),
+                child: const Icon(Icons.my_location, color: kAuthRed, size: 20),
+              ),
+              title: Text(
+                'Send current location',
+                style: text.copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                'Your live position right now',
+                style: text.copyWith(fontSize: 12, color: kAuthFaint),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _sendCurrentLocation(chat);
+              },
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: kAuthGreen.withValues(alpha: 0.12),
+                child:
+                    const Icon(Icons.map_outlined, color: kAuthGreen, size: 20),
+              ),
+              title: Text(
+                'Send any location',
+                style: text.copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                'Pick a spot on the map',
+                style: text.copyWith(fontSize: 12, color: kAuthFaint),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndSendLocation();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendCurrentLocation(ChatProvider chat) async {
+    Position? position;
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission != LocationPermission.always &&
+          permission != LocationPermission.whileInUse) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Enable location permission to share your position')),
+          );
+        }
+        return;
+      }
+      position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+        ),
+      );
+    } catch (_) {}
+    if (position == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not get your location')),
+        );
+      }
+      return;
+    }
+    _sendMessage(
+      chat,
+      'Shared current location',
+      latitude: position.latitude,
+      longitude: position.longitude,
+    );
+  }
+
+  Future<void> _pickAndSendLocation() async {
+    double lat = 28.6139;
+    double lon = 77.2090;
+    try {
+      if (await Geolocator.isLocationServiceEnabled()) {
+        var permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.always ||
+            permission == LocationPermission.whileInUse) {
+          final pos = await Geolocator.getCurrentPosition(
+            locationSettings:
+                const LocationSettings(accuracy: LocationAccuracy.medium),
+          );
+          lat = pos.latitude;
+          lon = pos.longitude;
+        }
+      }
+    } catch (_) {}
+    if (!mounted) return;
+    final picked = await Navigator.of(context).push<PickedLocation>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickScreen(initialLat: lat, initialLon: lon),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    final chat = context.read<ChatProvider>();
+    _sendMessage(
+      chat,
+      picked.label == null || picked.label!.trim().isEmpty
+          ? 'Shared location'
+          : 'Shared location · ${picked.label}',
+      latitude: picked.latitude,
+      longitude: picked.longitude,
+    );
+  }
+
+  Future<void> _openLocation(ChatMessageModel m) async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=${m.latitude},${m.longitude}',
+    );
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open maps')),
+      );
+    }
+  }
 
   void _showParticipants(BuildContext context) {
     final text = GoogleFonts.inter();
@@ -130,6 +313,62 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       rows.add(Text('No participants yet', style: text.copyWith(color: kAuthFaint)));
     }
     return rows;
+  }
+
+  Widget _locationPreview(ChatMessageModel m) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: SizedBox(
+        width: 230,
+        height: 120,
+        child: Stack(
+          children: [
+            FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(m.latitude!, m.longitude!),
+                initialZoom: 15,
+                interactionOptions: const InteractionOptions(
+                  flags: InteractiveFlag.none,
+                ),
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.ambulance_coordination',
+                ),
+              ],
+            ),
+            const Center(
+              child: Icon(Icons.location_on, color: kAuthRed, size: 34,
+                  shadows: [
+                    Shadow(color: Colors.white, blurRadius: 8),
+                    Shadow(color: Colors.black26, blurRadius: 3),
+                  ]),
+            ),
+            Positioned(
+              left: 6,
+              bottom: 6,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${m.latitude!.toStringAsFixed(5)}, ${m.longitude!.toStringAsFixed(5)}',
+                  style: GoogleFonts.inter(
+                    fontSize: 9.5,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -283,8 +522,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 3),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: m.isLocation
+                ? const EdgeInsets.all(6)
+                : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             constraints: const BoxConstraints(maxWidth: 310),
             decoration: BoxDecoration(
               color: mine ? kAuthRedBadgeBg : Colors.white,
@@ -307,14 +547,58 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               crossAxisAlignment:
                   mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
-                Text(
-                  m.message,
-                  style: text.copyWith(
-                    fontSize: 14,
-                    color: kAuthText,
-                    height: 1.35,
+                if (m.isLocation) ...[
+                  InkWell(
+                    onTap: () => _openLocation(m),
+                    borderRadius: BorderRadius.circular(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _locationPreview(m),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 8, 4, 2),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.location_on,
+                                  color: kAuthRed, size: 16),
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: Text(
+                                  m.message.isEmpty
+                                      ? 'Location'
+                                      : m.message,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text.copyWith(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: kAuthText,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'View map',
+                                style: text.copyWith(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: kAuthRedLink,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ] else
+                  Text(
+                    m.message,
+                    style: text.copyWith(
+                      fontSize: 14,
+                      color: kAuthText,
+                      height: 1.35,
+                    ),
+                  ),
                 const SizedBox(height: 3),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -352,12 +636,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+        padding: const EdgeInsets.fromLTRB(8, 8, 10, 10),
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: kGlassBorder)),
         ),
         child: Row(
           children: [
+            IconButton(
+              onPressed: chat.sending ? null : () => _showAttachSheet(chat),
+              icon: const Icon(Icons.add_circle_outline_rounded,
+                  color: kAuthRed, size: 26),
+              tooltip: 'Share location',
+            ),
             Expanded(
               child: TextField(
                 controller: _composer,

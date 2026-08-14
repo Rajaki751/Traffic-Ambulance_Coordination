@@ -23,9 +23,20 @@ class ChatApiService {
         .toList();
   }
 
-  Future<ChatMessageModel> sendMessage(int sessionId, String message) async {
-    final res = await _api.post('/api/v1/chat/sessions/$sessionId/messages',
-        data: {'message': message});
+  Future<ChatMessageModel> sendMessage(
+    int sessionId,
+    String message, {
+    double? latitude,
+    double? longitude,
+  }) async {
+    final res = await _api.post(
+      '/api/v1/chat/sessions/$sessionId/messages',
+      data: {
+        'message': message,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
+      },
+    );
     return ChatMessageModel.fromJson(res.data as Map<String, dynamic>);
   }
 

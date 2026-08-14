@@ -60,12 +60,22 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendMessage(int sessionId, String message) async {
+  Future<void> sendMessage(
+    int sessionId,
+    String message, {
+    double? latitude,
+    double? longitude,
+  }) async {
     if (_sending) return;
     _sending = true;
     notifyListeners();
     try {
-      final msg = await _service.sendMessage(sessionId, message);
+      final msg = await _service.sendMessage(
+        sessionId,
+        message,
+        latitude: latitude,
+        longitude: longitude,
+      );
       final list = _messages[sessionId] ?? [];
       list.add(msg);
       _messages[sessionId] = list;

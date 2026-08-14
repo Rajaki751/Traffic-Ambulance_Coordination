@@ -191,6 +191,8 @@ class ChatService:
                 "sender_name": sender_name or "",
                 "sender_role": role.value if hasattr(role, "value") else str(role),
                 "message": msg.message,
+                "latitude": msg.latitude,
+                "longitude": msg.longitude,
                 "created_at": msg.created_at,
             }
             for msg, sender_name, role in reversed(rows)
@@ -203,6 +205,8 @@ class ChatService:
         user_id: int,
         role: str,
         message: str,
+        latitude: float | None = None,
+        longitude: float | None = None,
     ) -> Optional[ChatMessage]:
         if not await ChatService.can_participate(db, emergency_session_id, user_id, role):
             return None
@@ -210,6 +214,8 @@ class ChatService:
             emergency_session_id=emergency_session_id,
             sender_user_id=user_id,
             message=message,
+            latitude=latitude,
+            longitude=longitude,
         )
         db.add(msg)
         await db.flush()

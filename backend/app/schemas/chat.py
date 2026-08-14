@@ -19,13 +19,17 @@ class ChatMessageResponse(BaseModel):
     sender_name: str = ""
     sender_role: str = ""
     message: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
 
 
 class ChatSendRequest(BaseModel):
-    message: str
+    message: str = ""
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class ChatSessionResponse(BaseModel):

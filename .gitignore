@@ -31,3 +31,6 @@ backend/data/incidents_history.csv
 # Logs
 *.log
 dist/
+
+# Agents
+.agents/memory/

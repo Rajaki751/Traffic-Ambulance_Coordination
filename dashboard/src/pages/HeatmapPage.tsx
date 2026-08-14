@@ -7,8 +7,8 @@ import ErrorBanner from '../components/ErrorBanner';
 import { analyticsApi } from '../services/api';
 
 interface HeatmapData {
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   intensity: number;
   radius: number;
 }
@@ -62,7 +62,7 @@ export default function HeatmapPage() {
             return (
               <Circle
                 key={idx}
-                center={[point.latitude, point.longitude]}
+                center={[point.lat, point.lng]}
                 radius={point.radius}
                 pathOptions={{
                   color: color,

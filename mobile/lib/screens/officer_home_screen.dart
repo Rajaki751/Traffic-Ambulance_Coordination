@@ -93,28 +93,33 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               children: [
                 _navItem(
                   index: 0,
-                  icon: Icons.home_rounded,
+                  icon: Icons.home_outlined,
+                  selectedIcon: Icons.home_rounded,
                   label: 'Home',
                 ),
                 _navItem(
                   index: 1,
-                  icon: Icons.map_rounded,
+                  icon: Icons.map_outlined,
+                  selectedIcon: Icons.map_rounded,
                   label: 'Map',
                 ),
                 _navItem(
                   index: 2,
-                  icon: Icons.warning_rounded,
+                  icon: Icons.warning_amber_outlined,
+                  selectedIcon: Icons.warning_amber_rounded,
                   label: 'Alerts',
                   badgeCount: notifs.unreadCount,
                 ),
                 _navItem(
                   index: 3,
-                  icon: Icons.history_rounded,
+                  icon: Icons.history_outlined,
+                  selectedIcon: Icons.history_rounded,
                   label: 'History',
                 ),
                 _navItem(
                   index: 4,
-                  icon: Icons.person_rounded,
+                  icon: Icons.person_outlined,
+                  selectedIcon: Icons.person_rounded,
                   label: 'Profile',
                 ),
               ],
@@ -128,41 +133,12 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   Widget _navItem({
     required int index,
     required IconData icon,
+    required IconData selectedIcon,
     required String label,
     int badgeCount = 0,
   }) {
     final active = _selectedIndex == index;
     final text = GoogleFonts.inter();
-    final glyph = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Icon(
-          icon,
-          size: 21,
-          color: active ? kAuthRedLink : kAuthIcon,
-        ),
-        if (badgeCount > 0)
-          Positioned(
-            right: 2,
-            top: 1,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-              decoration: BoxDecoration(
-                color: kAuthRed,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '$badgeCount',
-                style: text.copyWith(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
     return Expanded(
       child: InkWell(
         onTap: () => setState(() => _selectedIndex = index),
@@ -171,16 +147,36 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOutCubic,
-              width: 44,
-              height: 28,
-              decoration: BoxDecoration(
-                color: active ? kAuthRedBadgeBg : Colors.transparent,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: glyph,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  active ? selectedIcon : icon,
+                  size: 21,
+                  color: active ? kAuthRedLink : kAuthIcon,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -8,
+                    top: -7,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: kAuthRed,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$badgeCount',
+                        style: text.copyWith(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 4),
             Text(

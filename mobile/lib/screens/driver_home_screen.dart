@@ -164,22 +164,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               children: [
                 _navItem(
                   index: 0,
-                  icon: Icons.home_rounded,
+                  icon: Icons.home_outlined,
+                  selectedIcon: Icons.home_rounded,
                   label: 'Home',
                 ),
                 _navItem(
                   index: 1,
-                  icon: Icons.route_rounded,
+                  icon: Icons.route_outlined,
+                  selectedIcon: Icons.route_rounded,
                   label: 'Trips',
                 ),
                 _navItem(
                   index: 2,
-                  icon: Icons.notifications_rounded,
+                  icon: Icons.notifications_outlined,
+                  selectedIcon: Icons.notifications_rounded,
                   label: 'Alerts',
                 ),
                 _navItem(
                   index: 3,
-                  icon: Icons.person_rounded,
+                  icon: Icons.person_outlined,
+                  selectedIcon: Icons.person_rounded,
                   label: 'Profile',
                 ),
               ],
@@ -193,6 +197,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Widget _navItem({
     required int index,
     required IconData icon,
+    required IconData selectedIcon,
     required String label,
   }) {
     final active = _selectedIndex == index;
@@ -205,20 +210,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOutCubic,
-              width: 44,
-              height: 28,
-              decoration: BoxDecoration(
-                color: active ? kAuthRedBadgeBg : Colors.transparent,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Icon(
-                icon,
-                size: 21,
-                color: active ? kAuthRedLink : kAuthIcon,
-              ),
+            Icon(
+              active ? selectedIcon : icon,
+              size: 21,
+              color: active ? kAuthRedLink : kAuthIcon,
             ),
             const SizedBox(height: 4),
             Text(

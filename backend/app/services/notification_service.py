@@ -84,6 +84,41 @@ class NotificationService:
         return NotificationResponse.model_validate(notif)
 
     @staticmethod
+    async def create_driver_reply(
+        db: AsyncSession,
+        officer_ids: List[int],
+        driver_user_id: int,
+        emergency_session_id: int | None,
+        title: str,
+        message: str,
+    ) -> List[NotificationResponse]:
+        """Create driver reply notifications for all traffic officers."""
+        notifications: List[Notification] = []
+        for officer_id in officer_ids:
+            notif = Notification(
+                officer_id=officer_id,
+                user_id=driver_user_id,
+                notification_type="driver_reply",
+                emergency_session_id=emergency_session_id,
+                title=title,
+                message=message,
+            )
+            db.add(notif)
+            notifications.append(notif)
+        await db.flush()
+        return [NotificationResponse.model_validate(n) for n in notifications]
+
+    @staticmethod
+    async def list_officer_user_ids(db: AsyncSession) -> List[int]:
+        """Return user ids of all traffic officers."""
+        from app.models.user import User, UserRole
+
+        result = await db.execute(
+            select(User.id).where(User.role == UserRole.OFFICER)
+        )
+        return [row[0] for row in result.all()]
+
+    @staticmethod
     async def get_user_notifications(
         db: AsyncSession, user_id: int, unread_only: bool = False
     ) -> List[Notification]:
@@ -114,12 +149,15 @@ class NotificationService:
 
     @staticmethod
     async def acknowledge(
-        db: AsyncSession, notification_id: int, officer_id: int
+        db: AsyncSession, notification_id: int, user_id: int, action: Optional[str] = None
     ) -> Optional[Notification]:
         result = await db.execute(
             select(Notification).where(
                 Notification.id == notification_id,
-                Notification.officer_id == officer_id,
+                or_(
+                    Notification.user_id == user_id,
+                    Notification.officer_id == user_id,
+                ),
             )
         )
         notif = result.scalar_one_or_none()
@@ -127,6 +165,8 @@ class NotificationService:
             return None
         notif.is_read = True
         notif.is_acknowledged = True
+        if action in ("accept", "reject", "ack"):
+            notif.acknowledgment = action
         return notif
 
     @staticmethod

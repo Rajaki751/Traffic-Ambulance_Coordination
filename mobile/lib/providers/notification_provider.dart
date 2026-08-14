@@ -33,8 +33,8 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> acknowledge(int id) async {
-    await _service.acknowledge(id);
+  Future<void> acknowledge(int id, {String? action}) async {
+    await _service.acknowledge(id, action: action);
     await load();
   }
 
@@ -62,5 +62,16 @@ class NotificationProvider extends ChangeNotifier {
       title: title,
       message: message,
     );
+  }
+
+  Future<void> replyToOfficer({
+    required int emergencySessionId,
+    required String message,
+  }) async {
+    await _service.replyToOfficer(
+      emergencySessionId: emergencySessionId,
+      message: message,
+    );
+    await load();
   }
 }

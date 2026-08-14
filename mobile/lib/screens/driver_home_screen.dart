@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/emergency_provider.dart';
+import '../models/emergency_model.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../providers/notification_provider.dart';
 import '../utils/route_utils.dart';
@@ -127,66 +128,70 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: kAuthBg,
-      body: SafeArea(
-        top: true,
-        bottom: false,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 240),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.012),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
+      backgroundColor: Colors.transparent,
+      body: GlassBackdrop(
+        child: SafeArea(
+          top: true,
+          bottom: false,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 240),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.012),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
             ),
-          ),
-          child: KeyedSubtree(
-            key: ValueKey(_selectedIndex),
-            child: pages[_selectedIndex],
+            child: KeyedSubtree(
+              key: ValueKey(_selectedIndex),
+              child: pages[_selectedIndex],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: kAuthCard,
-          border: Border(top: BorderSide(color: kAuthBorder)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 62,
-            child: Row(
-              children: [
-                _navItem(
-                  index: 0,
-                  icon: Icons.home_outlined,
-                  selectedIcon: Icons.home_rounded,
-                  label: 'Home',
-                ),
-                _navItem(
-                  index: 1,
-                  icon: Icons.route_outlined,
-                  selectedIcon: Icons.route_rounded,
-                  label: 'Trips',
-                ),
-                _navItem(
-                  index: 2,
-                  icon: Icons.notifications_outlined,
-                  selectedIcon: Icons.notifications_rounded,
-                  label: 'Alerts',
-                ),
-                _navItem(
-                  index: 3,
-                  icon: Icons.person_outlined,
-                  selectedIcon: Icons.person_rounded,
-                  label: 'Profile',
-                ),
-              ],
+      bottomNavigationBar: FrostedBar(
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: kGlassBorder)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 62,
+              child: Row(
+                children: [
+                  _navItem(
+                    index: 0,
+                    icon: Icons.home_outlined,
+                    selectedIcon: Icons.home_rounded,
+                    label: 'Home',
+                  ),
+                  _navItem(
+                    index: 1,
+                    icon: Icons.route_outlined,
+                    selectedIcon: Icons.route_rounded,
+                    label: 'Trips',
+                  ),
+                  _navItem(
+                    index: 2,
+                    icon: Icons.notifications_outlined,
+                    selectedIcon: Icons.notifications_rounded,
+                    label: 'Alerts',
+                    badgeCount: notifs.unreadCount,
+                  ),
+                  _navItem(
+                    index: 3,
+                    icon: Icons.person_outlined,
+                    selectedIcon: Icons.person_rounded,
+                    label: 'Profile',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -199,6 +204,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     required IconData icon,
     required IconData selectedIcon,
     required String label,
+    int badgeCount = 0,
   }) {
     final active = _selectedIndex == index;
     final text = GoogleFonts.inter();
@@ -210,10 +216,36 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              active ? selectedIcon : icon,
-              size: 21,
-              color: active ? kAuthRedLink : kAuthIcon,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  active ? selectedIcon : icon,
+                  size: 21,
+                  color: active ? kAuthRedLink : kAuthIcon,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -8,
+                    top: -7,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: kAuthRed,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$badgeCount',
+                        style: text.copyWith(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
@@ -241,9 +273,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final text = GoogleFonts.inter();
     final auth = context.watch<AuthProvider>();
     final driverName = auth.user?.name.trim() ?? '';
-    final firstName = driverName.isEmpty
-        ? 'Driver'
-        : driverName.split(' ').first;
+    final firstName =
+        driverName.isEmpty ? 'Driver' : driverName.split(' ').first;
     return RefreshIndicator(
       onRefresh: () async {
         await emergency.restoreActiveSession();
@@ -306,14 +337,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Container(
+          GlassSurface(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: kAuthCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kAuthBorder),
-              boxShadow: kCardShadow,
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -392,31 +417,31 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     curve: Curves.easeOutCubic,
                     alignment: Alignment.topCenter,
                     child: Row(
-                    children: [
-                      _statusPill(
-                        icon: Icons.check_circle_outline,
-                        label: 'Available',
-                        active: _driverStatus == 'Available',
-                        onTap: () => _setStatus('Available', 'available'),
-                        activeColors: _statusColors('Available'),
-                      ),
-                      const SizedBox(width: 8),
-                      _statusPill(
-                        icon: Icons.work_outline,
-                        label: 'On duty',
-                        active: _driverStatus == 'On Duty',
-                        onTap: () => _setStatus('On Duty', 'on_duty'),
-                        activeColors: _statusColors('On Duty'),
-                      ),
-                      const SizedBox(width: 8),
-                      _statusPill(
-                        icon: Icons.offline_bolt_outlined,
-                        label: 'Offline',
-                        active: _driverStatus == 'Offline',
-                        onTap: () => _setStatus('Offline', 'offline'),
-                        activeColors: _statusColors('Offline'),
-                      ),
-                    ],
+                      children: [
+                        _statusPill(
+                          icon: Icons.check_circle_outline,
+                          label: 'Available',
+                          active: _driverStatus == 'Available',
+                          onTap: () => _setStatus('Available', 'available'),
+                          activeColors: _statusColors('Available'),
+                        ),
+                        const SizedBox(width: 8),
+                        _statusPill(
+                          icon: Icons.work_outline,
+                          label: 'On duty',
+                          active: _driverStatus == 'On Duty',
+                          onTap: () => _setStatus('On Duty', 'on_duty'),
+                          activeColors: _statusColors('On Duty'),
+                        ),
+                        const SizedBox(width: 8),
+                        _statusPill(
+                          icon: Icons.offline_bolt_outlined,
+                          label: 'Offline',
+                          active: _driverStatus == 'Offline',
+                          onTap: () => _setStatus('Offline', 'offline'),
+                          activeColors: _statusColors('Offline'),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -430,9 +455,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 icon: Icons.local_shipping,
                 label: 'Active emergency',
                 value: emergency.isEmergencyActive ? 'Yes' : 'No',
-                iconColor: emergency.isEmergencyActive
-                    ? kAuthRed
-                    : kAuthMuted,
+                iconColor: emergency.isEmergencyActive ? kAuthRed : kAuthMuted,
                 tint: emergency.isEmergencyActive
                     ? kAuthRedBadgeBg
                     : _kNeutralTint,
@@ -455,9 +478,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 label: 'Notifications',
                 value: '${notifs.unreadCount}',
                 iconColor: notifs.unreadCount > 0 ? _kOrange : kAuthMuted,
-                tint: notifs.unreadCount > 0
-                    ? _kOrangeTint
-                    : _kNeutralTint,
+                tint: notifs.unreadCount > 0 ? _kOrangeTint : _kNeutralTint,
               ),
               const SizedBox(width: 12),
               _statCard(
@@ -472,7 +493,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-
           if (emergency.isEmergencyActive && active != null) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -512,14 +532,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     _infoRow('Patient', active.patientName!),
                   if (active.hospitalName != null)
                     _infoRow('Hospital', active.hospitalName!),
-                  if (active.tripStage != null)
-                    _infoRow('Stage', _capitalize(active.tripStage!)),
                 ],
               ),
             ),
             const SizedBox(height: 12),
           ],
-
           Row(
             children: [
               Text(
@@ -558,7 +575,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 }
               },
             ),
-
           if (emergency.isEmergencyActive) ...[
             SizedBox(
               width: double.infinity,
@@ -614,6 +630,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     onPressed: emergency.loading
                         ? null
                         : () async {
+                            final confirmed =
+                                await _confirmEndEmergency(context);
+                            if (!confirmed || !context.mounted) return;
                             final ok = await emergency.endEmergency();
                             if (!context.mounted) return;
                             if (ok) {
@@ -636,23 +655,50 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _stageButton(context, emergency, 'arrived_patient',
-                    'Arrived at Patient'),
-                _stageButton(context, emergency, 'patient_picked_up',
-                    'Patient Picked Up'),
-                _stageButton(context, emergency, 'arrived_hospital',
-                    'Reached Hospital'),
-              ],
+            const SizedBox(height: 12),
+            Text(
+              'Trip progress',
+              style: text.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: kAuthText.withValues(alpha: 0.7),
+                letterSpacing: 0.3,
+              ),
             ),
+            const SizedBox(height: 8),
+            _stageTracker(context, emergency, active),
           ],
         ],
       ),
     );
+  }
+
+  Future<bool> _confirmEndEmergency(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('End emergency?'),
+            content: const Text(
+              'Are you sure you want to end this emergency? Location tracking will stop.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton.icon(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                icon: const Icon(Icons.stop),
+                label: const Text('End emergency'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: kAuthRed,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   String _greetingPrefix(DateTime now) {
@@ -665,8 +711,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Future<void> _setStatus(String display, String api) async {
     final previous = _driverStatus;
     setState(() => _driverStatus = display);
-    final ok =
-        await context.read<AuthProvider>().updateAmbulanceStatus(api);
+    final ok = await context.read<AuthProvider>().updateAmbulanceStatus(api);
     if (!mounted) return;
     if (!ok) {
       setState(() => _driverStatus = previous);
@@ -735,14 +780,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }) {
     final text = GoogleFonts.inter();
     return Expanded(
-      child: Container(
+      child: GlassSurface(
+        radius: 14,
         padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
-        decoration: BoxDecoration(
-          color: kAuthCard,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: kAuthBorder),
-          boxShadow: kCardShadow,
-        ),
         child: Column(
           children: [
             AnimatedContainer(
@@ -894,8 +934,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               onPressed: emergency.loading
                                   ? null
                                   : () async {
-                                      final ok = await emergency
-                                          .endEmergency();
+                                      final confirmed =
+                                          await _confirmEndEmergency(context);
+                                      if (!confirmed || !context.mounted) {
+                                        return;
+                                      }
+                                      final ok = await emergency.endEmergency();
                                       if (!context.mounted) return;
                                       if (ok) {
                                         context
@@ -951,7 +995,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         if (!context.mounted) return;
                         if (emergency.isEmergencyActive &&
                             emergency.activeEmergency != null) {
-                          await context.read<DriverLocationProvider>()
+                          await context
+                              .read<DriverLocationProvider>()
                               .startTracking(
                                 emergency.activeEmergency!.id,
                                 onTick: emergency.refreshActiveEmergency,
@@ -998,25 +1043,142 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
-  String _capitalize(String input) {
-    final parts = input.replaceAll('_', ' ').split(' ');
-    return parts
-        .map((p) => p.isEmpty ? p : p[0].toUpperCase() + p.substring(1))
-        .join(' ');
-  }
-
-  Widget _stageButton(
+  Widget _stageTracker(
     BuildContext context,
     EmergencyProvider emergency,
-    String stage,
-    String label,
+    EmergencyModel active,
   ) {
-    return OutlinedButton(
-      onPressed: emergency.loading
+    const steps = <({String stage, String label, IconData icon})>[
+      (
+        stage: 'arrived_patient',
+        label: 'Arrived at Patient',
+        icon: Icons.place
+      ),
+      (
+        stage: 'patient_picked_up',
+        label: 'Patient Picked Up',
+        icon: Icons.person_pin,
+      ),
+      (
+        stage: 'arrived_hospital',
+        label: 'Reached Hospital',
+        icon: Icons.local_hospital,
+      ),
+    ];
+    final currentIndex = steps.indexWhere((s) => s.stage == active.tripStage);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kAuthBorder),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        children: [
+          for (var i = 0; i < steps.length; i++) ...[
+            if (i > 0)
+              Container(
+                height: 14,
+                width: 2,
+                margin: const EdgeInsets.only(left: 19),
+                color: i <= currentIndex ? _kGreen : kAuthBorder,
+              ),
+            _stageRow(context, emergency, steps[i], i, currentIndex),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _stageRow(
+    BuildContext context,
+    EmergencyProvider emergency,
+    ({String stage, String label, IconData icon}) step,
+    int index,
+    int currentIndex,
+  ) {
+    final done = currentIndex >= 0 && index < currentIndex;
+    final active = index == currentIndex;
+    final Color fg = done
+        ? _kGreenBadgeText
+        : active
+            ? kAuthRedBadgeText
+            : kAuthText.withValues(alpha: 0.65);
+    final text = GoogleFonts.inter();
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: emergency.loading
           ? null
-          : () => context.read<EmergencyProvider>().updateTripStage(stage),
-      style: _outlineStyle(),
-      child: Text(label),
+          : () => context.read<EmergencyProvider>().updateTripStage(step.stage),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: done
+                    ? _kGreen
+                    : active
+                        ? kAuthRed
+                        : Colors.transparent,
+                border: active || done
+                    ? null
+                    : Border.all(color: kAuthBorder, width: 1.5),
+              ),
+              child: Icon(
+                done ? Icons.check : step.icon,
+                size: 15,
+                color: done || active ? Colors.white : fg,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                step.label,
+                style: text.copyWith(
+                  fontSize: 14,
+                  fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                  color: fg,
+                ),
+              ),
+            ),
+            if (active)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: kAuthRedBadgeBg,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: kAuthRed.withValues(alpha: 0.3)),
+                ),
+                child: Text(
+                  'In progress',
+                  style: text.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: kAuthRedBadgeText,
+                  ),
+                ),
+              )
+            else if (done)
+              Text(
+                'Done',
+                style: text.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: _kGreenBadgeText,
+                ),
+              )
+            else
+              Icon(Icons.chevron_right, size: 18, color: kAuthBorder),
+          ],
+        ),
+      ),
     );
   }
 }

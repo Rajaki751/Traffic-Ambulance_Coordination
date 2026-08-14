@@ -5,7 +5,8 @@ class NotificationApiService {
   final ApiService _api;
   NotificationApiService(this._api);
 
-  Future<List<NotificationModel>> fetchNotifications({bool unreadOnly = false}) async {
+  Future<List<NotificationModel>> fetchNotifications(
+      {bool unreadOnly = false}) async {
     final res = await _api.get('/api/v1/notifications/', query: {
       'unread_only': unreadOnly,
     });
@@ -25,14 +26,25 @@ class NotificationApiService {
         .toList();
   }
 
-  Future<void> acknowledge(int notificationId) async {
+  Future<void> acknowledge(int notificationId, {String? action}) async {
     await _api.post('/api/v1/notifications/acknowledge', data: {
       'notification_id': notificationId,
+      if (action != null) 'action': action,
     });
   }
 
   Future<void> markRead(int notificationId) async {
     await _api.patch('/api/v1/notifications/$notificationId/read');
+  }
+
+  Future<void> replyToOfficer({
+    required int emergencySessionId,
+    required String message,
+  }) async {
+    await _api.post('/api/v1/notifications/reply-to-officer', data: {
+      'emergency_session_id': emergencySessionId,
+      'message': message,
+    });
   }
 
   Future<void> sendToDriver({

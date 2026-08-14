@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../providers/junction_provider.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../providers/notification_provider.dart';
+import '../models/notification_model.dart';
 import '../widgets/auth_widgets.dart';
 import 'officer_map_screen.dart';
 import 'officer_history_screen.dart';
@@ -27,6 +28,13 @@ class OfficerHomeScreen extends StatefulWidget {
 
 class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   int _selectedIndex = 0;
+  LiveAmbulanceProvider? _live;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _live ??= context.read<LiveAmbulanceProvider>();
+  }
 
   @override
   void initState() {
@@ -41,7 +49,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
 
   @override
   void dispose() {
-    context.read<LiveAmbulanceProvider>().stopPolling();
+    _live?.stopPolling();
     super.dispose();
   }
 
@@ -52,7 +60,10 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     final junctions = context.watch<JunctionProvider>();
 
     final pages = <Widget>[
-      SafeArea(top: true, bottom: false, child: _buildHomePage(context, live, notifs, junctions)),
+      SafeArea(
+          top: true,
+          bottom: false,
+          child: _buildHomePage(context, live, notifs, junctions)),
       const OfficerMapScreen(),
       _buildAlertsPage(context, notifs),
       const OfficerHistoryScreen(),
@@ -60,69 +71,72 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: kAuthBg,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 240),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.012),
-              end: Offset.zero,
-            ).animate(animation),
-            child: child,
+      backgroundColor: Colors.transparent,
+      body: GlassBackdrop(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 240),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.012),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(_selectedIndex),
+            child: pages[_selectedIndex],
           ),
         ),
-        child: KeyedSubtree(
-          key: ValueKey(_selectedIndex),
-          child: pages[_selectedIndex],
-        ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: kAuthCard,
-          border: Border(top: BorderSide(color: kAuthBorder)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 62,
-            child: Row(
-              children: [
-                _navItem(
-                  index: 0,
-                  icon: Icons.home_outlined,
-                  selectedIcon: Icons.home_rounded,
-                  label: 'Home',
-                ),
-                _navItem(
-                  index: 1,
-                  icon: Icons.map_outlined,
-                  selectedIcon: Icons.map_rounded,
-                  label: 'Map',
-                ),
-                _navItem(
-                  index: 2,
-                  icon: Icons.warning_amber_outlined,
-                  selectedIcon: Icons.warning_amber_rounded,
-                  label: 'Alerts',
-                  badgeCount: notifs.unreadCount,
-                ),
-                _navItem(
-                  index: 3,
-                  icon: Icons.history_outlined,
-                  selectedIcon: Icons.history_rounded,
-                  label: 'History',
-                ),
-                _navItem(
-                  index: 4,
-                  icon: Icons.person_outlined,
-                  selectedIcon: Icons.person_rounded,
-                  label: 'Profile',
-                ),
-              ],
+      bottomNavigationBar: FrostedBar(
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: kGlassBorder)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 62,
+              child: Row(
+                children: [
+                  _navItem(
+                    index: 0,
+                    icon: Icons.home_outlined,
+                    selectedIcon: Icons.home_rounded,
+                    label: 'Home',
+                  ),
+                  _navItem(
+                    index: 1,
+                    icon: Icons.map_outlined,
+                    selectedIcon: Icons.map_rounded,
+                    label: 'Map',
+                  ),
+                  _navItem(
+                    index: 2,
+                    icon: Icons.warning_amber_outlined,
+                    selectedIcon: Icons.warning_amber_rounded,
+                    label: 'Alerts',
+                    badgeCount: notifs.unreadCount,
+                  ),
+                  _navItem(
+                    index: 3,
+                    icon: Icons.history_outlined,
+                    selectedIcon: Icons.history_rounded,
+                    label: 'History',
+                  ),
+                  _navItem(
+                    index: 4,
+                    icon: Icons.person_outlined,
+                    selectedIcon: Icons.person_rounded,
+                    label: 'Profile',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -202,9 +216,8 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     final text = GoogleFonts.inter();
     final auth = context.watch<AuthProvider>();
     final officerName = auth.user?.name.trim() ?? '';
-    final firstName = officerName.isEmpty
-        ? 'Officer'
-        : officerName.split(' ').first;
+    final firstName =
+        officerName.isEmpty ? 'Officer' : officerName.split(' ').first;
     final activeAmbulances = live.ambulances.length;
     final activeEmergencies =
         live.ambulances.where((a) => a.status == 'emergency').length;
@@ -272,23 +285,16 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Container(
+          GlassSurface(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: kAuthCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kAuthBorder),
-              boxShadow: kCardShadow,
-            ),
             child: Row(
               children: [
                 Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: activeEmergencies > 0
-                        ? kAuthRedBadgeBg
-                        : _kNeutralTint,
+                    color:
+                        activeEmergencies > 0 ? kAuthRedBadgeBg : _kNeutralTint,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -442,57 +448,44 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
             ),
             const SizedBox(height: 8),
             ...notifs.notifications.take(3).map(
-              (n) => Card(
-                margin: const EdgeInsets.only(bottom: 6),
-                color: n.isAcknowledged
-                    ? null
-                    : Theme.of(context).colorScheme.errorContainer,
-                child: ListTile(
-                  leading: Icon(
-                    Icons.emergency_rounded,
+                  (n) => Card(
+                    margin: const EdgeInsets.only(bottom: 6),
                     color: n.isAcknowledged
-                        ? Theme.of(context).colorScheme.outline
-                        : kAuthRed,
-                  ),
-                  title: Text(
-                    n.title,
-                    style: text.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: kAuthText,
-                    ),
-                  ),
-                  subtitle: Text(
-                    n.message,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: text.copyWith(
-                      fontSize: 13,
-                      color: kAuthMuted,
-                    ),
-                  ),
-                  trailing: n.isAcknowledged
-                      ? const Icon(Icons.check, color: kAuthGreen, size: 20)
-                      : TextButton(
-                          onPressed: () => notifs.acknowledge(n.id),
-                          style: TextButton.styleFrom(
-                            foregroundColor: kAuthRedLink,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            minimumSize: Size.zero,
-                            tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'ACK',
-                            style: text.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                        ? null
+                        : Theme.of(context).colorScheme.errorContainer,
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.emergency_rounded,
+                        color: n.isAcknowledged
+                            ? Theme.of(context).colorScheme.outline
+                            : kAuthRed,
+                      ),
+                      title: Text(
+                        n.title,
+                        style: text.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: kAuthText,
                         ),
+                      ),
+                      subtitle: Text(
+                        n.message,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: text.copyWith(
+                          fontSize: 13,
+                          color: kAuthMuted,
+                        ),
+                      ),
+                      trailing: _alertActions(
+                        context,
+                        notifs,
+                        n,
+                        text,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
           ],
           if (live.ambulances.isNotEmpty) ...[
             const SizedBox(height: 20),
@@ -581,8 +574,9 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   Widget _buildAlertsPage(BuildContext context, NotificationProvider notifs) {
     final text = GoogleFonts.inter();
     return Scaffold(
-      backgroundColor: kAuthBg,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        flexibleSpace: const FrostedAppBarBackdrop(),
         shape: const Border(bottom: BorderSide(color: kAuthBorder)),
         title: Text(
           'Alerts',
@@ -594,68 +588,160 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
           ),
         ),
       ),
-      body: notifs.loading
-          ? const Center(child: CircularProgressIndicator())
-          : notifs.notifications.isEmpty
-              ? const AuthEmptyState(
-                  icon: Icons.notifications_none_rounded,
-                  title: 'No alerts yet',
-                  hint:
-                      'Emergency alerts appear here as soon as a driver '
-                      'starts a trip.',
-                )
-              : RefreshIndicator(
-                  onRefresh: notifs.load,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: notifs.notifications.length,
-                    itemBuilder: (_, i) {
-                      final n = notifs.notifications[i];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        color: n.isAcknowledged
-                            ? null
-                            : Theme.of(context).colorScheme.errorContainer,
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.emergency_rounded,
-                            color: n.isAcknowledged
-                                ? Theme.of(context).colorScheme.outline
-                                : kAuthRed,
-                          ),
-                          title: Text(
-                            n.title,
-                            style: text.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: kAuthText,
+      body: GlassBackdrop(
+        child: notifs.loading
+            ? const Center(child: CircularProgressIndicator())
+            : notifs.notifications.isEmpty
+                ? const AuthEmptyState(
+                    icon: Icons.notifications_none_rounded,
+                    title: 'No alerts yet',
+                    hint: 'Emergency alerts appear here as soon as a driver '
+                        'starts a trip.',
+                  )
+                : RefreshIndicator(
+                    onRefresh: notifs.load,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: notifs.notifications.length,
+                      itemBuilder: (_, i) {
+                        final n = notifs.notifications[i];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          color: n.isAcknowledged
+                              ? null
+                              : Theme.of(context).colorScheme.errorContainer,
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.emergency_rounded,
+                              color: n.isAcknowledged
+                                  ? Theme.of(context).colorScheme.outline
+                                  : kAuthRed,
+                            ),
+                            title: Text(
+                              n.title,
+                              style: text.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: kAuthText,
+                              ),
+                            ),
+                            subtitle: Text(
+                              n.message,
+                              style: text.copyWith(
+                                fontSize: 13,
+                                color: kAuthMuted,
+                              ),
+                            ),
+                            trailing: _alertActions(
+                              context,
+                              notifs,
+                              n,
+                              text,
                             ),
                           ),
-                          subtitle: Text(
-                            n.message,
-                            style: text.copyWith(
-                              fontSize: 13,
-                              color: kAuthMuted,
-                            ),
-                          ),
-                          trailing: n.isAcknowledged
-                              ? const Icon(Icons.check, color: kAuthGreen)
-                              : TextButton(
-                                  onPressed: () => notifs.acknowledge(n.id),
-                                  child: Text(
-                                    'ACK',
-                                    style: text.copyWith(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: kAuthRedLink,
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
+      ),
+    );
+  }
+
+  Widget _alertActions(
+    BuildContext context,
+    NotificationProvider notifs,
+    NotificationModel n,
+    TextStyle text,
+  ) {
+    if (n.isAcknowledged) {
+      final isEmergency = n.notificationType == 'emergency_alert';
+      final action = n.acknowledgment ?? (isEmergency ? 'ack' : 'ack');
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: action == 'accept'
+              ? kAuthGreen.withValues(alpha: 0.12)
+              : action == 'reject'
+                  ? kAuthRed.withValues(alpha: 0.1)
+                  : kAuthBorder.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          action == 'accept'
+              ? 'Accepted'
+              : action == 'reject'
+                  ? 'Rejected'
+                  : 'Acknowledged',
+          style: text.copyWith(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w600,
+            color: action == 'accept'
+                ? kAuthGreen
+                : action == 'reject'
+                    ? kAuthRed
+                    : kAuthMuted,
+          ),
+        ),
+      );
+    }
+
+    if (n.notificationType == 'emergency_alert') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton(
+            onPressed: () => notifs.acknowledge(n.id, action: 'accept'),
+            style: TextButton.styleFrom(
+              foregroundColor: kAuthGreen,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Accept',
+              style: text.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: kAuthGreen,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => notifs.acknowledge(n.id, action: 'reject'),
+            style: TextButton.styleFrom(
+              foregroundColor: kAuthRed,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Reject',
+              style: text.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: kAuthRed,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return TextButton(
+      onPressed: () => notifs.acknowledge(n.id),
+      style: TextButton.styleFrom(
+        foregroundColor: kAuthRedLink,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Text(
+        'ACK',
+        style: text.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 
@@ -678,14 +764,9 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
-      child: Container(
+      child: GlassSurface(
+        radius: 16,
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: kAuthCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: kAuthBorder),
-          boxShadow: kCardShadow,
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -727,14 +808,9 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   }) {
     final text = GoogleFonts.inter();
     return Expanded(
-      child: Container(
+      child: GlassSurface(
+        radius: 14,
         padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
-        decoration: BoxDecoration(
-          color: kAuthCard,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: kAuthBorder),
-          boxShadow: kCardShadow,
-        ),
         child: Column(
           children: [
             Container(
@@ -848,8 +924,8 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     );
   }
 
-  Future<void> _sendDriverMessage(BuildContext context, int sessionId,
-      String title, String message) async {
+  Future<void> _sendDriverMessage(
+      BuildContext context, int sessionId, String title, String message) async {
     try {
       final notifProvider = context.read<NotificationProvider>();
       await notifProvider.sendToDriver(

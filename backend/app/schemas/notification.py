@@ -16,6 +16,7 @@ class NotificationResponse(BaseModel):
     message: str
     is_read: bool
     is_acknowledged: bool
+    acknowledgment: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -23,3 +24,9 @@ class NotificationResponse(BaseModel):
 
 class NotificationAcknowledge(BaseModel):
     notification_id: int
+    action: Optional[str] = None
+
+
+class DriverReplyRequest(BaseModel):
+    emergency_session_id: int
+    message: str

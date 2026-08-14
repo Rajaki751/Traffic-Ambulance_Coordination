@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/emergency_provider.dart';
 import '../providers/notification_provider.dart';
+import '../models/notification_model.dart';
 import '../widgets/auth_widgets.dart';
 
 const _kGreen = Color(0xFF2F9E63);
@@ -27,6 +28,72 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
     });
   }
 
+  Future<void> _replyToOfficer(
+    BuildContext context,
+    NotificationProvider notifs,
+    NotificationModel n,
+  ) async {
+    final ctrl = TextEditingController();
+    final text = GoogleFonts.inter();
+    final sent = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: kAuthCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Text(
+          'Reply to officer',
+          style: text.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          maxLines: 3,
+          style: text.copyWith(fontSize: 14, color: kAuthText),
+          cursorColor: kAuthRed,
+          decoration: const InputDecoration(
+            hintText: 'Message for traffic officers…',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: text.copyWith(color: kAuthMuted)),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: kAuthRed,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              final msg = ctrl.text.trim();
+              if (msg.isEmpty) return;
+              Navigator.pop(ctx, true);
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+    if (sent != true) return;
+    final msg = ctrl.text.trim();
+    await notifs.replyToOfficer(
+      emergencySessionId: n.emergencySessionId!,
+      message: msg,
+    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: _kGreen,
+          content: Text(
+            'Reply sent to traffic officers',
+            style: text.copyWith(color: Colors.white),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final notifs = context.watch<NotificationProvider>();
@@ -36,12 +103,13 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: kAuthBg,
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
-          backgroundColor: kAuthCard,
+          backgroundColor: Colors.transparent,
           foregroundColor: kAuthText,
           elevation: 0,
           scrolledUnderElevation: 0,
+          flexibleSpace: const FrostedAppBarBackdrop(),
           shape: const Border(bottom: BorderSide(color: kAuthBorder)),
           title: Text(
             'Alerts',
@@ -68,169 +136,194 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            RefreshIndicator(
-              onRefresh: notifs.load,
-              child: notifs.notifications.isEmpty
-                  ? const AuthEmptyState(
-                      icon: Icons.notifications_none_rounded,
-                      title: 'No notifications yet',
-                      hint:
-                          'Emergency alerts and coordination updates from '
-                          'dispatch will appear here.',
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: notifs.notifications.length,
-                      itemBuilder: (_, i) {
-                        final n = notifs.notifications[i];
-                        return Card(
-                          margin:
-                              const EdgeInsets.symmetric(vertical: 6),
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          color: kAuthCard,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: kAuthBorder),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 4),
-                            leading: Icon(
-                              n.isRead
-                                  ? Icons.notifications_off
-                                  : Icons.notifications,
-                              color: n.isRead ? kAuthIcon : _kOrange,
+        body: GlassBackdrop(
+          child: TabBarView(
+            children: [
+              RefreshIndicator(
+                onRefresh: notifs.load,
+                child: notifs.notifications.isEmpty
+                    ? const AuthEmptyState(
+                        icon: Icons.notifications_none_rounded,
+                        title: 'No notifications yet',
+                        hint: 'Emergency alerts and coordination updates from '
+                            'dispatch will appear here.',
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: notifs.notifications.length,
+                        itemBuilder: (_, i) {
+                          final n = notifs.notifications[i];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                            color: kAuthCard,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(color: kAuthBorder),
                             ),
-                            title: Text(
-                              n.title,
-                              style: text.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: kAuthText,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 4),
+                              leading: Icon(
+                                n.isRead
+                                    ? Icons.notifications_off
+                                    : Icons.notifications,
+                                color: n.isRead ? kAuthIcon : _kOrange,
                               ),
-                            ),
-                            subtitle: Text(
-                              n.message,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: text.copyWith(
-                                fontSize: 13,
-                                color: kAuthMuted,
+                              title: Text(
+                                n.title,
+                                style: text.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: kAuthText,
+                                ),
                               ),
-                            ),
-                            trailing: n.isRead
-                                ? Icon(
-                                    Icons.done,
-                                    color: _kGreen,
-                                    size: 20,
-                                  )
-                                : TextButton(
-                                    onPressed: () => notifs.markRead(n.id),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: kAuthRedLink,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: Text(
-                                      'Read',
-                                      style: text.copyWith(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
+                              subtitle: Text(
+                                n.message,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: text.copyWith(
+                                  fontSize: 13,
+                                  color: kAuthMuted,
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (n.emergencySessionId != null)
+                                    TextButton(
+                                      onPressed: () =>
+                                          _replyToOfficer(context, notifs, n),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: _kGreen,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: Text(
+                                        'Reply',
+                                        style: text.copyWith(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-            RefreshIndicator(
-              onRefresh: emergency.loadHistory,
-              child: emergency.history.isEmpty
-                  ? const AuthEmptyState(
-                      icon: Icons.history_rounded,
-                      title: 'No trip history yet',
-                      hint:
-                          'Completed emergency trips will show up here with '
-                          'status and date.',
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: emergency.history.length,
-                      itemBuilder: (_, i) {
-                        final h = emergency.history[i];
-                        return Card(
-                          margin:
-                              const EdgeInsets.symmetric(vertical: 6),
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          color: kAuthCard,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: kAuthBorder),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 4),
-                            leading: Icon(
-                              h.endedAt != null
-                                  ? Icons.check_circle
-                                  : Icons.access_time,
-                              color:
-                                  h.endedAt != null ? _kGreen : _kOrange,
-                            ),
-                            title: Text(
-                              h.destination,
-                              style: text.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: kAuthText,
+                                  n.isRead
+                                      ? Icon(
+                                          Icons.done,
+                                          color: _kGreen,
+                                          size: 20,
+                                        )
+                                      : TextButton(
+                                          onPressed: () =>
+                                              notifs.acknowledge(n.id),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: kAuthRedLink,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize:
+                                                MaterialTapTargetSize.shrinkWrap,
+                                          ),
+                                          child: Text(
+                                            'ACK',
+                                            style: text.copyWith(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                ],
                               ),
                             ),
-                            subtitle: Text(
-                              '${h.status} • ${h.incidentType ?? "general"}',
-                              style: text.copyWith(
-                                fontSize: 13,
-                                color: kAuthMuted,
-                              ),
+                          );
+                        },
+                      ),
+              ),
+              RefreshIndicator(
+                onRefresh: emergency.loadHistory,
+                child: emergency.history.isEmpty
+                    ? const AuthEmptyState(
+                        icon: Icons.history_rounded,
+                        title: 'No trip history yet',
+                        hint:
+                            'Completed emergency trips will show up here with '
+                            'status and date.',
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: emergency.history.length,
+                        itemBuilder: (_, i) {
+                          final h = emergency.history[i];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                            color: kAuthCard,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(color: kAuthBorder),
                             ),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  h.endedAt != null ? 'Done' : 'Open',
-                                  style: text.copyWith(
-                                    color: h.endedAt != null
-                                        ? _kGreen
-                                        : _kOrange,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                  ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 4),
+                              leading: Icon(
+                                h.endedAt != null
+                                    ? Icons.check_circle
+                                    : Icons.access_time,
+                                color: h.endedAt != null ? _kGreen : _kOrange,
+                              ),
+                              title: Text(
+                                h.destination,
+                                style: text.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: kAuthText,
                                 ),
-                                if (h.endedAt != null)
+                              ),
+                              subtitle: Text(
+                                '${h.status} • ${h.incidentType ?? "general"}',
+                                style: text.copyWith(
+                                  fontSize: 13,
+                                  color: kAuthMuted,
+                                ),
+                              ),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
                                   Text(
-                                    h.endedAt!.toIso8601String().substring(
-                                        0, 10),
+                                    h.endedAt != null ? 'Done' : 'Open',
                                     style: text.copyWith(
-                                      fontSize: 10,
-                                      color: kAuthFaint,
+                                      color: h.endedAt != null
+                                          ? _kGreen
+                                          : _kOrange,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
                                     ),
                                   ),
-                              ],
+                                  if (h.endedAt != null)
+                                    Text(
+                                      h.endedAt!
+                                          .toIso8601String()
+                                          .substring(0, 10),
+                                      style: text.copyWith(
+                                        fontSize: 10,
+                                        color: kAuthFaint,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

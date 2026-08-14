@@ -14,14 +14,29 @@ import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
 import StatusPill from '../components/StatusPill';
 import ErrorBanner from '../components/ErrorBanner';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { analyticsApi, emergencyApi, gpsApi } from '../services/api';
 import { useWebSocketContext } from '../hooks/useWebSocket';
+import {
+  AnalyticsSummary,
+  AmbulanceStats,
+  LiveLocation,
+  Emergency,
+} from '../types';
 
 function timestampMs(location) {
   return location?.updated_at ? new Date(location.updated_at).getTime() : 0;
 }
 
-function upsertLocation(prev, next) {
+function upsertLocation(prev: LiveLocation[], next: LiveLocation): LiveLocation[] {
   const idx = prev.findIndex((a) => a.ambulance_id === next.ambulance_id);
   if (idx >= 0) {
     if (timestampMs(next) < timestampMs(prev[idx])) return prev;
@@ -32,21 +47,21 @@ function upsertLocation(prev, next) {
   return [...prev, next];
 }
 
-function mergeLocations(prev, incoming) {
+function mergeLocations(prev: LiveLocation[], incoming: LiveLocation[]): LiveLocation[] {
   return incoming.reduce((acc, next) => upsertLocation(acc, next), prev);
 }
 
-function formatTime(value) {
+function formatTime(value: string | Date | null | undefined): string {
   if (!value) return '-';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export default function DashboardPage() {
-  const [summary, setSummary] = useState(null);
-  const [ambulances, setAmbulances] = useState([]);
-  const [liveLocations, setLiveLocations] = useState([]);
-  const [emergencies, setEmergencies] = useState([]);
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+  const [ambulances, setAmbulances] = useState<AmbulanceStats[]>([]);
+  const [liveLocations, setLiveLocations] = useState<LiveLocation[]>([]);
+  const [emergencies, setEmergencies] = useState<Emergency[]>([]);
   const [error, setError] = useState('');
   const pollInFlight = useRef(false);
   const { subscribe } = useWebSocketContext();
@@ -203,17 +218,57 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            title="Response Time"
-            subtitle="Average across today's responses"
+            title="Response Time Trend"
+            subtitle="Historical 7-day average (mocked)"
             icon={IconClock}
             bodyClassName="p-5"
           >
-            <p className="text-4xl font-bold tabular-nums tracking-tight text-emergency">
-              {summary?.avg_response_time_minutes ?? 0}
-              <span className="ml-1 text-base font-medium text-gray-500 dark:text-gray-400">
-                min
+            <div className="mb-4 flex items-baseline gap-2">
+              <p className="text-4xl font-bold tabular-nums tracking-tight text-emergency">
+                {summary?.avg_response_time_minutes ?? 0}
+              </p>
+              <span className="text-base font-medium text-gray-500 dark:text-gray-400">
+                min (Current)
               </span>
-            </p>
+            </div>
+            
+            <div className="h-[140px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={[
+                    { name: 'Mon', time: 14.2 },
+                    { name: 'Tue', time: 12.8 },
+                    { name: 'Wed', time: 15.1 },
+                    { name: 'Thu', time: 11.5 },
+                    { name: 'Fri', time: 10.9 },
+                    { name: 'Sat', time: 9.2 },
+                    { name: 'Sun', time: 8.5 },
+                  ]}
+                  margin={{ top: 5, right: 0, left: -25, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorTime" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#E53935" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#E53935" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.2} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="time"
+                    stroke="#E53935"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorTime)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
           <Card

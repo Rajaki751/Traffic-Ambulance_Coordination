@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/chat_models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/chat_provider.dart';
+import '../services/gps_service.dart';
 import '../widgets/auth_widgets.dart';
 import 'location_pick_screen.dart';
 
@@ -177,16 +178,45 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         }
         return;
       }
-      position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.best,
-        ),
-      );
     } catch (_) {}
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Center(
+        child: GlassSurface(
+          radius: 16,
+          blur: 10,
+          tint: kGlassTint,
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2.4),
+              ),
+              SizedBox(width: 14),
+              Text(
+                'Getting your location…',
+                style: TextStyle(color: kAuthText, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    position = await GpsTrackingService.bestPosition();
+    if (!mounted) return;
+    Navigator.of(context).pop();
+
     if (position == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not get your location')),
+          const SnackBar(content: Text('Could not get your location — try again')),
         );
       }
       return;
@@ -203,20 +233,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     double lat = 28.6139;
     double lon = 77.2090;
     try {
-      if (await Geolocator.isLocationServiceEnabled()) {
-        var permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.denied) {
-          permission = await Geolocator.requestPermission();
-        }
-        if (permission == LocationPermission.always ||
-            permission == LocationPermission.whileInUse) {
-          final pos = await Geolocator.getCurrentPosition(
-            locationSettings:
-                const LocationSettings(accuracy: LocationAccuracy.medium),
-          );
-          lat = pos.latitude;
-          lon = pos.longitude;
-        }
+      final last = await Geolocator.getLastKnownPosition();
+      if (last != null) {
+        lat = last.latitude;
+        lon = last.longitude;
       }
     } catch (_) {}
     if (!mounted) return;

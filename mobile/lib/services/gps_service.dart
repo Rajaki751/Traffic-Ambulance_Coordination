@@ -118,6 +118,27 @@ class GpsTrackingService {
     }
   }
 
+  static Future<Position?> bestPosition({
+    Duration timeout = const Duration(seconds: 6),
+  }) async {
+    try {
+      final last = await Geolocator.getLastKnownPosition();
+      final fresh = last != null &&
+          DateTime.now().difference(last.timestamp).inMinutes < 5;
+      if (fresh) return last;
+    } catch (_) {}
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: timeout,
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   void dispose() {
     _lifecycleListener.dispose();
     stopTracking();

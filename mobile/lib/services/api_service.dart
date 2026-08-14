@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../core/constants.dart';
+import 'offline_queue_service.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -29,6 +30,7 @@ class ApiService {
         handler.next(error);
       },
     ));
+    OfflineQueueService().init(_dio);
   }
 
   String get baseUrl => _baseUrl;
@@ -43,9 +45,37 @@ class ApiService {
   Future<Response> get(String path, {Map<String, dynamic>? query}) =>
       _dio.get(path, queryParameters: query);
 
-  Future<Response> post(String path, {dynamic data}) =>
-      _dio.post(path, data: data);
+  Future<Response> post(String path, {dynamic data}) async {
+    try {
+      return await _dio.post(path, data: data);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout) {
+        await OfflineQueueService().enqueue(path, 'POST', data);
+        return Response(
+          requestOptions: e.requestOptions,
+          statusCode: 202,
+          data: {'queued': true, 'message': 'Request queued for offline sync'},
+        );
+      }
+      rethrow;
+    }
+  }
 
-  Future<Response> patch(String path, {dynamic data}) =>
-      _dio.patch(path, data: data);
+  Future<Response> patch(String path, {dynamic data}) async {
+    try {
+      return await _dio.patch(path, data: data);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout) {
+        await OfflineQueueService().enqueue(path, 'PATCH', data);
+        return Response(
+          requestOptions: e.requestOptions,
+          statusCode: 202,
+          data: {'queued': true, 'message': 'Request queued for offline sync'},
+        );
+      }
+      rethrow;
+    }
+  }
 }

@@ -29,9 +29,11 @@ import 'providers/settings_provider.dart';
 import 'widgets/auth_widgets.dart';
 
 import 'core/map_cache.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('offline_queue');
   await initMapCache();
   final api = ApiService();
   final serverConfig = ServerConfigService();

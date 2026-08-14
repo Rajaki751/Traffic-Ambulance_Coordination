@@ -122,16 +122,25 @@ class FrostedAppBarBackdrop extends StatelessWidget {
 }
 
 class FrostedBar extends StatelessWidget {
-  const FrostedBar({super.key, required this.child, this.blur});
+  const FrostedBar({super.key, required this.child, this.blur, this.borderRadius});
 
   final Widget child;
   final double? blur;
+  final BorderRadius? borderRadius;
 
   @override
   Widget build(BuildContext context) {
-    final tint = Container(color: kGlassTint, child: child);
+    final tint = Container(
+      decoration: BoxDecoration(
+        color: kGlassTint,
+        borderRadius: borderRadius,
+      ),
+      child: child,
+    );
     if (kIsWeb) return tint;
-    return ClipRect(
+    
+    return ClipRRect(
+      borderRadius: borderRadius ?? BorderRadius.zero,
       child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: blur ?? kGlassBlur,

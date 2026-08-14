@@ -135,6 +135,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBody: true,
       body: GlassBackdrop(
         child: SafeArea(
           top: true,
@@ -160,17 +161,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: FrostedBar(
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: kGlassBorder)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: 62,
-              child: Row(
-                children: [
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+          child: FrostedBar(
+            borderRadius: BorderRadius.circular(32),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: kGlassBorder.withValues(alpha: 0.2)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                  )
+                ],
+              ),
+              child: SizedBox(
+                height: 64,
+                child: Row(
+                  children: [
                   _navItem(
                     index: 0,
                     icon: Icons.home_outlined,

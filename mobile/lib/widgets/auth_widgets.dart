@@ -116,6 +116,63 @@ class AuthCard extends StatelessWidget {
   }
 }
 
+class AuthEmptyState extends StatelessWidget {
+  const AuthEmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.hint,
+  });
+
+  final IconData icon;
+  final String title;
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = GoogleFonts.inter();
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: kAuthRedBadgeBg,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Icon(icon, size: 28, color: kAuthRedLink),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: text.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: kAuthText,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              hint,
+              textAlign: TextAlign.center,
+              style: text.copyWith(
+                fontSize: 13,
+                height: 1.4,
+                color: kAuthMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AuthField extends StatefulWidget {
   const AuthField({
     super.key,

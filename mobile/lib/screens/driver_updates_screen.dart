@@ -73,14 +73,12 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
             RefreshIndicator(
               onRefresh: notifs.load,
               child: notifs.notifications.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No notifications yet',
-                        style: text.copyWith(
-                          fontSize: 14,
-                          color: kAuthMuted,
-                        ),
-                      ),
+                  ? const AuthEmptyState(
+                      icon: Icons.notifications_none_rounded,
+                      title: 'No notifications yet',
+                      hint:
+                          'Emergency alerts and coordination updates from '
+                          'dispatch will appear here.',
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
@@ -155,14 +153,12 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
             RefreshIndicator(
               onRefresh: emergency.loadHistory,
               child: emergency.history.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No trip history yet',
-                        style: text.copyWith(
-                          fontSize: 14,
-                          color: kAuthMuted,
-                        ),
-                      ),
+                  ? const AuthEmptyState(
+                      icon: Icons.history_rounded,
+                      title: 'No trip history yet',
+                      hint:
+                          'Completed emergency trips will show up here with '
+                          'status and date.',
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),

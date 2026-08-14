@@ -580,6 +580,7 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
         color: kAuthCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: kAuthBorder),
+        boxShadow: kCardShadow,
       ),
       child: Row(
         children: [
@@ -648,6 +649,7 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
         color: kAuthCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: kAuthBorder),
+        boxShadow: kCardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

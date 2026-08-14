@@ -118,13 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: kAuthCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: kAuthBorder),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A1A1A18),
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
+        boxShadow: kCardShadow,
       ),
       child: Row(
         children: [

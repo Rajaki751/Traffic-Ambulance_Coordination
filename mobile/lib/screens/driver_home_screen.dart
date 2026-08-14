@@ -131,7 +131,25 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       body: SafeArea(
         top: true,
         bottom: false,
-        child: pages[_selectedIndex],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 240),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.012),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(_selectedIndex),
+            child: pages[_selectedIndex],
+          ),
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -178,19 +196,38 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     required String label,
   }) {
     final active = _selectedIndex == index;
-    final color = active ? kAuthRedLink : kAuthIcon;
     final text = GoogleFonts.inter();
     return Expanded(
       child: InkWell(
         onTap: () => setState(() => _selectedIndex = index),
+        borderRadius: BorderRadius.circular(12),
+        hoverColor: kAuthBorder.withValues(alpha: 0.3),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: color),
-            const SizedBox(height: 3),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              width: 44,
+              height: 28,
+              decoration: BoxDecoration(
+                color: active ? kAuthRedBadgeBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(
+                icon,
+                size: 21,
+                color: active ? kAuthRedLink : kAuthIcon,
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: text.copyWith(fontSize: 11, color: color),
+              style: text.copyWith(
+                fontSize: 10.5,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                color: active ? kAuthRedLink : kAuthIcon,
+              ),
             ),
           ],
         ),
@@ -258,6 +295,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   color: kAuthRedBadgeBg,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
+                  boxShadow: kCardShadow,
                 ),
                 child: Center(
                   child: Text(
@@ -279,13 +317,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               color: kAuthCard,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: kAuthBorder),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A1A1A18),
-                  blurRadius: 2,
-                  offset: Offset(0, 1),
-                ),
-              ],
+              boxShadow: kCardShadow,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +329,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         _driverStatus,
                         emergency: emergency.isEmergencyActive,
                       );
-                      return Container(
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOutCubic,
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
@@ -335,14 +369,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               _driverStatus,
                               emergency: emergency.isEmergencyActive,
                             );
-                            return Text(
-                              emergency.isEmergencyActive
-                                  ? 'Busy'
-                                  : _driverStatus,
-                              style: text.copyWith(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                color: colors.fg,
+                            final label = emergency.isEmergencyActive
+                                ? 'Busy'
+                                : _driverStatus;
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: Text(
+                                label,
+                                key: ValueKey(label),
+                                style: text.copyWith(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.fg,
+                                ),
                               ),
                             );
                           }),
@@ -353,7 +392,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 ),
                 if (!emergency.isEmergencyActive) ...[
                   const SizedBox(height: 12),
-                  Row(
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 240),
+                    curve: Curves.easeOutCubic,
+                    alignment: Alignment.topCenter,
+                    child: Row(
                     children: [
                       _statusPill(
                         icon: Icons.check_circle_outline,
@@ -379,6 +422,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         activeColors: _statusColors('Offline'),
                       ),
                     ],
+                    ),
                   ),
                 ],
               ],
@@ -651,7 +695,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
-        child: Container(
+        hoverColor: activeColors.bg.withValues(alpha: 0.5),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
           height: 40,
           decoration: BoxDecoration(
             color: active ? activeColors.bg : kAuthCard,
@@ -699,17 +746,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           color: kAuthCard,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: kAuthBorder),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0A1A1A18),
-              blurRadius: 2,
-              offset: Offset(0, 1),
-            ),
-          ],
+          boxShadow: kCardShadow,
         ),
         child: Column(
           children: [
-            Container(
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
               width: 40,
               height: 40,
               decoration: BoxDecoration(
@@ -726,6 +769,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 fontWeight: FontWeight.w600,
                 letterSpacing: -0.5,
                 color: kAuthText,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
             const SizedBox(height: 2),

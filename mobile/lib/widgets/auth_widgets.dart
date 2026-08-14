@@ -15,6 +15,19 @@ const kAuthRedBadgeText = Color(0xFF791F1F);
 const kAuthRedBadgeBg = Color(0xFFFCEBEB);
 const kAuthRedLink = Color(0xFFA32D2D);
 
+const kCardShadow = <BoxShadow>[
+  BoxShadow(
+    color: Color(0x0E1A1A18),
+    blurRadius: 14,
+    offset: Offset(0, 4),
+  ),
+  BoxShadow(
+    color: Color(0x081A1A18),
+    blurRadius: 2,
+    offset: Offset(0, 1),
+  ),
+];
+
 class AuthBadge extends StatelessWidget {
   const AuthBadge({super.key});
 

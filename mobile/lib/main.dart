@@ -28,8 +28,11 @@ import 'services/server_config_service.dart';
 import 'providers/settings_provider.dart';
 import 'widgets/auth_widgets.dart';
 
+import 'core/map_cache.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initMapCache();
   final api = ApiService();
   final serverConfig = ServerConfigService();
   api.setBaseUrl(await serverConfig.getApiBaseUrl());

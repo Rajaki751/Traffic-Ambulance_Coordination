@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map_cache/flutter_map_cache.dart';
+import '../core/map_cache.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -170,6 +172,7 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.ambulance_coordination',
+                  tileProvider: CachedTileProvider(store: mapCacheStore),
                 ),
                 const SimpleAttributionWidget(
                   source: Text('© OpenStreetMap contributors'),

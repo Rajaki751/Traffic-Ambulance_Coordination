@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map_cache/flutter_map_cache.dart';
+import '../core/map_cache.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -303,6 +305,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.ambulance.coordination',
+                  tileProvider: CachedTileProvider(store: mapCacheStore),
                 ),
                 if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
                 MarkerLayer(markers: markers),

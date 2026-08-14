@@ -99,8 +99,9 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
         widget.destLon != oldWidget.destLon ||
         widget.routePolyline != oldWidget.routePolyline;
     if (routeChanged) _fitToContent();
-    if (widget.showTrafficOverlay && !oldWidget.showTrafficOverlay)
+    if (widget.showTrafficOverlay && !oldWidget.showTrafficOverlay) {
       _loadTraffic();
+    }
   }
 
   Future<void> _fitToContent() async {

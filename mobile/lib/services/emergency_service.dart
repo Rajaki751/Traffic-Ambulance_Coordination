@@ -37,8 +37,9 @@ class EmergencyService {
     }
     if (hospitalName != null) data['hospital_name'] = hospitalName;
     if (hospitalLatitude != null) data['hospital_latitude'] = hospitalLatitude;
-    if (hospitalLongitude != null)
+    if (hospitalLongitude != null) {
       data['hospital_longitude'] = hospitalLongitude;
+    }
 
     final res = await _api.post('/api/v1/emergencies/activate', data: data);
     return EmergencyModel.fromJson(res.data);

@@ -508,8 +508,9 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                   validator: (v) {
                     final lat = double.tryParse(v?.trim() ?? '');
                     if (lat == null) return 'Enter a valid latitude';
-                    if (lat < -90 || lat > 90)
+                    if (lat < -90 || lat > 90) {
                       return 'Latitude must be -90 to 90';
+                    }
                     return null;
                   },
                 ),
@@ -523,8 +524,9 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                   validator: (v) {
                     final lon = double.tryParse(v?.trim() ?? '');
                     if (lon == null) return 'Enter a valid longitude';
-                    if (lon < -180 || lon > 180)
+                    if (lon < -180 || lon > 180) {
                       return 'Longitude must be -180 to 180';
+                    }
                     return null;
                   },
                 ),

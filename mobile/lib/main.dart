@@ -128,7 +128,7 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
         title: 'Ambulance Coordination',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
       ),

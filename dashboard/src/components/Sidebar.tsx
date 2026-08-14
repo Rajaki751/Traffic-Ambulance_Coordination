@@ -7,12 +7,16 @@ import {
   IconLayoutDashboard,
   IconUsers,
   IconActivity,
+  IconFlame,
 } from '@tabler/icons-react';
 
 const navGroups = [
   {
     label: 'Overview',
-    links: [{ to: '/', label: 'Dashboard', icon: IconLayoutDashboard }],
+    links: [
+      { to: '/', label: 'Dashboard', icon: IconLayoutDashboard },
+      { to: '/heatmap', label: 'Predictive Heatmap', icon: IconFlame },
+    ],
   },
   {
     label: 'Operations',

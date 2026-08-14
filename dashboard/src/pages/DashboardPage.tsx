@@ -67,6 +67,7 @@ export default function DashboardPage() {
   const [liveLocations, setLiveLocations] = useState<LiveLocation[]>([]);
 
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
+  const [trend, setTrend] = useState<any[]>([]);
   const [error, setError] = useState('');
   const pollInFlight = useRef(false);
   const { subscribe } = useWebSocketContext();
@@ -75,16 +76,18 @@ export default function DashboardPage() {
     if (pollInFlight.current) return;
     pollInFlight.current = true;
     try {
-      const [sumRes, liveRes, emergRes, ambStatsRes] = await Promise.all([
+      const [sumRes, liveRes, emergRes, ambStatsRes, trendRes] = await Promise.all([
         analyticsApi.summary(),
         gpsApi.liveAll(),
         emergencyApi.active(),
         analyticsApi.ambulances(),
+        analyticsApi.trend(),
       ]);
       setSummary(sumRes.data);
       setLiveLocations((prev) => mergeLocations(prev, liveRes.data));
       setEmergencies(emergRes.data);
       setAmbulances(ambStatsRes.data);
+      setTrend(trendRes.data);
       setError('');
     } catch (e) {
       console.error(e);
@@ -240,15 +243,7 @@ export default function DashboardPage() {
             <div className="h-[140px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={[
-                    { name: 'Mon', time: 14.2 },
-                    { name: 'Tue', time: 12.8 },
-                    { name: 'Wed', time: 15.1 },
-                    { name: 'Thu', time: 11.5 },
-                    { name: 'Fri', time: 10.9 },
-                    { name: 'Sat', time: 9.2 },
-                    { name: 'Sun', time: 8.5 },
-                  ]}
+                  data={trend}
                   margin={{ top: 5, right: 0, left: -25, bottom: 0 }}
                 >
                   <defs>

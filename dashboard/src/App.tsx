@@ -6,6 +6,7 @@ import EmergenciesPage from './pages/EmergenciesPage';
 import AmbulancesPage from './pages/AmbulancesPage';
 import UsersPage from './pages/UsersPage';
 import FleetActivityPage from './pages/FleetActivityPage';
+import HeatmapPage from './pages/HeatmapPage';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -41,6 +42,7 @@ export default function App() {
         }
       >
         <Route index element={<DashboardPage />} />
+        <Route path="heatmap" element={<HeatmapPage />} />
         <Route path="emergencies" element={<EmergenciesPage />} />
         <Route path="ambulances" element={<AmbulancesPage />} />
         <Route path="fleet" element={<FleetActivityPage />} />

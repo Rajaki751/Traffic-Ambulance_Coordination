@@ -35,6 +35,8 @@ export const authApi = {
 export const analyticsApi = {
   summary: () => api.get('/api/v1/analytics/summary'),
   ambulances: () => api.get('/api/v1/analytics/ambulances'),
+  trend: () => api.get('/api/v1/analytics/trend'),
+  heatmap: () => api.get('/api/v1/analytics/heatmap'),
 };
 
 export const emergencyApi = {

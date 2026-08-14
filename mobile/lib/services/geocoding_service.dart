@@ -27,7 +27,8 @@ class GeocodingService {
   final ApiService _api;
   GeocodingService(this._api);
 
-  Future<List<GeocodingResult>> search(String query, {double? lat, double? lon}) async {
+  Future<List<GeocodingResult>> search(String query,
+      {double? lat, double? lon}) async {
     final params = <String, dynamic>{'q': query, 'limit': 5};
     if (lat != null) params['lat'] = lat;
     if (lon != null) params['lon'] = lon;

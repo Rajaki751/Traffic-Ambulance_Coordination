@@ -1,8 +1,12 @@
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const kAuthBg = Color(0xFFF7F7F5);
-const kAuthCard = Color(0xFFFFFFFF);
+final Color kAuthCard =
+    kIsWeb ? const Color(0xBDFFFFFF) : const Color(0x8CFFFFFF);
 const kAuthBorder = Color(0xFFD3D1C7);
 const kAuthText = Color(0xFF1A1A18);
 const kAuthMuted = Color(0xFF5F5E5A);
@@ -14,6 +18,14 @@ const kAuthRedPressed = Color(0xFFB2322F);
 const kAuthRedBadgeText = Color(0xFF791F1F);
 const kAuthRedBadgeBg = Color(0xFFFCEBEB);
 const kAuthRedLink = Color(0xFFA32D2D);
+
+const kGlassBorder = Color(0xB8FFFFFF);
+const kGlassOverlay = Color(0x66FFFFFF);
+
+final Color kGlassTint =
+    kIsWeb ? const Color(0xBDFFFFFF) : const Color(0x8CFFFFFF);
+
+const double kGlassBlur = 14.0;
 
 const kAuthBlue = Color(0xFF2E6FD8);
 const kAuthBlueTint = Color(0xFFEAF1FC);
@@ -27,16 +39,182 @@ const kAuthInk = Color(0xFF1D1D1B);
 
 const kCardShadow = <BoxShadow>[
   BoxShadow(
-    color: Color(0x0E1A1A18),
-    blurRadius: 14,
-    offset: Offset(0, 4),
+    color: Color(0x1A1A1A18),
+    blurRadius: 18,
+    offset: Offset(0, 6),
   ),
   BoxShadow(
-    color: Color(0x081A1A18),
-    blurRadius: 2,
+    color: Color(0x0D1A1A18),
+    blurRadius: 3,
     offset: Offset(0, 1),
   ),
 ];
+
+class GlassSurface extends StatelessWidget {
+  const GlassSurface({
+    super.key,
+    required this.child,
+    this.radius = 16,
+    this.blur,
+    this.padding,
+    this.tint,
+    this.borderColor = kGlassBorder,
+    this.shadows = kCardShadow,
+  });
+
+  final Widget child;
+  final double radius;
+  final double? blur;
+  final EdgeInsetsGeometry? padding;
+  final Color? tint;
+  final Color borderColor;
+  final List<BoxShadow>? shadows;
+
+  @override
+  Widget build(BuildContext context) {
+    final sigma = blur ?? kGlassBlur;
+    final fill = tint ?? kGlassTint;
+    final panel = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: borderColor),
+        boxShadow: shadows,
+      ),
+      child: child,
+    );
+    if (kIsWeb) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: panel,
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+        child: panel,
+      ),
+    );
+  }
+}
+
+class FrostedAppBarBackdrop extends StatelessWidget {
+  const FrostedAppBarBackdrop({super.key, this.blur});
+
+  final double? blur;
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = Container(color: kGlassTint);
+    if (kIsWeb) return tint;
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: blur ?? kGlassBlur,
+          sigmaY: blur ?? kGlassBlur,
+        ),
+        child: tint,
+      ),
+    );
+  }
+}
+
+class FrostedBar extends StatelessWidget {
+  const FrostedBar({super.key, required this.child, this.blur});
+
+  final Widget child;
+  final double? blur;
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = Container(color: kGlassTint, child: child);
+    if (kIsWeb) return tint;
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: blur ?? kGlassBlur,
+          sigmaY: blur ?? kGlassBlur,
+        ),
+        child: tint,
+      ),
+    );
+  }
+}
+
+class GlassBackdrop extends StatelessWidget {
+  const GlassBackdrop({super.key, this.child});
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(color: kAuthBg),
+        IgnorePointer(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned(
+                top: -160,
+                left: -120,
+                child: _blob(
+                  radius: 360,
+                  color: kAuthRed.withValues(alpha: 0.10),
+                ),
+              ),
+              Positioned(
+                top: -80,
+                right: -140,
+                child: _blob(
+                  radius: 320,
+                  color: kAuthBlue.withValues(alpha: 0.09),
+                ),
+              ),
+              Positioned(
+                bottom: -180,
+                left: -100,
+                child: _blob(
+                  radius: 380,
+                  color: kAuthOrange.withValues(alpha: 0.08),
+                ),
+              ),
+              Positioned(
+                bottom: 40,
+                right: -60,
+                child: _blob(
+                  radius: 260,
+                  color: _kGreenBgBlob.withValues(alpha: 0.07),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (child case final Widget c) c,
+      ],
+    );
+  }
+
+  Widget _blob({required double radius, required Color color}) {
+    return Container(
+      width: radius,
+      height: radius,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          center: Alignment.center,
+          radius: 1,
+          colors: [color, color.withValues(alpha: 0)],
+        ),
+      ),
+    );
+  }
+}
+
+const Color _kGreenBgBlob = Color(0xFF2F9E63);
 
 class AuthBadge extends StatelessWidget {
   const AuthBadge({super.key});
@@ -102,25 +280,9 @@ class AuthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassSurface(
+      radius: 18,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: kAuthCard,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: kAuthBorder),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A1A1A18),
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-          BoxShadow(
-            color: Color(0x0A1A1A18),
-            blurRadius: 24,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
       child: child,
     );
   }
@@ -307,9 +469,8 @@ class _AuthFieldState extends State<AuthField> {
                             ? Icons.visibility_rounded
                             : Icons.visibility_off_rounded,
                         size: 18,
-                        color: _eyeHover || _eyePressed
-                            ? kAuthMuted
-                            : kAuthIcon,
+                        color:
+                            _eyeHover || _eyePressed ? kAuthMuted : kAuthIcon,
                       ),
                     ),
                   ),
@@ -501,9 +662,8 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton> {
           height: 44,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: _pressed
-                ? kAuthRedPressed
-                : (_hover ? kAuthRedDark : kAuthRed),
+            color:
+                _pressed ? kAuthRedPressed : (_hover ? kAuthRedDark : kAuthRed),
           ),
           child: ElevatedButton(
             onPressed: widget.loading ? null : widget.onPressed,

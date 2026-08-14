@@ -22,12 +22,12 @@ class AppTheme {
       colorScheme: scheme,
       fontFamily: GoogleFonts.inter().fontFamily,
       splashFactory: InkSparkle.splashFactory,
-      scaffoldBackgroundColor: isDark ? kAuthInk : kAuthBg,
+      scaffoldBackgroundColor: isDark ? kAuthInk : Colors.transparent,
     );
 
     return base.copyWith(
       appBarTheme: AppBarTheme(
-        backgroundColor: isDark ? kAuthInk : kAuthCard,
+        backgroundColor: isDark ? kAuthInk : Colors.transparent,
         foregroundColor: isDark ? scheme.onSurface : kAuthText,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -66,11 +66,8 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: isDark
-              ? const Color(0xFFF2A3A2)
-              : kAuthRedLink,
-          overlayColor:
-              scheme.primaryContainer.withValues(alpha: 0.5),
+          foregroundColor: isDark ? const Color(0xFFF2A3A2) : kAuthRedLink,
+          overlayColor: scheme.primaryContainer.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -202,14 +199,14 @@ class AppTheme {
         unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: scheme.surface,
+        backgroundColor: const Color(0xEBFFFFFF),
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: scheme.surface,
+        backgroundColor: const Color(0xEBFFFFFF),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -332,13 +329,13 @@ class AppTheme {
       onError: Colors.white,
       errorContainer: kAuthRedBadgeBg,
       onErrorContainer: kAuthRedBadgeText,
-      surface: kAuthCard,
+      surface: kGlassTint,
       onSurface: kAuthText,
-      surfaceContainerLowest: kAuthCard,
-      surfaceContainerLow: const Color(0xFFFCFCFB),
-      surfaceContainer: kAuthBg,
-      surfaceContainerHigh: kAuthNeutralTint,
-      surfaceContainerHighest: const Color(0xFFEDECE7),
+      surfaceContainerLowest: kGlassOverlay,
+      surfaceContainerLow: kGlassTint,
+      surfaceContainer: kGlassTint,
+      surfaceContainerHigh: kGlassTint,
+      surfaceContainerHighest: const Color(0xB3FFFFFF),
       onSurfaceVariant: kAuthMuted,
       outline: kAuthBorder,
       outlineVariant: const Color(0xFFE4E2DA),
@@ -369,8 +366,7 @@ class AppTheme {
       }),
       elevation: const WidgetStatePropertyAll(0),
       shadowColor: const WidgetStatePropertyAll(Colors.transparent),
-      padding:
-          const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 14)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 14)),
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

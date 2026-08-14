@@ -27,8 +27,12 @@ class TripHistoryItem {
       priorityLevel: json['priority_level'] as String?,
       status: json['status'] as String? ?? 'unknown',
       startedAt: DateTime.parse(json['started_at'] as String),
-      endedAt: json['ended_at'] != null ? DateTime.parse(json['ended_at'] as String) : null,
-      etaMinutes: json['eta_minutes'] != null ? (json['eta_minutes'] as num).toDouble() : null,
+      endedAt: json['ended_at'] != null
+          ? DateTime.parse(json['ended_at'] as String)
+          : null,
+      etaMinutes: json['eta_minutes'] != null
+          ? (json['eta_minutes'] as num).toDouble()
+          : null,
     );
   }
 }

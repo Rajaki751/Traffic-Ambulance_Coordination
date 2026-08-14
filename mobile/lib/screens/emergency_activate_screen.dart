@@ -165,8 +165,7 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
                   cursorColor: kAuthRed,
                   decoration: InputDecoration(
                     hintText: 'e.g. Teaching Hospital Kathmandu',
-                    hintStyle:
-                        text.copyWith(fontSize: 14, color: kAuthFaint),
+                    hintStyle: text.copyWith(fontSize: 14, color: kAuthFaint),
                     prefixIcon: const Icon(
                       Icons.search_rounded,
                       size: 20,
@@ -313,12 +312,13 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
     final text = GoogleFonts.inter();
 
     return Scaffold(
-      backgroundColor: kAuthBg,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: kAuthCard,
+        backgroundColor: Colors.transparent,
         foregroundColor: kAuthText,
         elevation: 0,
         scrolledUnderElevation: 0,
+        flexibleSpace: const FrostedAppBarBackdrop(),
         shape: const Border(bottom: BorderSide(color: kAuthBorder)),
         title: Text(
           'Activate emergency',
@@ -329,228 +329,238 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: kAuthRedBadgeBg,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.emergency_rounded, size: 18, color: kAuthRed),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'On activation, dispatch and nearby traffic officers '
-                      'are alerted to clear the route.',
-                      style: text.copyWith(
-                        fontSize: 12.5,
-                        color: kAuthRedBadgeText,
-                        height: 1.4,
+      body: GlassBackdrop(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: kAuthRedBadgeBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: kAuthRed.withValues(alpha: 0.25)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.emergency_rounded,
+                        size: 18, color: kAuthRed),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'On activation, dispatch and nearby traffic officers '
+                        'are alerted to clear the route.',
+                        style: text.copyWith(
+                          fontSize: 12.5,
+                          color: kAuthRedBadgeText,
+                          height: 1.4,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            _sectionLabel(text, 'Incident details'),
-            const SizedBox(height: 8),
-            AuthDropdownField(
-              label: 'Incident type',
-              icon: Icons.medical_information_outlined,
-              value: _incidentType,
-              items: _incidentTypes
-                  .map((t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(_incidentLabel(t)),
-                      ))
-                  .toList(),
-              onChanged: (v) =>
-                  setState(() => _incidentType = v ?? 'general'),
-            ),
-            const SizedBox(height: 12),
-            AuthDropdownField(
-              label: 'Route preference',
-              icon: Icons.route_outlined,
-              value: _routePreference,
-              items: const [
-                DropdownMenuItem(value: 'fastest', child: Text('Fastest (time)')),
-                DropdownMenuItem(
-                  value: 'shortest',
-                  child: Text('Shortest (distance)'),
+                  ],
                 ),
-              ],
-              onChanged: (v) =>
-                  setState(() => _routePreference = v ?? 'fastest'),
-            ),
-            const SizedBox(height: 12),
-            _KField(
-              controller: _destCtrl,
-              label: 'Destination / landmark',
-              icon: Icons.location_on_outlined,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Enter a destination' : null,
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    tooltip: 'Search location',
-                    padding: const EdgeInsets.all(7),
-                    onPressed: () => _showLocationSearch(context),
-                    icon: const Icon(
-                      Icons.search_rounded,
-                      size: 20,
-                      color: kAuthIcon,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'Pin on map',
-                    padding: const EdgeInsets.all(7),
-                    onPressed: () => _pickOnMap(context),
-                    icon: const Icon(
-                      Icons.map_outlined,
-                      size: 20,
-                      color: kAuthRedLink,
-                    ),
+              ),
+              const SizedBox(height: 20),
+              _sectionLabel(text, 'Incident details'),
+              const SizedBox(height: 8),
+              AuthDropdownField(
+                label: 'Incident type',
+                icon: Icons.medical_information_outlined,
+                value: _incidentType,
+                items: _incidentTypes
+                    .map((t) => DropdownMenuItem(
+                          value: t,
+                          child: Text(_incidentLabel(t)),
+                        ))
+                    .toList(),
+                onChanged: (v) =>
+                    setState(() => _incidentType = v ?? 'general'),
+              ),
+              const SizedBox(height: 12),
+              AuthDropdownField(
+                label: 'Route preference',
+                icon: Icons.route_outlined,
+                value: _routePreference,
+                items: const [
+                  DropdownMenuItem(
+                      value: 'fastest', child: Text('Fastest (time)')),
+                  DropdownMenuItem(
+                    value: 'shortest',
+                    child: Text('Shortest (distance)'),
                   ),
                 ],
-              ),
-            ),
-            if (_pinned && _useAi) ...[
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  const Icon(Icons.push_pin_outlined, size: 14, color: kAuthRedLink),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      'Pinned location overrides the AI estimate for this activation.',
-                      style: GoogleFonts.inter().copyWith(
-                        color: kAuthRedLink,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 8),
-            AuthDropdownField(
-              label: 'Hospital (optional)',
-              icon: Icons.local_hospital_outlined,
-              value: _hospital?.name ?? '',
-              items: [
-                const DropdownMenuItem(
-                  value: '',
-                  child: Text('Choose from Kathmandu hospitals'),
-                ),
-                ...kathmanduHospitals
-                    .map((h) =>
-                        DropdownMenuItem(value: h.name, child: Text(h.name))),
-              ],
-              onChanged: (v) {
-                if (v == null) return;
-                setState(() {
-                  _hospital = v.isEmpty
-                      ? null
-                      : kathmanduHospitals.firstWhere((h) => h.name == v);
-                  if (!_useAi && _hospital != null) {
-                    _latCtrl.text = _hospital!.lat.toStringAsFixed(6);
-                    _lonCtrl.text = _hospital!.lon.toStringAsFixed(6);
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            _sectionLabel(text, 'Prediction'),
-            const SizedBox(height: 8),
-            _aiToggleCard(text, emergency),
-            const SizedBox(height: 12),
-            if (_useAi) ...[
-              _PreviewButton(
-                loading: emergency.loading,
-                onPressed: () async {
-                  final pred = await emergency.previewAiPrediction(
-                    incidentType: _incidentType,
-                  );
-                  if (pred != null && mounted) {
-                    setState(() {
-                      _pinned = false;
-                      _latCtrl.text = pred.incidentLat.toStringAsFixed(6);
-                      _lonCtrl.text = pred.incidentLon.toStringAsFixed(6);
-                    });
-                  }
-                },
-              ),
-              if (prediction != null) ...[
-                const SizedBox(height: 12),
-                _predictionCard(text, prediction),
-              ],
-            ] else ...[
-              _KField(
-                controller: _latCtrl,
-                label: 'Incident latitude (manual)',
-                icon: Icons.near_me_outlined,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  final lat = double.tryParse(v?.trim() ?? '');
-                  if (lat == null) return 'Enter a valid latitude';
-                  if (lat < -90 || lat > 90) return 'Latitude must be -90 to 90';
-                  return null;
-                },
+                onChanged: (v) =>
+                    setState(() => _routePreference = v ?? 'fastest'),
               ),
               const SizedBox(height: 12),
               _KField(
-                controller: _lonCtrl,
-                label: 'Incident longitude (manual)',
-                icon: Icons.explore_outlined,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  final lon = double.tryParse(v?.trim() ?? '');
-                  if (lon == null) return 'Enter a valid longitude';
-                  if (lon < -180 || lon > 180) return 'Longitude must be -180 to 180';
-                  return null;
+                controller: _destCtrl,
+                label: 'Destination / landmark',
+                icon: Icons.location_on_outlined,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Enter a destination'
+                    : null,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: 'Search location',
+                      padding: const EdgeInsets.all(7),
+                      onPressed: () => _showLocationSearch(context),
+                      icon: const Icon(
+                        Icons.search_rounded,
+                        size: 20,
+                        color: kAuthIcon,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Pin on map',
+                      padding: const EdgeInsets.all(7),
+                      onPressed: () => _pickOnMap(context),
+                      icon: const Icon(
+                        Icons.map_outlined,
+                        size: 20,
+                        color: kAuthRedLink,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_pinned && _useAi) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.push_pin_outlined,
+                        size: 14, color: kAuthRedLink),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Pinned location overrides the AI estimate for this activation.',
+                        style: GoogleFonts.inter().copyWith(
+                          color: kAuthRedLink,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 8),
+              AuthDropdownField(
+                label: 'Hospital (optional)',
+                icon: Icons.local_hospital_outlined,
+                value: _hospital?.name ?? '',
+                items: [
+                  const DropdownMenuItem(
+                    value: '',
+                    child: Text('Choose from Kathmandu hospitals'),
+                  ),
+                  ...kathmanduHospitals.map((h) =>
+                      DropdownMenuItem(value: h.name, child: Text(h.name))),
+                ],
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() {
+                    _hospital = v.isEmpty
+                        ? null
+                        : kathmanduHospitals.firstWhere((h) => h.name == v);
+                    if (!_useAi && _hospital != null) {
+                      _latCtrl.text = _hospital!.lat.toStringAsFixed(6);
+                      _lonCtrl.text = _hospital!.lon.toStringAsFixed(6);
+                    }
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              _sectionLabel(text, 'Prediction'),
+              const SizedBox(height: 8),
+              _aiToggleCard(text, emergency),
+              const SizedBox(height: 12),
+              if (_useAi) ...[
+                _PreviewButton(
+                  loading: emergency.loading,
+                  onPressed: () async {
+                    final pred = await emergency.previewAiPrediction(
+                      incidentType: _incidentType,
+                    );
+                    if (pred != null && mounted) {
+                      setState(() {
+                        _pinned = false;
+                        _latCtrl.text = pred.incidentLat.toStringAsFixed(6);
+                        _lonCtrl.text = pred.incidentLon.toStringAsFixed(6);
+                      });
+                    }
+                  },
+                ),
+                if (prediction != null) ...[
+                  const SizedBox(height: 12),
+                  _predictionCard(text, prediction),
+                ],
+              ] else ...[
+                _KField(
+                  controller: _latCtrl,
+                  label: 'Incident latitude (manual)',
+                  icon: Icons.near_me_outlined,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  validator: (v) {
+                    final lat = double.tryParse(v?.trim() ?? '');
+                    if (lat == null) return 'Enter a valid latitude';
+                    if (lat < -90 || lat > 90)
+                      return 'Latitude must be -90 to 90';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                _KField(
+                  controller: _lonCtrl,
+                  label: 'Incident longitude (manual)',
+                  icon: Icons.explore_outlined,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  validator: (v) {
+                    final lon = double.tryParse(v?.trim() ?? '');
+                    if (lon == null) return 'Enter a valid longitude';
+                    if (lon < -180 || lon > 180)
+                      return 'Longitude must be -180 to 180';
+                    return null;
+                  },
+                ),
+              ],
+              if (emergency.error != null) ...[
+                const SizedBox(height: 16),
+                AuthErrorBanner(message: emergency.error!),
+              ],
+              const SizedBox(height: 24),
+              EmergencyButton(
+                loading: emergency.loading,
+                label: 'Start emergency',
+                onPressed: () async {
+                  if (!(_formKey.currentState!.validate())) return;
+                  final ok = await emergency.activateEmergency(
+                    destination: _destCtrl.text,
+                    useAiPrediction: _useAi,
+                    incidentType: _incidentType,
+                    routePreference: _routePreference,
+                    destLat: _pinned
+                        ? _pinnedLat
+                        : (_useAi ? null : double.tryParse(_latCtrl.text)),
+                    destLon: _pinned
+                        ? _pinnedLon
+                        : (_useAi ? null : double.tryParse(_lonCtrl.text)),
+                    hospitalName: _hospital?.name,
+                    hospitalLatitude: _hospital?.lat,
+                    hospitalLongitude: _hospital?.lon,
+                  );
+                  if (!ok) return;
+                  if (!mounted) return;
+                  Navigator.pop(this.context, true);
                 },
               ),
             ],
-            if (emergency.error != null) ...[
-              const SizedBox(height: 16),
-              AuthErrorBanner(message: emergency.error!),
-            ],
-            const SizedBox(height: 24),
-            EmergencyButton(
-              loading: emergency.loading,
-              label: 'Start emergency',
-              onPressed: () async {
-                if (!(_formKey.currentState!.validate())) return;
-                final ok = await emergency.activateEmergency(
-                  destination: _destCtrl.text,
-                  useAiPrediction: _useAi,
-                  incidentType: _incidentType,
-                  routePreference: _routePreference,
-                  destLat: _pinned
-                      ? _pinnedLat
-                      : (_useAi ? null : double.tryParse(_latCtrl.text)),
-                  destLon: _pinned
-                      ? _pinnedLon
-                      : (_useAi ? null : double.tryParse(_lonCtrl.text)),
-                  hospitalName: _hospital?.name,
-                  hospitalLatitude: _hospital?.lat,
-                  hospitalLongitude: _hospital?.lon,
-                );
-                if (!ok) return;
-                if (!mounted) return;
-                Navigator.pop(this.context, true);
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -574,14 +584,8 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
   }
 
   Widget _aiToggleCard(TextStyle text, EmergencyProvider emergency) {
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: kAuthCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kAuthBorder),
-        boxShadow: kCardShadow,
-      ),
       child: Row(
         children: [
           Container(
@@ -643,14 +647,8 @@ class _EmergencyActivateScreenState extends State<EmergencyActivateScreen> {
   }
 
   Widget _predictionCard(TextStyle text, IncidentPrediction prediction) {
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kAuthCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kAuthBorder),
-        boxShadow: kCardShadow,
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

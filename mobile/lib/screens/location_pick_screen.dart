@@ -132,13 +132,14 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
   Widget build(BuildContext context) {
     final center = LatLng(widget.initialLat, widget.initialLon);
     return Scaffold(
-      backgroundColor: kAuthBg,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: kAuthCard,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+        flexibleSpace: const FrostedAppBarBackdrop(),
         title: Text(
           'Pick incident location',
           style: _text.copyWith(
@@ -148,160 +149,166 @@ class _LocationPickScreenState extends State<LocationPickScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: center,
-              initialZoom: 16,
-              minZoom: 10,
-              maxZoom: 19,
-              backgroundColor: kAuthBg,
-              onPositionChanged: _onPositionChanged,
-              onMapReady: () => _mapReady = true,
-              interactionOptions: const InteractionOptions(
-                flags: InteractiveFlag.all,
+      body: GlassBackdrop(
+        child: Stack(
+          children: [
+            FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: center,
+                initialZoom: 16,
+                minZoom: 10,
+                maxZoom: 19,
+                backgroundColor: kAuthBg,
+                onPositionChanged: _onPositionChanged,
+                onMapReady: () => _mapReady = true,
+                interactionOptions: const InteractionOptions(
+                  flags: InteractiveFlag.all,
+                ),
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.ambulance_coordination',
+                ),
+                const SimpleAttributionWidget(
+                  source: Text('© OpenStreetMap contributors'),
+                ),
+              ],
+            ),
+            IgnorePointer(
+              child: Center(
+                child: Transform.translate(
+                  offset: const Offset(0, -14),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GlassSurface(
+                        radius: 29,
+                        blur: 8,
+                        tint: kGlassTint.withValues(alpha: 0.85),
+                        shadows: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                        child: SizedBox(
+                          width: 58,
+                          height: 58,
+                          child: Icon(
+                            Icons.location_on,
+                            size: 40,
+                            color: kAuthRed,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.ambulance_coordination',
+            Positioned(
+              top: 12,
+              right: 16,
+              child: Material(
+                color: kAuthCard,
+                shape: const CircleBorder(),
+                elevation: 2,
+                shadowColor: Colors.black.withValues(alpha: 0.2),
+                child: IconButton(
+                  tooltip: 'My location',
+                  onPressed: _locate,
+                  icon:
+                      const Icon(Icons.my_location, color: kAuthRed, size: 22),
+                ),
               ),
-              const SimpleAttributionWidget(
-                source: Text('© OpenStreetMap contributors'),
-              ),
-            ],
-          ),
-          IgnorePointer(
-            child: Center(
-              child: Transform.translate(
-                offset: const Offset(0, -14),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: kAuthCard.withValues(alpha: 0.92),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.18),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(18)),
+                child: FrostedBar(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                    decoration: const BoxDecoration(
+                      border: Border(top: BorderSide(color: kGlassBorder)),
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                _resolving
+                                    ? Icons.hourglass_top_rounded
+                                    : Icons.place_outlined,
+                                size: 16,
+                                color: _resolving ? kAuthIcon : kAuthRedLink,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _resolving
+                                      ? 'Resolving place name…'
+                                      : (_label ?? 'Pinned point'),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: _text.copyWith(
+                                    color: kAuthText,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Drag the map so the pin sits on the incident spot.',
+                            style: _text.copyWith(
+                              color: kAuthFaint,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          SizedBox(
+                            height: 48,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: kAuthRed,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                              onPressed: _confirm,
+                              child: Text(
+                                'Use this location',
+                                style: _text.copyWith(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.location_on,
-                        size: 40,
-                        color: kAuthRed,
-                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: 12,
-            right: 16,
-            child: Material(
-              color: kAuthCard,
-              shape: const CircleBorder(),
-              elevation: 2,
-              shadowColor: Colors.black.withValues(alpha: 0.2),
-              child: IconButton(
-                tooltip: 'My location',
-                onPressed: _locate,
-                icon: const Icon(Icons.my_location, color: kAuthRed, size: 22),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-              decoration: BoxDecoration(
-                color: kAuthCard,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                border: Border(
-                  top: BorderSide(color: kAuthBorder, width: 1),
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          _resolving
-                              ? Icons.hourglass_top_rounded
-                              : Icons.place_outlined,
-                          size: 16,
-                          color: _resolving ? kAuthIcon : kAuthRedLink,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _resolving
-                                ? 'Resolving place name…'
-                                : (_label ?? 'Pinned point'),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: _text.copyWith(
-                              color: kAuthText,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Drag the map so the pin sits on the incident spot.',
-                      style: _text.copyWith(
-                        color: kAuthFaint,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kAuthRed,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: _confirm,
-                        child: Text(
-                          'Use this location',
-                          style: _text.copyWith(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

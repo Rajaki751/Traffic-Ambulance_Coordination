@@ -16,6 +16,7 @@ const _kBlueTint = Color(0xFFEAF1FC);
 const _kOrange = Color(0xFFE8833A);
 const _kOrangeTint = Color(0xFFFDF1E7);
 const _kNeutralTint = Color(0xFFF2F1ED);
+const _kScrim = Color(0x3D1A1A18);
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -112,14 +113,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _identityCard(TextStyle text, String name, String email, String role) {
     final initial = name.isEmpty ? 'D' : name[0].toUpperCase();
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: kAuthCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kAuthBorder),
-        boxShadow: kCardShadow,
-      ),
       child: Row(
         children: [
           Container(
@@ -521,6 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final text = GoogleFonts.inter();
     showDialog(
       context: context,
+      barrierColor: _kScrim,
       builder: (ctx) => _styledDialog(
         title: 'Log out?',
         content: Text(
@@ -552,6 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     showDialog(
       context: context,
+      barrierColor: _kScrim,
       builder: (ctx) => _styledDialog(
         title: 'Edit name',
         content: Form(
@@ -595,6 +592,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     showDialog(
       context: context,
+      barrierColor: _kScrim,
       builder: (ctx) => _styledDialog(
         title: 'Change password',
         content: Form(
@@ -608,8 +606,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: text.copyWith(fontSize: 15, color: kAuthText),
                 cursorColor: kAuthRed,
                 decoration: _fieldDecoration('Current password'),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Enter your current password' : null,
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Enter your current password'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -618,8 +617,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: text.copyWith(fontSize: 15, color: kAuthText),
                 cursorColor: kAuthRed,
                 decoration: _fieldDecoration('New password'),
-                validator: (v) =>
-                    (v == null || v.length < 8) ? 'At least 8 characters' : null,
+                validator: (v) => (v == null || v.length < 8)
+                    ? 'At least 8 characters'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -653,6 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final text = GoogleFonts.inter();
     showDialog(
       context: context,
+      barrierColor: _kScrim,
       builder: (ctx) => _styledDialog(
         title: 'Help & support',
         content: Column(
@@ -708,6 +709,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final text = GoogleFonts.inter();
     showDialog(
       context: context,
+      barrierColor: _kScrim,
       builder: (ctx) => _styledDialog(
         title: 'About',
         content: Column(
@@ -769,12 +771,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     final text = GoogleFonts.inter();
     return Dialog(
-      backgroundColor: kAuthCard,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: kAuthBorder),
-      ),
-      child: Padding(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      child: GlassSurface(
+        radius: 16,
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -922,9 +924,8 @@ class _LogoutButtonState extends State<_LogoutButton> {
           height: 46,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: _pressed
-                ? kAuthRedPressed
-                : (_hover ? kAuthRedDark : kAuthRed),
+            color:
+                _pressed ? kAuthRedPressed : (_hover ? kAuthRedDark : kAuthRed),
           ),
           child: Material(
             color: Colors.transparent,
@@ -935,7 +936,8 @@ class _LogoutButtonState extends State<_LogoutButton> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.logout_rounded, size: 18, color: Colors.white),
+                    const Icon(Icons.logout_rounded,
+                        size: 18, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
                       'Logout',

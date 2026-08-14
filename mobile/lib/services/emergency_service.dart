@@ -37,7 +37,8 @@ class EmergencyService {
     }
     if (hospitalName != null) data['hospital_name'] = hospitalName;
     if (hospitalLatitude != null) data['hospital_latitude'] = hospitalLatitude;
-    if (hospitalLongitude != null) data['hospital_longitude'] = hospitalLongitude;
+    if (hospitalLongitude != null)
+      data['hospital_longitude'] = hospitalLongitude;
 
     final res = await _api.post('/api/v1/emergencies/activate', data: data);
     return EmergencyModel.fromJson(res.data);
@@ -70,7 +71,8 @@ class EmergencyService {
     };
     if (currentLat != null) data['current_latitude'] = currentLat;
     if (currentLon != null) data['current_longitude'] = currentLon;
-    final res = await _api.patch('/api/v1/emergencies/$sessionId/trip-stage', data: data);
+    final res = await _api.patch('/api/v1/emergencies/$sessionId/trip-stage',
+        data: data);
     return EmergencyModel.fromJson(res.data);
   }
 

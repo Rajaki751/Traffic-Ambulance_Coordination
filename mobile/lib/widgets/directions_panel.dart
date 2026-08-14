@@ -37,7 +37,8 @@ class DirectionsPanel extends StatelessWidget {
         final curr = points[i];
         final d = dist.as(LengthUnit.Meter, prev, curr);
         total += d;
-        steps.add(_StepItem(index: i, lat: curr.latitude, lon: curr.longitude, meters: d));
+        steps.add(_StepItem(
+            index: i, lat: curr.latitude, lon: curr.longitude, meters: d));
       }
     }
 
@@ -50,17 +51,20 @@ class DirectionsPanel extends StatelessWidget {
             Container(
               height: 4,
               width: 48,
-              decoration: BoxDecoration(color: kAuthBorder, borderRadius: BorderRadius.circular(4)),
+              decoration: BoxDecoration(
+                  color: kAuthBorder, borderRadius: BorderRadius.circular(4)),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 const Icon(Icons.directions, color: kAuthRed),
                 const SizedBox(width: 8),
-                const Text('Turn-by-turn (approx.)', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Turn-by-turn (approx.)',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const Spacer(),
                 if (totalEtaMinutes != null)
-                  Text('${totalEtaMinutes!.round()} min', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text('${totalEtaMinutes!.round()} min',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
@@ -77,8 +81,12 @@ class DirectionsPanel extends StatelessWidget {
                   separatorBuilder: (_, __) => const Divider(height: 8),
                   itemBuilder: (_, i) {
                     final s = steps[i];
-                    final cumMeters = steps.take(i + 1).fold<double>(0, (p, e) => p + e.meters);
-                    final eta = totalEtaMinutes != null && total > 0 ? (cumMeters / total) * totalEtaMinutes! : null;
+                    final cumMeters = steps
+                        .take(i + 1)
+                        .fold<double>(0, (p, e) => p + e.meters);
+                    final eta = totalEtaMinutes != null && total > 0
+                        ? (cumMeters / total) * totalEtaMinutes!
+                        : null;
                     final instr = (routeSteps != null && routeSteps!.length > i)
                         ? routeSteps![i].instruction
                         : 'Proceed ${(s.meters).round()} m';
@@ -87,7 +95,8 @@ class DirectionsPanel extends StatelessWidget {
                       title: Text(instr),
                       subtitle: routeSteps != null && routeSteps!.length > i
                           ? Text('${(s.meters).round()} m')
-                          : Text('Lat ${s.lat.toStringAsFixed(5)}, Lon ${s.lon.toStringAsFixed(5)}'),
+                          : Text(
+                              'Lat ${s.lat.toStringAsFixed(5)}, Lon ${s.lon.toStringAsFixed(5)}'),
                       trailing: eta != null ? Text('${eta.round()}m') : null,
                     );
                   },
@@ -107,5 +116,9 @@ class _StepItem {
   final double lon;
   final double meters;
 
-  _StepItem({required this.index, required this.lat, required this.lon, required this.meters});
+  _StepItem(
+      {required this.index,
+      required this.lat,
+      required this.lon,
+      required this.meters});
 }

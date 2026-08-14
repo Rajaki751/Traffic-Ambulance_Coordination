@@ -97,7 +97,8 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
         widget.destLon != oldWidget.destLon ||
         widget.routePolyline != oldWidget.routePolyline;
     if (routeChanged) _fitToContent();
-    if (widget.showTrafficOverlay && !oldWidget.showTrafficOverlay) _loadTraffic();
+    if (widget.showTrafficOverlay && !oldWidget.showTrafficOverlay)
+      _loadTraffic();
   }
 
   Future<void> _fitToContent() async {
@@ -191,7 +192,8 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
     }
 
     for (final a in widget.extraAmbulances) {
-      markers.add(_marker(a.lat, a.lon, Icons.local_shipping, Colors.red, a.label));
+      markers.add(
+          _marker(a.lat, a.lon, Icons.local_shipping, Colors.red, a.label));
       if (a.destLat != null && a.destLon != null) {
         markers.add(_marker(
           a.destLat!,
@@ -204,7 +206,8 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
     }
     if (widget.showKathmanduHospitals) {
       for (final h in kathmanduHospitals) {
-        markers.add(_marker(h.lat, h.lon, Icons.local_hospital, Colors.green, h.name));
+        markers.add(
+            _marker(h.lat, h.lon, Icons.local_hospital, Colors.green, h.name));
       }
     }
 
@@ -239,7 +242,8 @@ class _AmbulanceMapState extends State<AmbulanceMap> {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.ambulance.coordination',
         ),
-        if ((widget.showTrafficOverlay && _trafficCircles.isNotEmpty) && settings.showTrafficOverlay)
+        if ((widget.showTrafficOverlay && _trafficCircles.isNotEmpty) &&
+            settings.showTrafficOverlay)
           CircleLayer(circles: _trafficCircles),
         if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
         MarkerLayer(markers: markers),

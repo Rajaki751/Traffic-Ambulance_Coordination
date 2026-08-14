@@ -49,8 +49,10 @@ class IncidentPrediction {
   }
 
   String get confidenceDescription {
-    if (confidence >= 0.8) return 'High confidence - Strong match with historical patterns';
-    if (confidence >= 0.5) return 'Moderate confidence - Some uncertainty in prediction';
+    if (confidence >= 0.8)
+      return 'High confidence - Strong match with historical patterns';
+    if (confidence >= 0.5)
+      return 'Moderate confidence - Some uncertainty in prediction';
     return 'Low confidence - Limited historical data for this area/type';
   }
 }

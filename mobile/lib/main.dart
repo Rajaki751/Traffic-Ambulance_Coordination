@@ -24,6 +24,7 @@ import 'services/notification_service.dart';
 import 'services/profile_service.dart';
 import 'services/server_config_service.dart';
 import 'providers/settings_provider.dart';
+import 'widgets/auth_widgets.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,8 @@ Future<void> main() async {
 }
 
 class AmbulanceApp extends StatefulWidget {
-  const AmbulanceApp({super.key, required this.api, required this.serverConfig});
+  const AmbulanceApp(
+      {super.key, required this.api, required this.serverConfig});
 
   final ApiService api;
   final ServerConfigService serverConfig;
@@ -142,6 +144,7 @@ class _SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      backgroundColor: kAuthBg,
       body: Center(child: CircularProgressIndicator()),
     );
   }

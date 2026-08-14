@@ -1,7 +1,8 @@
 /// API and app constants.
 class AppConstants {
   /// Compile-time override: `flutter run --dart-define=API_BASE_URL=http://...`
-  static const String compileTimeBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static const String compileTimeBaseUrl =
+      String.fromEnvironment('API_BASE_URL');
 
   /// Emulator default. Physical phones should set server URL on the login screen.
   static const String emulatorBaseUrl = 'http://10.0.2.2:8000';

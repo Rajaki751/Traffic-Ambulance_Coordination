@@ -51,144 +51,146 @@ class _LoginScreenState extends State<LoginScreen> {
     final text = GoogleFonts.inter();
 
     return Scaffold(
-      backgroundColor: kAuthBg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Center(child: AuthBadge()),
-                    const SizedBox(height: 24),
-                    const Center(child: AuthEmblem()),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Ambulance coordination',
-                      textAlign: TextAlign.center,
-                      style: text.copyWith(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: -0.24,
-                        color: kAuthText,
-                        height: 1.2,
+      backgroundColor: Colors.transparent,
+      body: GlassBackdrop(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Center(child: AuthBadge()),
+                      const SizedBox(height: 24),
+                      const Center(child: AuthEmblem()),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Ambulance coordination',
+                        textAlign: TextAlign.center,
+                        style: text.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: -0.24,
+                          color: kAuthText,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Driver & Traffic Officer Portal',
-                      textAlign: TextAlign.center,
-                      style: text.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: kAuthMuted,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Driver & Traffic Officer Portal',
+                        textAlign: TextAlign.center,
+                        style: text.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: kAuthMuted,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    AuthCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _DisclosureRow(
-                            title: 'Advanced settings',
-                            open: _advancedOpen,
-                            onToggle: () => setState(
-                                () => _advancedOpen = !_advancedOpen),
-                          ),
-                          AnimatedCrossFade(
-                            firstChild:
-                                const SizedBox(width: double.infinity),
-                            secondChild: Padding(
-                              padding: const EdgeInsets.only(top: 16),
-                              child: AuthField(
-                                controller: _serverCtrl,
-                                label: 'Server URL',
-                                icon: Icons.dns_outlined,
-                                keyboardType: TextInputType.url,
-                                helper: 'Use your PC IP on a physical '
-                                    'phone (same Wi-Fi)',
-                                validator: (v) {
-                                  if (v == null || v.trim().isEmpty) {
-                                    return 'Server URL required';
-                                  }
-                                  if (!v.contains(':')) {
-                                    return 'Include port, e.g. '
-                                        'http://192.168.x.x:8000';
-                                  }
-                                  return null;
-                                },
-                              ),
+                      const SizedBox(height: 32),
+                      AuthCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _DisclosureRow(
+                              title: 'Advanced settings',
+                              open: _advancedOpen,
+                              onToggle: () => setState(
+                                  () => _advancedOpen = !_advancedOpen),
                             ),
-                            crossFadeState: _advancedOpen
-                                ? CrossFadeState.showSecond
-                                : CrossFadeState.showFirst,
-                            duration: const Duration(milliseconds: 260),
-                            sizeCurve: Curves.easeOutCubic,
-                          ),
-                          const SizedBox(height: 20),
-                          AuthField(
-                            controller: _emailCtrl,
-                            label: 'Email',
-                            icon: Icons.mail_outline_rounded,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) => v == null || v.isEmpty
-                                ? 'Email required'
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-                          AuthField(
-                            controller: _passCtrl,
-                            label: 'Password',
-                            icon: Icons.lock_outline_rounded,
-                            obscure: _obscurePass,
-                            onToggleObscure: () => setState(
-                                () => _obscurePass = !_obscurePass),
-                            validator: (v) => v == null || v.length < 6
-                                ? 'Password required'
-                                : null,
-                          ),
-                          if (auth.error != null) ...[
+                            AnimatedCrossFade(
+                              firstChild:
+                                  const SizedBox(width: double.infinity),
+                              secondChild: Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: AuthField(
+                                  controller: _serverCtrl,
+                                  label: 'Server URL',
+                                  icon: Icons.dns_outlined,
+                                  keyboardType: TextInputType.url,
+                                  helper: 'Use your PC IP on a physical '
+                                      'phone (same Wi-Fi)',
+                                  validator: (v) {
+                                    if (v == null || v.trim().isEmpty) {
+                                      return 'Server URL required';
+                                    }
+                                    if (!v.contains(':')) {
+                                      return 'Include port, e.g. '
+                                          'http://192.168.x.x:8000';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              crossFadeState: _advancedOpen
+                                  ? CrossFadeState.showSecond
+                                  : CrossFadeState.showFirst,
+                              duration: const Duration(milliseconds: 260),
+                              sizeCurve: Curves.easeOutCubic,
+                            ),
+                            const SizedBox(height: 20),
+                            AuthField(
+                              controller: _emailCtrl,
+                              label: 'Email',
+                              icon: Icons.mail_outline_rounded,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) => v == null || v.isEmpty
+                                  ? 'Email required'
+                                  : null,
+                            ),
                             const SizedBox(height: 16),
-                            AuthErrorBanner(message: auth.error!),
+                            AuthField(
+                              controller: _passCtrl,
+                              label: 'Password',
+                              icon: Icons.lock_outline_rounded,
+                              obscure: _obscurePass,
+                              onToggleObscure: () =>
+                                  setState(() => _obscurePass = !_obscurePass),
+                              validator: (v) => v == null || v.length < 6
+                                  ? 'Password required'
+                                  : null,
+                            ),
+                            if (auth.error != null) ...[
+                              const SizedBox(height: 16),
+                              AuthErrorBanner(message: auth.error!),
+                            ],
+                            const SizedBox(height: 24),
+                            AuthPrimaryButton(
+                              loading: auth.loading,
+                              label: 'Sign In',
+                              onPressed: () async {
+                                if (!_formKey.currentState!.validate()) {
+                                  return;
+                                }
+                                await auth
+                                    .configureServer(_serverCtrl.text.trim());
+                                await auth.login(
+                                  _emailCtrl.text.trim(),
+                                  _passCtrl.text,
+                                );
+                              },
+                            ),
                           ],
-                          const SizedBox(height: 24),
-                          AuthPrimaryButton(
-                            loading: auth.loading,
-                            label: 'Sign In',
-                            onPressed: () async {
-                              if (!_formKey.currentState!.validate()) {
-                                return;
-                              }
-                              await auth.configureServer(
-                                  _serverCtrl.text.trim());
-                              await auth.login(
-                                _emailCtrl.text.trim(),
-                                _passCtrl.text,
-                              );
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    AuthFooterLink(
-                      question: "Don't have an account? ",
-                      action: 'Register',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                  ],
+                      const SizedBox(height: 24),
+                      AuthFooterLink(
+                        question: "Don't have an account? ",
+                        action: 'Register',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 ),
               ),
             ),

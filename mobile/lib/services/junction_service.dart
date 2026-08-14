@@ -55,7 +55,8 @@ class JunctionService {
 
   Future<List<JunctionPoint>> getKathmanduJunctions() async {
     final res = await _api.get('/api/v1/junctions/kathmandu');
-    final data = res.data is List ? res.data as List : (res.data['value'] as List);
+    final data =
+        res.data is List ? res.data as List : (res.data['value'] as List);
     return data
         .map((e) => JunctionPoint.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -77,8 +78,10 @@ class JunctionService {
     });
   }
 
-  Future<List<JunctionClearanceRecord>> getMyClearanceHistory({int limit = 50}) async {
-    final res = await _api.get('/api/v1/junctions/history', query: {'limit': limit});
+  Future<List<JunctionClearanceRecord>> getMyClearanceHistory(
+      {int limit = 50}) async {
+    final res =
+        await _api.get('/api/v1/junctions/history', query: {'limit': limit});
     return (res.data as List)
         .map((e) => JunctionClearanceRecord.fromJson(e as Map<String, dynamic>))
         .toList();

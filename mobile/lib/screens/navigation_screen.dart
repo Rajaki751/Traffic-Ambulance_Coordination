@@ -158,7 +158,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
     if (emergency == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Navigation')),
-        body: const Center(child: Text('No active emergency')),
+        body: GlassBackdrop(
+          child: const Center(child: Text('No active emergency')),
+        ),
       );
     }
     final routePoints = parseRoutePolyline(emergency.routePolyline);
@@ -214,20 +216,23 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   ),
                 ],
               ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.emergency, color: Colors.white, size: 14),
-                  SizedBox(width: 4),
-                  Text(
-                    'DEST',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
+              child: const FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.emergency, color: Colors.white, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      'DEST',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const Icon(Icons.location_on, color: Colors.red, size: 32),
@@ -245,9 +250,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ));
     }
 
-    final currentInstruction = (steps != null && _currentStepIndex < steps.length)
-        ? steps[_currentStepIndex].instruction
-        : null;
+    final currentInstruction =
+        (steps != null && _currentStepIndex < steps.length)
+            ? steps[_currentStepIndex].instruction
+            : null;
     final currentDistance = (steps != null && _currentStepIndex < steps.length)
         ? steps[_currentStepIndex].distanceM
         : null;
@@ -271,7 +277,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(_followMode ? Icons.my_location : Icons.location_searching),
+            icon: Icon(
+                _followMode ? Icons.my_location : Icons.location_searching),
             tooltip: _followMode ? 'Following' : 'Re-center',
             onPressed: () {
               setState(() => _followMode = !_followMode);
@@ -280,125 +287,129 @@ class _NavigationScreenState extends State<NavigationScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: center,
-              initialZoom: 15,
-              minZoom: 12,
-              maxZoom: 18,
-              onMapReady: () => _mapReady = true,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.ambulance.coordination',
+      body: GlassBackdrop(
+        child: Stack(
+          children: [
+            FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: center,
+                initialZoom: 15,
+                minZoom: 12,
+                maxZoom: 18,
+                onMapReady: () => _mapReady = true,
               ),
-              if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
-              MarkerLayer(markers: markers),
-            ],
-          ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: Column(
               children: [
-                _mapButton(
-                  icon: Icons.add,
-                  onPressed: () async {
-                    if (!await _awaitMapReady()) return;
-                    final z = _mapController.camera.zoom;
-                    _mapController.move(
-                        _mapController.camera.center, math.min(z + 1, 18));
-                  },
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.ambulance.coordination',
                 ),
-                const SizedBox(height: 8),
-                _mapButton(
-                  icon: Icons.remove,
-                  onPressed: () async {
-                    if (!await _awaitMapReady()) return;
-                    final z = _mapController.camera.zoom;
-                    _mapController.move(
-                        _mapController.camera.center, math.max(z - 1, 12));
-                  },
-                ),
-                const SizedBox(height: 8),
-                _mapButton(
-                  icon: Icons.fit_screen,
-                  onPressed: _fitToRoute,
-                ),
+                if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
+                MarkerLayer(markers: markers),
               ],
             ),
-          ),
-          if (currentInstruction != null)
             Positioned(
               top: 12,
-              left: 12,
-              right: 64,
-              child: Card(
-                color: Colors.white,
-                elevation: 6,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: kAuthBlue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${_currentStepIndex + 1}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+              right: 12,
+              child: Column(
+                children: [
+                  _mapButton(
+                    icon: Icons.add,
+                    onPressed: () async {
+                      if (!await _awaitMapReady()) return;
+                      final z = _mapController.camera.zoom;
+                      _mapController.move(
+                          _mapController.camera.center, math.min(z + 1, 18));
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _mapButton(
+                    icon: Icons.remove,
+                    onPressed: () async {
+                      if (!await _awaitMapReady()) return;
+                      final z = _mapController.camera.zoom;
+                      _mapController.move(
+                          _mapController.camera.center, math.max(z - 1, 12));
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _mapButton(
+                    icon: Icons.fit_screen,
+                    onPressed: _fitToRoute,
+                  ),
+                ],
+              ),
+            ),
+            if (currentInstruction != null)
+              Positioned(
+                top: 12,
+                left: 12,
+                right: 64,
+                child: Card(
+                  color: Colors.white,
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: kAuthBlue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${_currentStepIndex + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _formatInstruction(currentInstruction),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            if (currentDistance != null)
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                               Text(
-                                '${currentDistance.round()} m',
-                                style: TextStyle(
-                                  color: kAuthMuted,
-                                  fontSize: 13,
+                                _formatInstruction(currentInstruction),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
                                 ),
                               ),
-                          ],
+                              if (currentDistance != null)
+                                Text(
+                                  '${currentDistance.round()} m',
+                                  style: TextStyle(
+                                    color: kAuthMuted,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildBottomPanel(steps),
             ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _buildBottomPanel(steps),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

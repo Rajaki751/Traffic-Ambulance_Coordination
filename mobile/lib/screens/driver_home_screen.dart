@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/chat_provider.dart';
 import '../providers/emergency_provider.dart';
 import '../models/emergency_model.dart';
 import '../providers/live_ambulance_provider.dart';
@@ -15,6 +16,7 @@ import '../widgets/emergency_button.dart';
 import 'emergency_activate_screen.dart';
 import 'navigation_screen.dart';
 import 'driver_updates_screen.dart';
+import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 const _kGreenBadgeBg = Color(0xFFE8F5EC);
@@ -85,9 +87,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       final loc = context.read<DriverLocationProvider>();
       final emergency = context.read<EmergencyProvider>();
       final notifications = context.read<NotificationProvider>();
+      final chat = context.read<ChatProvider>();
       await loc.init();
       await emergency.restoreActiveSession();
       await notifications.setMode(driver: true);
+      await chat.loadSessions();
       if (emergency.isEmergencyActive && emergency.activeEmergency != null) {
         final started = await loc.startTracking(
           emergency.activeEmergency!.id,
@@ -111,6 +115,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final emergency = context.watch<EmergencyProvider>();
     final location = context.watch<DriverLocationProvider>();
     final notifs = context.watch<NotificationProvider>();
+    final chat = context.watch<ChatProvider>();
     final active = emergency.activeEmergency;
     final now = DateTime.now();
     bool isToday(DateTime dt) =>
@@ -124,6 +129,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       _buildHomePage(context, emergency, location, active, todayTrips, notifs),
       _buildMapPage(context, emergency, location, active),
       const DriverUpdatesScreen(),
+      const ChatScreen(),
       const ProfileScreen(),
     ];
 
@@ -186,6 +192,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   ),
                   _navItem(
                     index: 3,
+                    icon: Icons.chat_bubble_outline_rounded,
+                    selectedIcon: Icons.chat_bubble_rounded,
+                    label: 'Chat',
+                    badgeCount: chat.totalUnread,
+                  ),
+                  _navItem(
+                    index: 4,
                     icon: Icons.person_outlined,
                     selectedIcon: Icons.person_rounded,
                     label: 'Profile',

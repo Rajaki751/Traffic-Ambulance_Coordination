@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/theme.dart';
 import 'models/user_model.dart';
 import 'providers/auth_provider.dart';
+import 'providers/chat_provider.dart';
 import 'providers/emergency_provider.dart';
 import 'providers/junction_provider.dart';
 import 'providers/live_ambulance_provider.dart';
@@ -16,6 +17,7 @@ import 'screens/officer_home_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'services/ai_service.dart';
+import 'services/chat_service.dart';
 import 'services/emergency_service.dart';
 import 'services/gps_service.dart';
 import 'services/junction_service.dart';
@@ -117,6 +119,13 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
                 NotificationProvider(NotificationApiService(widget.api));
             _liveService.onNotification = notifProvider.refresh;
             return notifProvider;
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            final chatProvider = ChatProvider(ChatApiService(widget.api));
+            _liveService.onChatMessage = chatProvider.refresh;
+            return chatProvider;
           },
         ),
         ChangeNotifierProvider(

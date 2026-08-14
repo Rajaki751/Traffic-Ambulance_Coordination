@@ -6,6 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class LiveService {
   void Function()? onNotification;
+  void Function()? onChatMessage;
 
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _sub;
@@ -83,6 +84,9 @@ class LiveService {
         type == 'emergency_ended' ||
         type == 'trip_stage_updated') {
       onNotification?.call();
+    }
+    if (type == 'chat_message') {
+      onChatMessage?.call();
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../providers/emergency_provider.dart';
 import '../providers/notification_provider.dart';
-import '../models/notification_model.dart';
 import '../widgets/auth_widgets.dart';
 
 const _kGreen = Color(0xFF2F9E63);
@@ -26,72 +25,6 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
       if (!mounted) return;
       await context.read<EmergencyProvider>().loadHistory();
     });
-  }
-
-  Future<void> _replyToOfficer(
-    BuildContext context,
-    NotificationProvider notifs,
-    NotificationModel n,
-  ) async {
-    final ctrl = TextEditingController();
-    final text = GoogleFonts.inter();
-    final sent = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: kAuthCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        title: Text(
-          'Reply to officer',
-          style: text.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          maxLines: 3,
-          style: text.copyWith(fontSize: 14, color: kAuthText),
-          cursorColor: kAuthRed,
-          decoration: const InputDecoration(
-            hintText: 'Message for traffic officers…',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: text.copyWith(color: kAuthMuted)),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: kAuthRed,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              final msg = ctrl.text.trim();
-              if (msg.isEmpty) return;
-              Navigator.pop(ctx, true);
-            },
-            child: const Text('Send'),
-          ),
-        ],
-      ),
-    );
-    if (sent != true) return;
-    final msg = ctrl.text.trim();
-    await notifs.replyToOfficer(
-      emergencySessionId: n.emergencySessionId!,
-      message: msg,
-    );
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: _kGreen,
-          content: Text(
-            'Reply sent to traffic officers',
-            style: text.copyWith(color: Colors.white),
-          ),
-        ),
-      );
-    }
   }
 
   @override
@@ -188,15 +121,16 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
                                   color: kAuthMuted,
                                 ),
                               ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (n.emergencySessionId != null)
-                                    TextButton(
-                                      onPressed: () =>
-                                          _replyToOfficer(context, notifs, n),
+                              trailing: n.isRead
+                                  ? Icon(
+                                      Icons.done,
+                                      color: _kGreen,
+                                      size: 20,
+                                    )
+                                  : TextButton(
+                                      onPressed: () => notifs.acknowledge(n.id),
                                       style: TextButton.styleFrom(
-                                        foregroundColor: _kGreen,
+                                        foregroundColor: kAuthRedLink,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 12),
                                         minimumSize: Size.zero,
@@ -204,40 +138,13 @@ class _DriverUpdatesScreenState extends State<DriverUpdatesScreen> {
                                             MaterialTapTargetSize.shrinkWrap,
                                       ),
                                       child: Text(
-                                        'Reply',
+                                        'ACK',
                                         style: text.copyWith(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),
-                                  n.isRead
-                                      ? Icon(
-                                          Icons.done,
-                                          color: _kGreen,
-                                          size: 20,
-                                        )
-                                      : TextButton(
-                                          onPressed: () =>
-                                              notifs.acknowledge(n.id),
-                                          style: TextButton.styleFrom(
-                                            foregroundColor: kAuthRedLink,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12),
-                                            minimumSize: Size.zero,
-                                            tapTargetSize:
-                                                MaterialTapTargetSize.shrinkWrap,
-                                          ),
-                                          child: Text(
-                                            'ACK',
-                                            style: text.copyWith(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                ],
-                              ),
                             ),
                           );
                         },

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/chat_provider.dart';
 import '../providers/junction_provider.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../providers/notification_provider.dart';
@@ -10,6 +11,7 @@ import '../models/notification_model.dart';
 import '../widgets/auth_widgets.dart';
 import 'officer_map_screen.dart';
 import 'officer_history_screen.dart';
+import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 const _kBlue = Color(0xFF2E6FD8);
@@ -44,6 +46,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
       if (!mounted) return;
       context.read<LiveAmbulanceProvider>().startPolling();
       context.read<JunctionProvider>().loadClearanceHistory();
+      await context.read<ChatProvider>().loadSessions();
     });
   }
 
@@ -58,6 +61,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
     final notifs = context.watch<NotificationProvider>();
     final live = context.watch<LiveAmbulanceProvider>();
     final junctions = context.watch<JunctionProvider>();
+    final chat = context.watch<ChatProvider>();
 
     final pages = <Widget>[
       SafeArea(
@@ -66,6 +70,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
           child: _buildHomePage(context, live, notifs, junctions)),
       const OfficerMapScreen(),
       _buildAlertsPage(context, notifs),
+      const ChatScreen(),
       const OfficerHistoryScreen(),
       const SafeArea(top: true, bottom: false, child: ProfileScreen()),
     ];
@@ -125,12 +130,19 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                   ),
                   _navItem(
                     index: 3,
+                    icon: Icons.chat_bubble_outline_rounded,
+                    selectedIcon: Icons.chat_bubble_rounded,
+                    label: 'Chat',
+                    badgeCount: chat.totalUnread,
+                  ),
+                  _navItem(
+                    index: 4,
                     icon: Icons.history_outlined,
                     selectedIcon: Icons.history_rounded,
                     label: 'History',
                   ),
                   _navItem(
-                    index: 4,
+                    index: 5,
                     icon: Icons.person_outlined,
                     selectedIcon: Icons.person_rounded,
                     label: 'Profile',
@@ -410,12 +422,12 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               Expanded(
                 child: _actionCard(
                   text,
-                  icon: Icons.message_rounded,
+                  icon: Icons.chat_bubble_rounded,
                   iconColor: _kOrange,
                   tint: _kOrangeTint,
-                  label: 'Message driver',
-                  sub: 'Send a dispatch update',
-                  onTap: () => _showSendMessageDialog(context),
+                  label: 'Open chat',
+                  sub: 'Message drivers & officers',
+                  onTap: () => setState(() => _selectedIndex = 3),
                 ),
               ),
             ],
@@ -843,107 +855,5 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         ),
       ),
     );
-  }
-
-  void _showSendMessageDialog(BuildContext context) {
-    final live = context.read<LiveAmbulanceProvider>();
-    if (live.ambulances.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No active ambulances to message')),
-      );
-      return;
-    }
-
-    int? selectedSessionId;
-    final messageCtrl = TextEditingController();
-    final titleCtrl = TextEditingController(text: 'Traffic Update');
-
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Message Driver'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<int>(
-                initialValue: selectedSessionId,
-                decoration: const InputDecoration(
-                  labelText: 'Select Ambulance',
-                  border: OutlineInputBorder(),
-                ),
-                items: live.ambulances
-                    .map((a) => DropdownMenuItem(
-                          value: a.emergencySessionId,
-                          child: Text('${a.vehicleNumber} — ${a.destination}'),
-                        ))
-                    .toList(),
-                onChanged: (v) => setDialogState(() => selectedSessionId = v),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: titleCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: messageCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Message',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel')),
-            ElevatedButton(
-              onPressed:
-                  selectedSessionId == null || messageCtrl.text.trim().isEmpty
-                      ? null
-                      : () async {
-                          Navigator.pop(ctx);
-                          await _sendDriverMessage(
-                            context,
-                            selectedSessionId!,
-                            titleCtrl.text.trim(),
-                            messageCtrl.text.trim(),
-                          );
-                        },
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _sendDriverMessage(
-      BuildContext context, int sessionId, String title, String message) async {
-    try {
-      final notifProvider = context.read<NotificationProvider>();
-      await notifProvider.sendToDriver(
-        emergencySessionId: sessionId,
-        title: title,
-        message: message,
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Message sent to driver')),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send message: $e')),
-        );
-      }
-    }
   }
 }

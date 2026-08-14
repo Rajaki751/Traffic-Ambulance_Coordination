@@ -48,7 +48,9 @@ function upsertLocation(prev: LiveLocation[], next: LiveLocation): LiveLocation[
 }
 
 function mergeLocations(prev: LiveLocation[], incoming: LiveLocation[]): LiveLocation[] {
-  return incoming.reduce((acc, next) => upsertLocation(acc, next), prev);
+  const merged = incoming.reduce((acc, next) => upsertLocation(acc, next), prev);
+  const cutoff = Date.now() - 5 * 60 * 1000; // 5 minutes
+  return merged.filter((loc) => timestampMs(loc) > cutoff);
 }
 
 function formatTime(value: string | Date | null | undefined): string {

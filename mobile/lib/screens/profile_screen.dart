@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -514,26 +515,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _confirmLogout(BuildContext context, AuthProvider auth) {
     final text = GoogleFonts.inter();
-    showDialog(
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      isScrollControlled: true,
       barrierColor: _kScrim,
-      builder: (ctx) => _styledDialog(
-        title: 'Log out?',
-        content: Text(
-          "You'll need your credentials to sign back in.",
-          style: text.copyWith(
-            fontSize: 13.5,
-            color: kAuthMuted,
-            height: 1.4,
+      builder: (ctx) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+          decoration: BoxDecoration(
+            color: (isDark ? kAuthInk : Colors.white).withValues(alpha: 0.85),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            border: Border(top: BorderSide(color: scheme.outline.withValues(alpha: 0.3))),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 44,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 32),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: scheme.errorContainer.withValues(alpha: isDark ? 0.3 : 0.8),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.logout_rounded, color: kAuthRed, size: 36),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Log out of your account?',
+                style: text.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                  color: scheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "You'll need your credentials to sign back in.",
+                style: text.copyWith(
+                  fontSize: 15,
+                  color: scheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 36),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    auth.logout();
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: kAuthRed,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: Text(
+                    'Log out',
+                    style: text.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: Text(
+                    'Cancel',
+                    style: text.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          _dialogButton('Cancel', kAuthMuted, () => Navigator.pop(ctx)),
-          _dialogButton('Log out', kAuthRed, () {
-            Navigator.pop(ctx);
-            auth.logout();
-          }),
-        ],
       ),
     );
   }

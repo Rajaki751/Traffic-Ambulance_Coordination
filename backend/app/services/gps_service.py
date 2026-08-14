@@ -21,30 +21,71 @@ logger = get_logger(__name__)
 class GPSService:
     """Record GPS updates and serve live ambulance positions."""
 
+    PERSIST_INTERVAL_SECONDS = 15
+    REROUTE_INTERVAL_SECONDS = 30
+
     def __init__(self) -> None:
         self.route_optimizer = RouteOptimizer()
         # In-memory cache for latest positions (also persisted to DB)
         self._live_cache: Dict[int, LiveAmbulanceLocation] = {}
+        # Throttle watermarks: session_id -> last write / reroute time
+        self._last_persist_at: Dict[int, datetime] = {}
+        self._last_reroute_at: Dict[int, datetime] = {}
 
     async def record_update(
-        self, db: AsyncSession, payload: GPSUpdate
+        self,
+        db: AsyncSession,
+        payload: GPSUpdate,
+        session: Optional[EmergencySession] = None,
     ) -> GPSLog:
-        """Store GPS log and update live cache; optionally reroute."""
+        """Store GPS log and update live cache; optionally reroute.
+
+        History rows are throttled to one per PERSIST_INTERVAL_SECONDS per
+        session and route re-optimization to one per REROUTE_INTERVAL_SECONDS,
+        since drivers emit positions every few meters while moving.
+        """
+        now = datetime.now(timezone.utc)
+        if session is None:
+            session = await self._get_session_with_ambulance(
+                db, payload.emergency_session_id
+            )
+
+        is_active = bool(
+            session and session.status == EmergencyStatus.ACTIVE
+        )
+        session_id = payload.emergency_session_id
+
+        last_persist = self._last_persist_at.get(session_id)
+        should_persist = (
+            is_active
+            and (
+                last_persist is None
+                or (now - last_persist).total_seconds()
+                >= self.PERSIST_INTERVAL_SECONDS
+            )
+        )
+
         log = GPSLog(
-            emergency_session_id=payload.emergency_session_id,
+            emergency_session_id=session_id,
             latitude=payload.latitude,
             longitude=payload.longitude,
             speed_kmh=payload.speed_kmh,
             heading=payload.heading,
+            timestamp=now,
         )
-        db.add(log)
+        if should_persist:
+            self._last_persist_at[session_id] = now
+            db.add(log)
 
-        session = await self._get_session_with_ambulance(
-            db, payload.emergency_session_id
-        )
-        if session and session.status == EmergencyStatus.ACTIVE:
-            # Dynamic reroute check
-            if session.dest_latitude and session.dest_longitude:
+        if session and is_active:
+            last_reroute = self._last_reroute_at.get(session_id)
+            reroute_due = (
+                last_reroute is None
+                or (now - last_reroute).total_seconds()
+                >= self.REROUTE_INTERVAL_SECONDS
+            )
+            # Dynamic reroute check (throttled)
+            if reroute_due and session.dest_latitude and session.dest_longitude:
                 try:
                     traffic = TrafficService.get_current_conditions()
                     route = await self.route_optimizer.optimize_route(
@@ -60,6 +101,7 @@ class GPSService:
                     if route.reroute_recommended:
                         session.route_polyline = route.polyline
                         session.eta_minutes = route.eta_minutes
+                    self._last_reroute_at[session_id] = now
                 except Exception as exc:
                     logger.warning(
                         "Reroute failed for session %s, keeping previous route: %s",
@@ -82,11 +124,12 @@ class GPSService:
                 route_polyline=session.route_polyline,
                 eta_minutes=session.eta_minutes,
                 status=ambulance.status.value,
-                updated_at=datetime.now(timezone.utc),
+                updated_at=now,
             )
             self._live_cache[ambulance.id] = live
 
-        await db.flush()
+        if session is not None and (db.is_modified(session) or should_persist):
+            await db.flush()
         return log
 
     async def get_live_locations(self, db: AsyncSession) -> List[LiveAmbulanceLocation]:

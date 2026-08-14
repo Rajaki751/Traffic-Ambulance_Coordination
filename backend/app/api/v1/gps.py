@@ -21,7 +21,9 @@ async def update_gps(
     db: AsyncSession = Depends(get_db),
 ):
     """Record GPS position during active emergency (driver)."""
-    session = await gps_service._get_session_with_ambulance(db, payload.emergency_session_id)
+    session = await gps_service._get_session_with_ambulance(
+        db, payload.emergency_session_id
+    )
     if not session:
         raise HTTPException(status_code=404, detail="Emergency session not found")
     if current_user.role != UserRole.ADMIN:
@@ -31,7 +33,7 @@ async def update_gps(
                 status_code=403, detail="Emergency session does not belong to your ambulance"
             )
 
-    log = await gps_service.record_update(db, payload)
+    log = await gps_service.record_update(db, payload, session=session)
     live = gps_service.get_cached_location(session.ambulance_id)
     if live:
         await db.commit()

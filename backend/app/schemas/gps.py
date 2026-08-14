@@ -15,13 +15,13 @@ class GPSUpdate(BaseModel):
 
 
 class GPSLogResponse(BaseModel):
-    id: int
+    id: Optional[int] = None
     emergency_session_id: int
     latitude: float
     longitude: float
     speed_kmh: Optional[float]
     heading: Optional[float]
-    timestamp: datetime
+    timestamp: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
 

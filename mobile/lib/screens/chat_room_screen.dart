@@ -8,10 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/auth_widgets.dart';
 
-const _kWaTeal = Color(0xFF128C7E);
-const _kWaBubbleMine = Color(0xFFDCF8C6);
-const _kDriverGreen = Color(0xFF2F9E63);
-const _kOfficerRed = Color(0xFFE23D3D);
+
 
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key, required this.session});
@@ -105,7 +102,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       rows.add(ListTile(
         contentPadding: EdgeInsets.zero,
         leading: CircleAvatar(
-          backgroundColor: isDriver ? _kDriverGreen : _kOfficerRed,
+          backgroundColor: isDriver ? kAuthGreen : kAuthRed,
           child: Text(
             p.initials,
             style: text.copyWith(
@@ -123,7 +120,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           isDriver ? 'Driver' : 'Traffic officer',
           style: text.copyWith(
             fontSize: 12,
-            color: isDriver ? _kDriverGreen : _kOfficerRed,
+            color: isDriver ? kAuthGreen : kAuthRed,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -159,7 +156,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: _kWaTeal,
+                backgroundColor: kAuthRed,
                 child: Text(
                   widget.session.drivers.isEmpty
                       ? 'AMB'
@@ -241,7 +238,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               children: [
                 CircleAvatar(
                   radius: 9,
-                  backgroundColor: m.isFromDriver ? _kDriverGreen : _kOfficerRed,
+                  backgroundColor: m.isFromDriver ? kAuthGreen : kAuthRed,
                   child: Text(
                     m.initials,
                     style: text.copyWith(
@@ -265,7 +262,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                   decoration: BoxDecoration(
-                    color: (m.isFromDriver ? _kDriverGreen : _kOfficerRed)
+                    color: (m.isFromDriver ? kAuthGreen : kAuthRed)
                         .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -274,7 +271,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     style: text.copyWith(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w600,
-                      color: m.isFromDriver ? _kDriverGreen : _kOfficerRed,
+                      color: m.isFromDriver ? kAuthGreen : kAuthRed,
                     ),
                   ),
                 ),
@@ -290,7 +287,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             constraints: const BoxConstraints(maxWidth: 310),
             decoration: BoxDecoration(
-              color: mine ? _kWaBubbleMine : Colors.white,
+              color: mine ? kAuthRedBadgeBg : Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(14),
                 topRight: const Radius.circular(14),
@@ -334,7 +331,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       const Icon(
                         Icons.done_all_rounded,
                         size: 14,
-                        color: _kDriverGreen,
+                        color: kAuthGreen,
                       ),
                     ],
                   ],
@@ -367,7 +364,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 minLines: 1,
                 maxLines: 4,
                 style: text.copyWith(fontSize: 14, color: kAuthText),
-                cursorColor: _kWaTeal,
+                cursorColor: kAuthRed,
                 decoration: InputDecoration(
                   hintText: 'Message',
                   hintStyle: text.copyWith(fontSize: 14, color: kAuthFaint),
@@ -385,7 +382,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: _kWaTeal, width: 1.4),
+                    borderSide: const BorderSide(color: kAuthRed, width: 1.4),
                   ),
                 ),
                 textInputAction: TextInputAction.send,
@@ -397,7 +394,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               width: 44,
               height: 44,
               decoration: const BoxDecoration(
-                color: _kWaTeal,
+                color: kAuthRed,
                 shape: BoxShape.circle,
               ),
               child: IconButton(

@@ -8,8 +8,7 @@ import '../providers/chat_provider.dart';
 import '../widgets/auth_widgets.dart';
 import 'chat_room_screen.dart';
 
-const _kWaTeal = Color(0xFF128C7E);
-const _kDriverGreen = Color(0xFF2F9E63);
+
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -68,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 34,
               height: 34,
               decoration: const BoxDecoration(
-                color: _kWaTeal,
+                color: kAuthRed,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.chat_rounded, color: Colors.white, size: 18),
@@ -166,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _timeLabel(s.lastMessageAt),
                         style: text.copyWith(
                           fontSize: 11,
-                          color: hasUnread ? _kWaTeal : kAuthFaint,
+                          color: hasUnread ? kAuthRed : kAuthFaint,
                           fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
@@ -179,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 1.5),
                       decoration: BoxDecoration(
-                        color: _kDriverGreen.withValues(alpha: 0.1),
+                        color: kAuthGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -187,7 +186,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: text.copyWith(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w600,
-                          color: _kDriverGreen,
+                          color: kAuthGreen,
                         ),
                       ),
                     ),
@@ -213,7 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: const BoxDecoration(
-                            color: _kWaTeal,
+                            color: kAuthRed,
                             shape: BoxShape.circle,
                           ),
                           child: Text(
@@ -238,7 +237,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatar(int seed, String? initials, bool circle, double size) {
-    final Color bg = _kWaTeal;
+    final Color bg = kAuthRed;
     return Container(
       width: size,
       height: size,

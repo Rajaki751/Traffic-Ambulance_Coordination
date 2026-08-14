@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import '../utils/route_utils.dart';
 import '../models/emergency_model.dart';
+import 'auth_widgets.dart';
 
 class DirectionsPanel extends StatelessWidget {
   final String? routePolyline;
@@ -49,12 +50,12 @@ class DirectionsPanel extends StatelessWidget {
             Container(
               height: 4,
               width: 48,
-              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+              decoration: BoxDecoration(color: kAuthBorder, borderRadius: BorderRadius.circular(4)),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.directions, color: Colors.red),
+                const Icon(Icons.directions, color: kAuthRed),
                 const SizedBox(width: 8),
                 const Text('Turn-by-turn (approx.)', style: TextStyle(fontWeight: FontWeight.bold)),
                 const Spacer(),

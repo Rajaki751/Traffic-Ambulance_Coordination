@@ -7,6 +7,7 @@ import '../providers/live_ambulance_provider.dart';
 import '../services/junction_service.dart';
 import '../utils/route_utils.dart';
 import '../widgets/ambulance_map.dart';
+import '../widgets/auth_widgets.dart';
 
 class OfficerMapScreen extends StatefulWidget {
   const OfficerMapScreen({super.key});
@@ -49,7 +50,7 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
         children: [
           if (live.error != null)
             Material(
-              color: Colors.orange.shade100,
+              color: kAuthOrangeTint,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Text(live.error!),
@@ -165,7 +166,7 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
           children: [
             Text(
               '${a.vehicleNumber} — EMERGENCY',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+              style: const TextStyle(fontWeight: FontWeight.w600, color: kAuthRed),
             ),
             const SizedBox(height: 4),
             Text('Heading to: ${a.destination}'),
@@ -177,7 +178,7 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
             Text(
               'Traffic officer action: Clear the blue/red route corridor and '
               'prioritize this ambulance at intersections.',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ),

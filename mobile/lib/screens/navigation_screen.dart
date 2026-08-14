@@ -11,6 +11,7 @@ import '../models/emergency_model.dart';
 import '../providers/emergency_provider.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../utils/route_utils.dart';
+import '../widgets/auth_widgets.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -239,7 +240,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     if (routePoints.isNotEmpty) {
       polylines.add(Polyline(
         points: routePoints,
-        color: Colors.blue.shade700,
+        color: kAuthBlue,
         strokeWidth: 6,
       ));
     }
@@ -348,7 +349,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade700,
+                          color: kAuthBlue,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -379,7 +380,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                               Text(
                                 '${currentDistance.round()} m',
                                 style: TextStyle(
-                                  color: Colors.grey.shade600,
+                                  color: kAuthMuted,
                                   fontSize: 13,
                                 ),
                               ),
@@ -430,7 +431,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: kAuthBorder,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -455,10 +456,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: kAuthBlueTint,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.navigation, color: Colors.blue.shade700, size: 22),
+            child: Icon(Icons.navigation, color: kAuthBlue, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -471,19 +472,19 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.blue,
+                    color: kAuthBlue,
                   ),
                 ),
                 Text(
                   '$remaining steps remaining',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  style: TextStyle(color: kAuthMuted, fontSize: 13),
                 ),
               ],
             ),
           ),
           Icon(
             _showSteps ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
-            color: Colors.grey,
+            color: kAuthIcon,
           ),
         ],
       ),
@@ -508,10 +509,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
             height: 28,
             decoration: BoxDecoration(
               color: isPast
-                  ? Colors.green
+                  ? kAuthGreen
                   : isCurrent
-                      ? Colors.blue.shade700
-                      : Colors.grey.shade300,
+                      ? kAuthBlue
+                      : kAuthBorder,
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -520,7 +521,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   : Text(
                       '${i + 1}',
                       style: TextStyle(
-                        color: isCurrent ? Colors.white : Colors.grey.shade700,
+                        color: isCurrent ? Colors.white : kAuthMuted,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -531,7 +532,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
             _formatInstruction(s.instruction),
             style: TextStyle(
               fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-              color: isPast ? Colors.grey : null,
+              color: isPast ? kAuthMuted : null,
               decoration: isPast ? TextDecoration.lineThrough : null,
             ),
           ),
@@ -561,7 +562,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: Icon(icon, size: 20, color: Colors.grey.shade700),
+          child: Icon(icon, size: 20, color: kAuthMuted),
         ),
       ),
     );

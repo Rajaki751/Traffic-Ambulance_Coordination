@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/junction_provider.dart';
+import '../widgets/auth_widgets.dart';
 
 class OfficerHistoryScreen extends StatefulWidget {
   const OfficerHistoryScreen({super.key});
@@ -42,12 +43,12 @@ class _OfficerHistoryScreenState extends State<OfficerHistoryScreen> {
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 4),
                       child: ListTile(
-                        leading: const Icon(Icons.traffic, color: Colors.green),
+                        leading: const Icon(Icons.traffic, color: kAuthGreen),
                         title: Text(h.junctionName),
                         subtitle: Text(
                           h.clearedAt.isNotEmpty ? 'Cleared at ${h.clearedAt.substring(0, 19).replaceAll('T', ' ')}' : '',
                         ),
-                        trailing: const Icon(Icons.check_circle, color: Colors.green),
+                        trailing: const Icon(Icons.check_circle, color: kAuthGreen),
                       ),
                     );
                   },

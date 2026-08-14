@@ -15,6 +15,16 @@ const kAuthRedBadgeText = Color(0xFF791F1F);
 const kAuthRedBadgeBg = Color(0xFFFCEBEB);
 const kAuthRedLink = Color(0xFFA32D2D);
 
+const kAuthBlue = Color(0xFF2E6FD8);
+const kAuthBlueTint = Color(0xFFEAF1FC);
+const kAuthGreen = Color(0xFF2F9E63);
+const kAuthGreenText = Color(0xFF1F7A44);
+const kAuthGreenBg = Color(0xFFE8F5EC);
+const kAuthOrange = Color(0xFFE8833A);
+const kAuthOrangeTint = Color(0xFFFDF1E7);
+const kAuthNeutralTint = Color(0xFFF2F1ED);
+const kAuthInk = Color(0xFF1D1D1B);
+
 const kCardShadow = <BoxShadow>[
   BoxShadow(
     color: Color(0x0E1A1A18),

@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../providers/junction_provider.dart';
 import '../providers/live_ambulance_provider.dart';
 import '../providers/notification_provider.dart';
+import '../widgets/auth_widgets.dart';
 import 'officer_map_screen.dart';
 import 'officer_history_screen.dart';
 import 'profile_screen.dart';
@@ -66,15 +67,35 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
         ],
       ),
       body: pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (i) => setState(() => _selectedIndex = i),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.warning), label: 'Alerts'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (i) => setState(() => _selectedIndex = i),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map_rounded),
+            label: 'Map',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.warning_amber_outlined),
+            selectedIcon: Icon(Icons.warning_amber_rounded),
+            label: 'Alerts',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history_outlined),
+            selectedIcon: Icon(Icons.history_rounded),
+            label: 'History',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Profile',
+          ),
         ],
       ),
     );
@@ -105,7 +126,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Dashboard Overview', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('Dashboard Overview', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -114,7 +135,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                           icon: Icons.local_shipping,
                           label: 'Active\nAmbulances',
                           value: '$activeAmbulances',
-                          color: Colors.blue,
+                          color: kAuthBlue,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -123,7 +144,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                           icon: Icons.emergency,
                           label: 'Active\nEmergencies',
                           value: '$activeEmergencies',
-                          color: Colors.red,
+                          color: kAuthRed,
                         ),
                       ),
                     ],
@@ -136,7 +157,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                           icon: Icons.traffic,
                           label: 'Junctions\nCleared',
                           value: '$clearedToday',
-                          color: Colors.green,
+                          color: kAuthGreen,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -145,7 +166,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                           icon: Icons.notifications_active,
                           label: 'Pending\nAlerts',
                           value: '${notifs.unreadCount}',
-                          color: Colors.orange,
+                          color: kAuthOrange,
                         ),
                       ),
                     ],
@@ -170,13 +191,20 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
             ...notifs.notifications.take(3).map(
               (n) => Card(
                 margin: const EdgeInsets.only(bottom: 6),
-                color: n.isAcknowledged ? null : Colors.red.shade50,
+                color: n.isAcknowledged
+                    ? null
+                    : Theme.of(context).colorScheme.errorContainer,
                 child: ListTile(
-                  leading: Icon(Icons.emergency, color: n.isAcknowledged ? Colors.grey : Colors.red),
-                  title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  leading: Icon(
+                    Icons.emergency,
+                    color: n.isAcknowledged
+                        ? Theme.of(context).colorScheme.outline
+                        : kAuthRed,
+                  ),
+                  title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                   subtitle: Text(n.message, maxLines: 2, overflow: TextOverflow.ellipsis),
                   trailing: n.isAcknowledged
-                      ? const Icon(Icons.check, color: Colors.green, size: 20)
+                      ? const Icon(Icons.check, color: kAuthGreen, size: 20)
                       : TextButton(
                           onPressed: () => notifs.acknowledge(n.id),
                           child: const Text('ACK'),
@@ -239,8 +267,8 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
               (a) => Card(
                 margin: const EdgeInsets.only(bottom: 6),
                 child: ListTile(
-                  leading: const Icon(Icons.local_shipping, color: Colors.red),
-                  title: Text(a.vehicleNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  leading: const Icon(Icons.local_shipping, color: kAuthRed),
+                  title: Text(a.vehicleNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
                   subtitle: Text('To: ${a.destination}'),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -248,11 +276,14 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                     children: [
                       Text(
                         '${a.etaMinutes?.toStringAsFixed(0) ?? "?"} min',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+                        style: const TextStyle(fontWeight: FontWeight.w600, color: kAuthRed),
                       ),
                       Text(
                         '${a.speedKmh?.toStringAsFixed(0) ?? "?"} km/h',
-                        style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -279,13 +310,20 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
                     final n = notifs.notifications[i];
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: n.isAcknowledged ? null : Colors.red.shade50,
+                      color: n.isAcknowledged
+                          ? null
+                          : Theme.of(context).colorScheme.errorContainer,
                       child: ListTile(
-                        leading: Icon(Icons.emergency, color: n.isAcknowledged ? Colors.grey : Colors.red),
-                        title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        leading: Icon(
+                          Icons.emergency,
+                          color: n.isAcknowledged
+                              ? Theme.of(context).colorScheme.outline
+                              : kAuthRed,
+                        ),
+                        title: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w600)),
                         subtitle: Text(n.message),
                         trailing: n.isAcknowledged
-                            ? const Icon(Icons.check, color: Colors.green)
+                            ? const Icon(Icons.check, color: kAuthGreen)
                             : TextButton(onPressed: () => notifs.acknowledge(n.id), child: const Text('ACK')),
                       ),
                     );
@@ -393,6 +431,7 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
   }
 
   Widget _statCard({required IconData icon, required String label, required String value, required Color color}) {
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -400,8 +439,8 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
           children: [
             Icon(icon, color: color, size: 28),
             const SizedBox(height: 4),
-            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color)),
-            Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade700), textAlign: TextAlign.center),
+            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: color)),
+            Text(label, style: TextStyle(fontSize: 11, color: muted), textAlign: TextAlign.center),
           ],
         ),
       ),

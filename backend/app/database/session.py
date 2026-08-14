@@ -14,7 +14,13 @@ _engine_kwargs: dict = {"echo": settings.debug}
 if settings.is_sqlite:
     _engine_kwargs["connect_args"] = {"check_same_thread": False}
 else:
-    _engine_kwargs.update(pool_pre_ping=True, pool_size=10, max_overflow=20)
+    _engine_kwargs.update(
+        pool_pre_ping=True, 
+        pool_size=50, 
+        max_overflow=100, 
+        pool_timeout=30,
+        pool_recycle=1800,
+    )
 
 engine = create_async_engine(settings.database_url, **_engine_kwargs)
 

@@ -223,7 +223,7 @@ class _OfficerMapScreenState extends State<OfficerMapScreen> {
               ],
               if (selected != null) _buildDirectionsCard(selected),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 110),
                 child: GlassSurface(
                   radius: 16,
                   padding: const EdgeInsets.all(12),

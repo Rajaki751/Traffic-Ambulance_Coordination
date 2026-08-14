@@ -1,9 +1,9 @@
 """Group chat service for emergency sessions."""
 
 from datetime import datetime, timezone
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
@@ -73,6 +73,7 @@ class ChatService:
                     EmergencySession.destination,
                     EmergencySession.status,
                     Ambulance.vehicle_number,
+                    EmergencySession.ambulance_id,
                 )
                 .join(Ambulance, Ambulance.id == EmergencySession.ambulance_id)
                 .where(Ambulance.driver_id == user_id)
@@ -84,6 +85,7 @@ class ChatService:
                     EmergencySession.destination,
                     EmergencySession.status,
                     Ambulance.vehicle_number,
+                    EmergencySession.ambulance_id,
                 )
                 .join(Ambulance, Ambulance.id == EmergencySession.ambulance_id)
                 .join(
@@ -97,38 +99,114 @@ class ChatService:
                 .distinct()
             )
 
-        sessions = (await db.execute(session_query.order_by(EmergencySession.id.desc()).limit(limit))).all()
+        sessions = (
+            await db.execute(
+                session_query.order_by(EmergencySession.id.desc()).limit(limit)
+            )
+        ).all()
+        session_ids = [s[0] for s in sessions]
+        if not session_ids:
+            return []
+
+        # Batch 1: last message per session (MAX(id) join — ids are monotonic).
+        max_id_subq = (
+            select(
+                ChatMessage.emergency_session_id,
+                func.max(ChatMessage.id).label("max_id"),
+            )
+            .where(ChatMessage.emergency_session_id.in_(session_ids))
+            .group_by(ChatMessage.emergency_session_id)
+            .subquery()
+        )
+        last_result = await db.execute(
+            select(ChatMessage).join(
+                max_id_subq, ChatMessage.id == max_id_subq.c.max_id
+            )
+        )
+        last_by_session = {
+            m.emergency_session_id: m for m in last_result.scalars().all()
+        }
+
+        # Batch 2: unread counts (LEFT JOIN the per-user read marker).
+        unread_result = await db.execute(
+            select(ChatMessage.emergency_session_id, func.count(ChatMessage.id))
+            .outerjoin(
+                ChatLastRead,
+                (ChatLastRead.emergency_session_id == ChatMessage.emergency_session_id)
+                & (ChatLastRead.user_id == user_id),
+            )
+            .where(
+                ChatMessage.emergency_session_id.in_(session_ids),
+                ChatMessage.sender_user_id != user_id,
+                or_(
+                    ChatLastRead.last_read_at.is_(None),
+                    ChatMessage.created_at > ChatLastRead.last_read_at,
+                ),
+            )
+            .group_by(ChatMessage.emergency_session_id)
+        )
+        unread_by_session = dict(unread_result.all())
+
+        # Batch 3: participants — drivers by ambulance + alerted officers.
+        ambulance_ids = [s[4] for s in sessions]
+        driver_result = await db.execute(
+            select(Ambulance.id, Ambulance.driver_id).where(
+                Ambulance.id.in_(ambulance_ids)
+            )
+        )
+        driver_by_ambulance = dict(driver_result.all())
+
+        notif_result = await db.execute(
+            select(
+                Notification.emergency_session_id,
+                Notification.officer_id,
+            )
+            .where(
+                Notification.emergency_session_id.in_(session_ids),
+                Notification.notification_type == "emergency_alert",
+            )
+            .distinct()
+        )
+        officer_ids_by_session: Dict[int, set] = {}
+        for sid, officer_id in notif_result.all():
+            if officer_id is not None:
+                officer_ids_by_session.setdefault(sid, set()).add(officer_id)
+
+        participant_ids: set = set()
+        for sid, driver_ambulance_id in ((s[0], s[4]) for s in sessions):
+            driver_id = driver_by_ambulance.get(driver_ambulance_id)
+            if driver_id is not None:
+                participant_ids.add(driver_id)
+            participant_ids.update(officer_ids_by_session.get(sid, set()))
+
+        user_by_id: Dict[int, User] = {}
+        if participant_ids:
+            user_result = await db.execute(
+                select(User).where(User.id.in_(participant_ids))
+            )
+            user_by_id = {u.id: u for u in user_result.scalars().all()}
 
         results: List[dict] = []
-        for session_id, destination, status, vehicle_number in sessions:
-            last_result = await db.execute(
-                select(ChatMessage)
-                .where(ChatMessage.emergency_session_id == session_id)
-                .order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc())
-                .limit(1)
-            )
-            last = last_result.scalar_one_or_none()
-
-            read_result = await db.execute(
-                select(ChatLastRead.last_read_at).where(
-                    ChatLastRead.emergency_session_id == session_id,
-                    ChatLastRead.user_id == user_id,
-                )
-            )
-            last_read_at = read_result.scalar_one_or_none()
-
-            unread = 0
-            if last is not None:
-                count_query = select(func.count(ChatMessage.id)).where(
-                    ChatMessage.emergency_session_id == session_id,
-                    ChatMessage.sender_user_id != user_id,
-                )
-                if last_read_at is not None:
-                    count_query = count_query.where(
-                        ChatMessage.created_at > last_read_at
+        for session_id, destination, status, vehicle_number, ambulance_id in sessions:
+            driver_id = driver_by_ambulance.get(ambulance_id)
+            participants = []
+            for uid in sorted(user_by_id):
+                if uid in officer_ids_by_session.get(session_id, set()) or (
+                    driver_id is not None and uid == driver_id
+                ):
+                    u = user_by_id[uid]
+                    participants.append(
+                        {
+                            "user_id": uid,
+                            "name": u.name or "",
+                            "role": (
+                                u.role.value
+                                if hasattr(u.role, "value")
+                                else str(u.role)
+                            ),
+                        }
                     )
-                unread = (await db.execute(count_query)).scalar() or 0
-
+            last = last_by_session.get(session_id)
             results.append(
                 {
                     "emergency_session_id": session_id,
@@ -137,10 +215,8 @@ class ChatService:
                     "status": status.value if hasattr(status, "value") else str(status),
                     "last_message": last.message if last else None,
                     "last_message_at": last.created_at if last else None,
-                    "unread_count": unread,
-                    "participants": await ChatService.participant_details(
-                        db, session_id
-                    ),
+                    "unread_count": unread_by_session.get(session_id, 0),
+                    "participants": participants,
                 }
             )
         return results

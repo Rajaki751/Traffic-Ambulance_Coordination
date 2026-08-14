@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { analyticsApi, emergencyApi, gpsApi } from '../../services/api';
+import { analyticsApi, emergencyApi, gpsApi } from '../services/api';
 import { useWebSocketContext } from './useWebSocket';
-import { AnalyticsSummary, AmbulanceStats, LiveLocation, Emergency } from '../../types';
+import { AnalyticsSummary, AmbulanceStats, LiveLocation, Emergency } from '../types';
 
 function timestampMs(location: LiveLocation) {
   return location?.updated_at ? new Date(location.updated_at).getTime() : 0;

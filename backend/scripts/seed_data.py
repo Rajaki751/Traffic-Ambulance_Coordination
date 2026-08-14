@@ -56,10 +56,10 @@ async def seed() -> None:
         db.add(
             TrafficOfficer(
                 user_id=officer.id,
-                assigned_zone="Downtown Central",
-                zone_latitude=27.7172,
-                zone_longitude=85.3240,
-                zone_radius_km=8.0,
+                assigned_zone="No zone assigned",
+                zone_latitude=None,
+                zone_longitude=None,
+                zone_radius_km=5.0,
             )
         )
         await db.commit()

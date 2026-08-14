@@ -23,6 +23,7 @@ import math
 from dataclasses import dataclass
 
 from app.core.logging import get_logger
+from app.ai.kde_predictor import KDEPredictor
 
 logger = get_logger(__name__)
 
@@ -140,6 +141,9 @@ class IncidentLocationPredictor:
     MODEL_VERSION = "hybrid-v1"
 
     def __init__(self) -> None:
+        from app.ai.hotspot_discovery import load_hotspots
+        self.hotspots = load_hotspots()
+        self.kde_predictor = KDEPredictor()
         self._discovered: list[dict] = []
         self._discovered_sig: tuple = (-1, -1)
 
@@ -180,6 +184,19 @@ class IncidentLocationPredictor:
         traffic_index: float,
         incident_type: str = "general",
     ) -> IncidentPrediction:
+        # 1. Try True ML (Kernel Density Estimation) First
+        ml_prediction = self.kde_predictor.predict(
+            caller_latitude, caller_longitude, incident_type
+        )
+        if ml_prediction:
+            return IncidentPrediction(
+                incident_latitude=ml_prediction["latitude"],
+                incident_longitude=ml_prediction["longitude"],
+                confidence=ml_prediction["confidence"],
+                model_version=self.MODEL_VERSION
+            )
+
+        # 2. Fall back to geometric heuristics
         if incident_type not in INCIDENT_TYPES:
             incident_type = "general"
 

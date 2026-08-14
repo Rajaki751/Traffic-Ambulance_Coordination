@@ -97,6 +97,10 @@ async def ensure_learning_models() -> dict:
                 if found:
                     await asyncio.to_thread(save_hotspots, found, len(records))
                     hotspots = {"discovered": len(found), "source": "trained"}
+                
+                # Also train the true KDE model
+                from app.ai.kde_predictor import train_kde_models
+                await asyncio.to_thread(train_kde_models, records)
             except Exception as exc:
                 logger.warning("Hotspot discovery at startup failed: %s", exc)
         else:

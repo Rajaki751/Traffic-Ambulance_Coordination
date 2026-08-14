@@ -95,8 +95,10 @@ export default function UsersPage() {
     setLoading(true);
     try {
       if (editingUser) {
-        const payload = { name: form.name, email: form.email, role: form.role };
+        const payload: any = { name: form.name, email: form.email, role: form.role };
         if (form.password) payload.password = form.password;
+        if (form.role === 'driver') payload.vehicle_number = form.vehicle_number;
+        if (form.role === 'officer') payload.assigned_zone = form.assigned_zone;
         await usersApi.update(editingUser.id, payload);
       } else {
         if (!form.password) {
@@ -104,7 +106,7 @@ export default function UsersPage() {
           setLoading(false);
           return;
         }
-        const payload = {
+        const payload: any = {
           name: form.name,
           email: form.email,
           password: form.password,

@@ -1,9 +1,17 @@
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { connectAdminWebSocket } from '../services/websocket';
 
-export const WebSocketContext = createContext({ status: 'connecting', subscribe: () => () => {} });
+export const WebSocketContext = createContext({
+  status: 'connecting',
+  subscribe: (listener: (msg: any) => void) => { return () => {}; }
+});
 
-export function useAdminWebSocket(onMessage, { onStatusChange, onSessionExpired } = {}) {
+interface WSOptions {
+  onStatusChange?: (status: string) => void;
+  onSessionExpired?: () => void;
+}
+
+export function useAdminWebSocket(onMessage: (msg: any) => void, { onStatusChange, onSessionExpired }: WSOptions = {}) {
   const onMessageRef = useRef(onMessage);
   const onStatusChangeRef = useRef(onStatusChange);
   const onSessionExpiredRef = useRef(onSessionExpired);

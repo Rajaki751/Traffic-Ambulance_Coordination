@@ -63,6 +63,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [ambulances, setAmbulances] = useState<AmbulanceStats[]>([]);
   const [liveLocations, setLiveLocations] = useState<LiveLocation[]>([]);
+
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
   const [error, setError] = useState('');
   const pollInFlight = useRef(false);
@@ -110,7 +111,7 @@ export default function DashboardPage() {
     [subscribe, loadData]
   );
 
-  const mapCenter =
+  const mapCenter: [number, number] =
     liveLocations.length > 0
       ? [liveLocations[0].latitude, liveLocations[0].longitude]
       : [27.7172, 85.3240];

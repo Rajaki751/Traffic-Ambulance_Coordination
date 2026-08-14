@@ -1,3 +1,15 @@
+import { ReactNode, ComponentType } from 'react';
+
+interface CardProps {
+  title?: string;
+  subtitle?: string;
+  icon?: ComponentType<any>;
+  action?: ReactNode;
+  children?: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+}
+
 export default function Card({
   title,
   subtitle,
@@ -6,7 +18,7 @@ export default function Card({
   children,
   className = '',
   bodyClassName = '',
-}) {
+}: CardProps) {
   return (
     <section
       className={`overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 ${className}`}

@@ -8,9 +8,9 @@ export default function Layout() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const listenersRef = useRef(new Set());
+  const listenersRef = useRef<Set<(msg: any) => void>>(new Set());
 
-  const subscribe = useCallback((listener) => {
+  const subscribe = useCallback((listener: (msg: any) => void) => {
     listenersRef.current.add(listener);
     return () => {
       listenersRef.current.delete(listener);
@@ -43,7 +43,7 @@ export default function Layout() {
           </button>
         </header>
         <main className="flex-1 overflow-auto p-6">
-          <WebSocketContext.Provider value={{ subscribe }}>
+          <WebSocketContext.Provider value={{ subscribe, status: 'connected' }}>
             <Outlet />
           </WebSocketContext.Provider>
         </main>

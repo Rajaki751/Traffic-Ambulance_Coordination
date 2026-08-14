@@ -1,4 +1,6 @@
-export default function PageHeader({ title, subtitle, children }) {
+import React from 'react';
+
+export default function PageHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>

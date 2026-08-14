@@ -87,7 +87,7 @@ function FitBounds({ ambulances }) {
   return null;
 }
 
-export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }) {
+export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }: { ambulances?: any[], center?: [number, number] }) {
   return (
     <div className="h-[400px] w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
       <MapContainer center={center} zoom={13} className="h-full w-full">

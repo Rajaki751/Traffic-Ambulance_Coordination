@@ -3,7 +3,7 @@ const WS_BASE = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8000';
 const INITIAL_RETRY_MS = 1000;
 const MAX_RETRY_MS = 30000;
 
-export function connectAdminWebSocket(token, onMessage, { onStatusChange, onSessionExpired } = {}) {
+export function connectAdminWebSocket(token: string, onMessage: (msg: any) => void, { onStatusChange, onSessionExpired }: { onStatusChange?: (status: string) => void; onSessionExpired?: () => void } = {}) {
   const url = `${WS_BASE}/ws/live?token=${encodeURIComponent(token)}&channel=admin`;
   let ws = null;
   let pingInterval = null;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IconAmbulance, IconSteeringWheel } from '@tabler/icons-react';
+import { IconAmbulance, IconSteeringWheel, IconDownload } from '@tabler/icons-react';
 import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
 import ErrorBanner from '../components/ErrorBanner';
@@ -38,6 +38,26 @@ export default function AmbulancesPage() {
   const [ambulances, setAmbulances] = useState([]);
   const [error, setError] = useState('');
 
+  const handleExportCSV = useCallback(() => {
+    if (ambulances.length === 0) return;
+    const header = ['ID', 'Vehicle Number', 'Driver Name', 'Status'];
+    const rows = ambulances.map(a => [
+      a.id,
+      a.vehicle_number || '',
+      `"${(a.driver_name || '').replace(/"/g, '""')}"`,
+      a.status || ''
+    ]);
+    const csvContent = [header, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'ambulances_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [ambulances]);
+
   const loadAmbulances = useCallback(() => {
     setError('');
     ambulancesApi.list()
@@ -70,6 +90,16 @@ export default function AmbulancesPage() {
       <PageHeader
         title="Ambulance Fleet"
         subtitle="All registered ambulances and driver assignments"
+        action={
+          <button
+            onClick={handleExportCSV}
+            disabled={ambulances.length === 0}
+            className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
+          >
+            <IconDownload className="h-4 w-4" stroke={1.7} />
+            Export CSV
+          </button>
+        }
       >
         <div className="flex flex-wrap items-center gap-2">
           {summaryChips.map((chip) => (

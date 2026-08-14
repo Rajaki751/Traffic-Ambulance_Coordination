@@ -5,6 +5,7 @@ import {
   IconCalendarEvent,
   IconClock,
   IconMapPin,
+  IconDownload,
 } from '@tabler/icons-react';
 import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
@@ -22,6 +23,28 @@ export default function EmergenciesPage() {
   const [emergencies, setEmergencies] = useState([]);
   const [error, setError] = useState('');
 
+  const handleExportCSV = useCallback(() => {
+    if (emergencies.length === 0) return;
+    const header = ['ID', 'Vehicle Number', 'Destination', 'Status', 'ETA', 'Started At'];
+    const rows = emergencies.map(e => [
+      e.id,
+      e.ambulance_id || '',
+      `"${(e.destination || '').replace(/"/g, '""')}"`,
+      e.status || '',
+      e.eta_minutes != null ? e.eta_minutes.toFixed(0) : '',
+      formatDate(e.started_at)
+    ]);
+    const csvContent = [header, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'emergencies_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [emergencies]);
+
   const loadEmergencies = useCallback(() => {
     setError('');
     emergencyApi.active()
@@ -38,6 +61,16 @@ export default function EmergenciesPage() {
       <PageHeader
         title="Emergencies"
         subtitle="Active emergency sessions across the city"
+        action={
+          <button
+            onClick={handleExportCSV}
+            disabled={emergencies.length === 0}
+            className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
+          >
+            <IconDownload className="h-4 w-4" stroke={1.7} />
+            Export CSV
+          </button>
+        }
       >
         {!error && emergencies.length > 0 && (
           <span className="flex items-center gap-1.5 rounded-full bg-emergency px-3.5 py-1.5 text-sm font-medium text-white shadow-sm">

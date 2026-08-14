@@ -72,7 +72,14 @@ export default function UsersPage() {
 
   const openEdit = (u) => {
     setEditingUser(u);
-    setForm({ name: u.name, email: u.email, password: '', role: u.role });
+    setForm({
+      name: u.name,
+      email: u.email,
+      password: '',
+      role: u.role,
+      vehicle_number: u.vehicle_number || '',
+      assigned_zone: u.assigned_zone || '',
+    });
     setError('');
     setShowModal(true);
   };

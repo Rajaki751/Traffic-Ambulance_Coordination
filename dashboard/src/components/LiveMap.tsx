@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, Fragment } from 'react';
 
 const ambulanceIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
@@ -66,26 +66,12 @@ function parseRoutePolyline(polyline) {
 
 function FitBounds({ ambulances }) {
   const map = useMap();
-  const ambulancesRef = useRef(ambulances);
-  ambulancesRef.current = ambulances;
-
-  const signature = useMemo(
-    () =>
-      JSON.stringify(
-        ambulances.map((amb) => [
-          amb.ambulance_id ?? amb.id,
-          Number((amb.latitude ?? 0).toFixed(2)),
-          Number((amb.longitude ?? 0).toFixed(2)),
-        ])
-      ),
-    [ambulances]
-  );
+  const hasFitted = useRef(false);
 
   useEffect(() => {
-    const current = ambulancesRef.current;
-    if (!map || current.length === 0) return;
+    if (!map || ambulances.length === 0 || hasFitted.current) return;
     const positions = [];
-    current.forEach((amb) => {
+    ambulances.forEach((amb) => {
       if (amb.route_polyline) {
         positions.push(...parseRoutePolyline(amb.route_polyline));
       }
@@ -95,7 +81,8 @@ function FitBounds({ ambulances }) {
       }
     });
     map.fitBounds(L.latLngBounds(positions), { padding: [50, 50] });
-  }, [map, signature]);
+    hasFitted.current = true;
+  }, [map, ambulances]);
 
   return null;
 }
@@ -112,7 +99,7 @@ export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }
         {ambulances.map((amb) => {
           const routePositions = parseRoutePolyline(amb.route_polyline);
           return (
-            <div key={amb.ambulance_id ?? amb.id}>
+            <Fragment key={amb.ambulance_id ?? amb.id}>
               {routePositions.length > 1 && (
                 <Polyline
                   positions={routePositions}
@@ -144,7 +131,7 @@ export default function LiveMap({ ambulances = [], center = [27.7172, 85.3240] }
                   Speed: {amb.speed_kmh?.toFixed(0) ?? '-'} km/h
                 </Popup>
               </Marker>
-            </div>
+            </Fragment>
           );
         })}
       </MapContainer>

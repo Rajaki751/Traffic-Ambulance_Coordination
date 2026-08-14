@@ -76,6 +76,7 @@ async def send_chat_message(
                 emergency_session_id=session_id,
                 sender_user_id=current_user.id,
                 sender_name=current_user.name or "",
+                sender_role=current_user.role.value,
                 message=text,
                 created_at=msg.created_at,
             ).model_dump(mode="json"),
@@ -91,6 +92,7 @@ async def send_chat_message(
         emergency_session_id=session_id,
         sender_user_id=current_user.id,
         sender_name=current_user.name or "",
+        sender_role=current_user.role.value,
         message=text,
         created_at=msg.created_at,
     )

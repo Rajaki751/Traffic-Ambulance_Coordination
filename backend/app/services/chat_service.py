@@ -138,9 +138,36 @@ class ChatService:
                     "last_message": last.message if last else None,
                     "last_message_at": last.created_at if last else None,
                     "unread_count": unread,
+                    "participants": await ChatService.participant_details(
+                        db, session_id
+                    ),
                 }
             )
         return results
+
+    @staticmethod
+    async def participant_details(
+        db: AsyncSession, emergency_session_id: int
+    ) -> List[dict]:
+        """Return participants (user_id, name, role) for a session."""
+        officer_ids, driver_id = await ChatService.participants(
+            db, emergency_session_id
+        )
+        ids = [i for i in officer_ids if i is not None]
+        if driver_id is not None:
+            ids.append(driver_id)
+        if not ids:
+            return []
+        result = await db.execute(select(User.id, User.name, User.role).where(User.id.in_(ids)))
+        rows = result.all()
+        return [
+            {
+                "user_id": uid,
+                "name": name or "",
+                "role": role.value if hasattr(role, "value") else str(role),
+            }
+            for uid, name, role in rows
+        ]
 
     @staticmethod
     async def list_messages(
@@ -149,7 +176,7 @@ class ChatService:
         if not await ChatService.can_participate(db, emergency_session_id, user_id, role):
             return None
         result = await db.execute(
-            select(ChatMessage, User.name)
+            select(ChatMessage, User.name, User.role)
             .join(User, User.id == ChatMessage.sender_user_id)
             .where(ChatMessage.emergency_session_id == emergency_session_id)
             .order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc())
@@ -162,10 +189,11 @@ class ChatService:
                 "emergency_session_id": msg.emergency_session_id,
                 "sender_user_id": msg.sender_user_id,
                 "sender_name": sender_name or "",
+                "sender_role": role.value if hasattr(role, "value") else str(role),
                 "message": msg.message,
                 "created_at": msg.created_at,
             }
-            for msg, sender_name in reversed(rows)
+            for msg, sender_name, role in reversed(rows)
         ]
 
     @staticmethod

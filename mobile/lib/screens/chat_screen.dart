@@ -8,8 +8,12 @@ import '../providers/chat_provider.dart';
 import '../widgets/auth_widgets.dart';
 import 'chat_room_screen.dart';
 
+const _kWaTeal = Color(0xFF128C7E);
+const _kDriverGreen = Color(0xFF2F9E63);
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
+
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -33,6 +37,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return DateFormat('MMM d').format(dt.toLocal());
   }
 
+  String _chatTitle(ChatSessionSummary s) {
+    if (s.officers.isNotEmpty) {
+      final names = s.officers.map((o) => o.name).toList();
+      if (names.length > 1) {
+        return '${s.vehicleNumber} · ${names.length} officers';
+      }
+      return '${s.vehicleNumber} · ${names.first.split(' ').first}';
+    }
+    return s.vehicleNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     final chat = context.watch<ChatProvider>();
@@ -47,14 +62,28 @@ class _ChatScreenState extends State<ChatScreen> {
         scrolledUnderElevation: 0,
         flexibleSpace: const FrostedAppBarBackdrop(),
         shape: const Border(bottom: BorderSide(color: kAuthBorder)),
-        title: Text(
-          'Chat',
-          style: text.copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.2,
-            color: kAuthText,
-          ),
+        title: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: const BoxDecoration(
+                color: _kWaTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.chat_rounded, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Chat',
+              style: text.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+                color: kAuthText,
+              ),
+            ),
+          ],
         ),
       ),
       body: GlassBackdrop(
@@ -64,7 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? RefreshIndicator(
                     onRefresh: chat.loadSessions,
                     child: const AuthEmptyState(
-                      icon: Icons.chat_bubble_outline_rounded,
+                      icon: Icons.forum_outlined,
                       title: 'No conversations yet',
                       hint: 'Chat with drivers and officers for each emergency '
                           'trip will appear here.',
@@ -72,12 +101,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
                 : RefreshIndicator(
                     onRefresh: chat.loadSessions,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(12),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       itemCount: chat.sessions.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: 1,
+                        indent: 72,
+                        color: kAuthBorder.withValues(alpha: 0.6),
+                      ),
                       itemBuilder: (_, i) {
                         final s = chat.sessions[i];
-                        return _sessionCard(context, chat, s, text);
+                        return _sessionTile(context, chat, s, text);
                       },
                     ),
                   ),
@@ -85,118 +119,141 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _sessionCard(
+  Widget _sessionTile(
     BuildContext context,
     ChatProvider chat,
     ChatSessionSummary s,
     TextStyle text,
   ) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      elevation: 0,
-      shadowColor: Colors.transparent,
-      color: kAuthCard,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: kAuthBorder),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          chat.openSession(s.emergencySessionId);
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => ChatRoomScreen(session: s)))
-              .then((_) {
-            if (mounted) chat.loadSessions();
-          });
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: kAuthRed.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  s.status == 'active'
-                      ? Icons.local_shipping_rounded
-                      : Icons.history_rounded,
-                  color: kAuthRed,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
+    final driver = s.drivers.isEmpty ? null : s.drivers.first;
+    final preview = s.lastMessage ?? 'No messages yet — say hello!';
+    final hasUnread = s.unreadCount > 0;
+
+    return InkWell(
+      onTap: () {
+        chat.openSession(s.emergencySessionId);
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => ChatRoomScreen(session: s)))
+            .then((_) {
+          if (mounted) chat.loadSessions();
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
+          children: [
+            _avatar(s.emergencySessionId, driver?.initials, true, 46),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _chatTitle(s),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: text.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.5,
+                            color: kAuthText,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        _timeLabel(s.lastMessageAt),
+                        style: text.copyWith(
+                          fontSize: 11,
+                          color: hasUnread ? _kWaTeal : kAuthFaint,
+                          fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  if (driver != null)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: _kDriverGreen.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '${driver.name} · Driver',
+                        style: text.copyWith(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: _kDriverGreen,
+                        ),
+                      ),
+                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          preview,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: text.copyWith(
+                            fontSize: 13,
+                            color: s.lastMessage == null ? kAuthFaint : kAuthMuted,
+                            fontWeight: hasUnread
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      if (hasUnread) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: const BoxDecoration(
+                            color: _kWaTeal,
+                            shape: BoxShape.circle,
+                          ),
                           child: Text(
-                            s.vehicleNumber,
+                            '${s.unreadCount}',
                             style: text.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: kAuthText,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                        Text(
-                          _timeLabel(s.lastMessageAt),
-                          style: text.copyWith(
-                            fontSize: 11,
-                            color: kAuthFaint,
-                          ),
-                        ),
                       ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      s.destination,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: text.copyWith(fontSize: 12, color: kAuthMuted),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      s.lastMessage ?? 'No messages yet',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: text.copyWith(
-                        fontSize: 12.5,
-                        color: s.lastMessage == null ? kAuthFaint : kAuthMuted,
-                        fontWeight:
-                            s.unreadCount > 0 ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-              if (s.unreadCount > 0) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: kAuthRed,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${s.unreadCount}',
-                    style: text.copyWith(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _avatar(int seed, String? initials, bool circle, double size) {
+    final Color bg = _kWaTeal;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: bg,
+        shape: circle ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: circle ? null : BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          initials ?? 'AMB',
+          style: GoogleFonts.inter(
+            fontSize: size * 0.36,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
       ),

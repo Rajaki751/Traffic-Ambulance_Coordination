@@ -79,24 +79,49 @@ class _OfficerHomeScreenState extends State<OfficerHomeScreen> {
       backgroundColor: Colors.transparent,
       extendBody: true,
       body: GlassBackdrop(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 240),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.012),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
+        child: Stack(
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 240),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.012),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+              child: KeyedSubtree(
+                key: ValueKey(_selectedIndex),
+                child: pages[_selectedIndex],
+              ),
             ),
-          ),
-          child: KeyedSubtree(
-            key: ValueKey(_selectedIndex),
-            child: pages[_selectedIndex],
-          ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 110,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        kAuthBg.withValues(alpha: 0.0),
+                        kAuthBg.withValues(alpha: 0.8),
+                        kAuthBg,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: SafeArea(

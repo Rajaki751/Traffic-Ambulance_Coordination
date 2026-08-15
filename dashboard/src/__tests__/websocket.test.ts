@@ -7,7 +7,7 @@ describe('Admin WebSocket Client', () => {
   let lastMockInstance: any;
 
   beforeEach(() => {
-    originalWebSocket = global.WebSocket;
+    originalWebSocket = window.WebSocket;
     lastMockInstance = null;
 
     class MockWebSocket {
@@ -31,11 +31,11 @@ describe('Admin WebSocket Client', () => {
       }
     }
 
-    global.WebSocket = MockWebSocket as any;
+    window.WebSocket = MockWebSocket as any;
   });
 
   afterEach(() => {
-    global.WebSocket = originalWebSocket;
+    window.WebSocket = originalWebSocket;
   });
 
   it('connects to correct live endpoint with token and cleans up', () => {

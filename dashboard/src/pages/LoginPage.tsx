@@ -40,12 +40,33 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const extractErrorMessage = (err: any): string => {
+    if (!err?.response) {
+      return 'Cannot reach API server. Ensure backend is running: uvicorn app.main:app --port 8000';
+    }
+    if (err.response.status === 401) {
+      return 'Invalid email or password';
+    }
+    const detail = err.response.data?.detail;
+    if (typeof detail === 'string') {
+      return detail;
+    }
+    if (Array.isArray(detail)) {
+      return detail.map((d: any) => d.msg || (typeof d === 'string' ? d : JSON.stringify(d))).join(', ');
+    }
+    if (detail && typeof detail === 'object') {
+      return detail.message || JSON.stringify(detail);
+    }
+    return err.response.data?.message || err.message || 'Login failed';
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const cleanEmail = email.trim();
     try {
-      const { data } = await authApi.login(email, password);
+      const { data } = await authApi.login(cleanEmail, password);
       if (data.role !== 'admin') {
         setError('Admin access only');
         setLoading(false);
@@ -54,16 +75,11 @@ export default function LoginPage() {
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data));
       navigate('/');
-    } catch (err) {
-      if (!err.response) {
-        setError('Cannot reach API server. Start backend: uvicorn app.main:app --port 8000');
-      } else if (err.response.status === 401) {
-        setError('Invalid email or password');
-      } else {
-        setError(err.response.data?.detail || 'Login failed');
-      }
+    } catch (err: any) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -162,7 +178,10 @@ export default function LoginPage() {
                 stroke={1.7}
               />
               <input
+                id="email-input"
+                name="email"
                 type="email"
+                placeholder="admin@emergency.gov.np"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-4 transition-shadow focus:border-emergency focus:outline-none focus:ring-2 focus:ring-emergency/20 dark:border-gray-600 dark:bg-gray-800"
@@ -178,7 +197,10 @@ export default function LoginPage() {
                 stroke={1.7}
               />
               <input
+                id="password-input"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-11 transition-shadow focus:border-emergency focus:outline-none focus:ring-2 focus:ring-emergency/20 dark:border-gray-600 dark:bg-gray-800"

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import RequireAnyAuth, get_db
@@ -87,7 +87,10 @@ async def login(
     ),
 ):
     """Authenticate and receive JWT access token."""
-    result = await db.execute(select(User).where(User.email == payload.email))
+    clean_email = payload.email.strip().lower()
+    result = await db.execute(
+        select(User).where(func.lower(User.email) == clean_email)
+    )
     user = result.scalar_one_or_none()
 
     now = datetime.now(timezone.utc)

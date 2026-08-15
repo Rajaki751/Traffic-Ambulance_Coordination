@@ -38,9 +38,10 @@ class ProfileService {
     return ProfileModel.fromJson(res.data);
   }
 
-  Future<ProfileModel> updateProfile({String? name}) async {
+  Future<ProfileModel> updateProfile({String? name, String? fcmToken}) async {
     final data = <String, dynamic>{};
     if (name != null) data['name'] = name;
+    if (fcmToken != null) data['fcm_token'] = fcmToken;
     final res = await _api.patch('/api/v1/profile/me', data: data);
     return ProfileModel.fromJson(res.data);
   }

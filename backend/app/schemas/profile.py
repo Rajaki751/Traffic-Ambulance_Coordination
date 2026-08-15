@@ -14,12 +14,14 @@ class ProfileResponse(BaseModel):
     assigned_zone: Optional[str] = None
     zone_latitude: Optional[float] = None
     zone_longitude: Optional[float] = None
+    fcm_token: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
 
 class ProfileUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=255)
+    fcm_token: Optional[str] = None
 
 
 class ChangePasswordRequest(BaseModel):

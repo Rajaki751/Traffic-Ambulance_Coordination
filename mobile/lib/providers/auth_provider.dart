@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/live_service.dart';
 import '../services/server_config_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
@@ -135,7 +136,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _connectLive() {
+  void _connectLive() async {
     final user = _user;
     if (user == null || user.token == null) return;
     _liveService.connect(
@@ -143,6 +144,19 @@ class AuthProvider extends ChangeNotifier {
       token: user.token!,
       channel: user.role.name,
     );
+
+    // Register FCM token for push notifications
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _authService.registerFcmToken(fcmToken);
+      }
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        _authService.registerFcmToken(newToken);
+      });
+    } catch (e) {
+      // Ignored if firebase fails to initialize or get token
+    }
   }
 
   Future<bool> updateAmbulanceStatus(String status) async {

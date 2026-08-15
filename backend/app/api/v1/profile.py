@@ -19,6 +19,7 @@ def _build_profile(user: User) -> ProfileResponse:
         name=user.name,
         email=user.email,
         role=user.role.value,
+        fcm_token=user.fcm_token,
     )
     if hasattr(user, "ambulance") and user.ambulance:
         data.vehicle_number = user.ambulance.vehicle_number
@@ -65,6 +66,8 @@ async def update_profile(
 
     if payload.name is not None:
         user.name = payload.name
+    if payload.fcm_token is not None:
+        user.fcm_token = payload.fcm_token
 
     await db.flush()
     await db.refresh(user)

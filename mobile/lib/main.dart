@@ -30,8 +30,17 @@ import 'widgets/auth_widgets.dart';
 
 import 'core/map_cache.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  // Request permission for iOS (Android 13+ will prompt automatically)
+  await FirebaseMessaging.instance.requestPermission();
+
   await Hive.initFlutter();
   await Hive.openBox('offline_queue');
   await initMapCache();

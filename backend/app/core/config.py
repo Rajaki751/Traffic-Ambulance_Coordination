@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://localhost:3000"
 
     osrm_base_url: str = "https://router.project-osrm.org"
-    fcm_server_key: str = ""
+    firebase_credentials_json: str = ""
     # Optional Google Directions API key. If set, server will prefer Google Directions for routing.
     google_directions_api_key: str = ""
     # Optional Redis URL for persistent caching (e.g. redis://localhost:6379/0)

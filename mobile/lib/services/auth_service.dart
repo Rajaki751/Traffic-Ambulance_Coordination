@@ -12,6 +12,14 @@ class AuthService {
 
   void setBaseUrl(String url) => _api.setBaseUrl(url);
 
+  Future<void> registerFcmToken(String token) async {
+    try {
+      await _api.patch('/api/v1/profile/me', data: {'fcm_token': token});
+    } catch (e) {
+      // Ignore failure, we just won't get push notifications
+    }
+  }
+
   Future<UserModel> login(String email, String password) async {
     final res = await _api.post('/api/v1/auth/login', data: {
       'email': email,

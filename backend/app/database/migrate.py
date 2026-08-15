@@ -36,6 +36,10 @@ NOTIFICATION_COLUMNS = [
     ("acknowledgment", "VARCHAR(20)"),
 ]
 
+USER_COLUMNS = [
+    ("fcm_token", "VARCHAR(512)"),
+]
+
 
 async def run_dev_migrations() -> None:
     """Add missing columns to existing SQLite tables (dev only)."""
@@ -74,3 +78,16 @@ async def run_dev_migrations() -> None:
                 continue
             await conn.execute(text(f"ALTER TABLE notifications ADD COLUMN {name} {ddl}"))
             logger.info("Added column notifications.%s", name)
+
+        def _user_columns(sync_conn):
+            insp = inspect(sync_conn)
+            if not insp.has_table("users"):
+                return set()
+            return {col["name"] for col in insp.get_columns("users")}
+
+        user_existing = await conn.run_sync(_user_columns)
+        for name, ddl in USER_COLUMNS:
+            if name in user_existing:
+                continue
+            await conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {ddl}"))
+            logger.info("Added column users.%s", name)

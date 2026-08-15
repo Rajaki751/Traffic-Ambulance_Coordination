@@ -45,6 +45,7 @@ class User(Base):
     locked_until: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
     )
+    fcm_token: Mapped[str | None] = mapped_column(String(512), nullable=True, default=None)
 
     ambulance = relationship("Ambulance", back_populates="driver", uselist=False)
     officer_profile = relationship(

@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
 from app.models.notification import Notification
+from app.models.user import User
 from app.schemas.notification import NotificationResponse
+from app.services.push_service import PushService
 
 logger = get_logger(__name__)
 
@@ -48,6 +50,24 @@ class NotificationService:
             len(notifications),
             emergency_session_id,
         )
+
+        # Trigger push notifications for all officers with FCM tokens
+        if officer_ids:
+            officers_result = await db.execute(
+                select(User).where(User.id.in_(officer_ids), User.fcm_token.is_not(None))
+            )
+            for officer in officers_result.scalars():
+                if officer.fcm_token:
+                    import asyncio
+                    asyncio.create_task(
+                        PushService.send_push_notification(
+                            fcm_token=officer.fcm_token,
+                            title=title,
+                            body=message,
+                            data={"emergency_session_id": str(emergency_session_id), "type": "emergency_alert"},
+                        )
+                    )
+
         return [
             NotificationResponse.model_validate(n) for n in notifications
         ]
@@ -81,6 +101,22 @@ class NotificationService:
         )
         db.add(notif)
         await db.flush()
+
+        driver_result = await db.execute(
+            select(User).where(User.id == driver_user_id)
+        )
+        driver = driver_result.scalar_one_or_none()
+        if driver and driver.fcm_token:
+            import asyncio
+            asyncio.create_task(
+                PushService.send_push_notification(
+                    fcm_token=driver.fcm_token,
+                    title=title,
+                    body=message,
+                    data={"emergency_session_id": str(emergency_session_id) if emergency_session_id else "", "type": "driver_update"},
+                )
+            )
+
         return NotificationResponse.model_validate(notif)
 
     @staticmethod
@@ -106,6 +142,23 @@ class NotificationService:
             db.add(notif)
             notifications.append(notif)
         await db.flush()
+
+        if officer_ids:
+            officers_result = await db.execute(
+                select(User).where(User.id.in_(officer_ids), User.fcm_token.is_not(None))
+            )
+            for officer in officers_result.scalars():
+                if officer.fcm_token:
+                    import asyncio
+                    asyncio.create_task(
+                        PushService.send_push_notification(
+                            fcm_token=officer.fcm_token,
+                            title=title,
+                            body=message,
+                            data={"emergency_session_id": str(emergency_session_id) if emergency_session_id else "", "type": "driver_reply"},
+                        )
+                    )
+
         return [NotificationResponse.model_validate(n) for n in notifications]
 
     @staticmethod

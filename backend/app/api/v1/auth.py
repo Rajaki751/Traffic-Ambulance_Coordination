@@ -87,7 +87,13 @@ async def login(
     ),
 ):
     """Authenticate and receive JWT access token."""
-    clean_email = payload.email.strip().lower()
+    raw_email = payload.email or payload.username
+    if not raw_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or username is required",
+        )
+    clean_email = raw_email.strip().lower()
     result = await db.execute(
         select(User).where(func.lower(User.email) == clean_email)
     )

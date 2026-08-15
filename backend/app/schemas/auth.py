@@ -1,6 +1,7 @@
 """Authentication schemas."""
 
-from pydantic import BaseModel, EmailStr, Field
+from typing import Any, Optional
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 from app.models.user import UserRole
 
@@ -17,8 +18,17 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    email: str = Field(..., min_length=1, max_length=255)
+    email: Optional[str] = Field(None, max_length=255)
+    username: Optional[str] = Field(None, max_length=255)
     password: str = Field(..., min_length=1, max_length=128)
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_email_or_username(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if not data.get("email") and data.get("username"):
+                data["email"] = data["username"]
+        return data
 
 
 class TokenResponse(BaseModel):

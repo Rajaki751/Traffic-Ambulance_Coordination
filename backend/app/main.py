@@ -5,6 +5,7 @@ AI-Driven Traffic Ambulance Coordination System - FastAPI Application Entry Poin
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
@@ -103,6 +104,26 @@ async def add_security_headers(request: Request, call_next):
 
 app.include_router(api_router)
 app.include_router(ws_router, prefix="/ws", tags=["WebSocket"])
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Format 422 validation errors with a human-readable detail string to protect frontend parsers."""
+    errors = exc.errors()
+    messages = []
+    for err in errors:
+        loc = " -> ".join(str(l) for l in err.get("loc", []) if l != "body")
+        msg = err.get("msg", "Invalid value")
+        if loc:
+            messages.append(f"{loc}: {msg}")
+        else:
+            messages.append(msg)
+    detail_str = "; ".join(messages) if messages else "Invalid request data"
+    logger.warning("Validation error on %s %s: %s", request.method, request.url.path, detail_str)
+    return JSONResponse(
+        status_code=422,
+        content={"detail": detail_str, "errors": errors},
+    )
 
 
 @app.exception_handler(Exception)

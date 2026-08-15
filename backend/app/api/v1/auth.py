@@ -91,11 +91,17 @@ async def login(
     user = result.scalar_one_or_none()
 
     now = datetime.now(timezone.utc)
-    if user and user.locked_until and user.locked_until > now:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Account temporarily locked due to too many failed attempts. Try again later.",
+    if user and user.locked_until:
+        locked_until = (
+            user.locked_until
+            if user.locked_until.tzinfo is not None
+            else user.locked_until.replace(tzinfo=timezone.utc)
         )
+        if locked_until > now:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Account temporarily locked due to too many failed attempts. Try again later.",
+            )
 
     if not user or not await verify_password(payload.password, user.password_hash):
         if user:

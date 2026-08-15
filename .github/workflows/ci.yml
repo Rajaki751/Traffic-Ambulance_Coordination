@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Pipeline (High-Performance Bun & uv)
 
 on:
   push:
@@ -17,11 +17,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ==========================================
-  # 1. Backend CI (FastAPI, Python, Pytest)
-  # ==========================================
+  # ==============================================================
+  # 0. Changes Filter (Smart path-based conditional job execution)
+  # ==============================================================
+  changes:
+    name: Detect Changed Paths
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      dashboard: ${{ steps.filter.outputs.dashboard }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Path Filter Check
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+            dashboard:
+              - 'dashboard/**'
+              - '.github/workflows/ci.yml'
+            mobile:
+              - 'mobile/**'
+              - '.github/workflows/ci.yml'
+
+  # ==============================================================
+  # 1. Backend CI (FastAPI, uv Package Manager, Python Matrix)
+  # ==============================================================
   backend-ci:
-    name: Backend (Python ${{ matrix.python-version }})
+    name: Backend (Python ${{ matrix.python-version }} via uv)
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,19 +63,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Install uv (High-Performance Python Package Manager)
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: backend/requirements.txt
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "backend/requirements.txt"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Install Dependencies
         working-directory: ./backend
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-asyncio pytest-cov httpx
+          uv pip install --system -r requirements.txt
+          uv pip install --system pytest pytest-asyncio pytest-cov httpx
 
       - name: Run Python Linters & Syntax Check
         working-directory: ./backend
@@ -68,49 +101,51 @@ jobs:
           path: backend/coverage.xml
           if-no-files-found: ignore
 
-  # ==========================================
-  # 2. Dashboard CI (React, Vite, Vitest)
-  # ==========================================
+  # ==============================================================
+  # 2. Dashboard CI (React, Vite, Vitest via Bun Engine)
+  # ==============================================================
   dashboard-ci:
-    name: Dashboard (Node 20.x, Lint, Test & Build)
+    name: Dashboard (Bun Fast Engine - Lint, Test & Build)
+    needs: changes
+    if: ${{ needs.changes.outputs.dashboard == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20.x
-        uses: actions/setup-node@v4
+      - name: Set up Bun (High-Performance JS/TS Runtime)
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: dashboard/package.json
+          bun-version: latest
 
-      - name: Install Dependencies
+      - name: Install Dependencies with Bun Cache
         working-directory: ./dashboard
-        run: npm ci
+        run: bun install
 
       - name: Run ESLint
         working-directory: ./dashboard
-        run: npm run lint
+        run: bun run lint
 
       - name: Run TypeScript Type Check
         working-directory: ./dashboard
-        run: npx tsc --noEmit
+        run: bun x tsc --noEmit
 
       - name: Run Vitest Unit Tests
         working-directory: ./dashboard
-        run: npm test
+        run: bun run test
 
       - name: Build Vite Production Bundle
         working-directory: ./dashboard
-        run: npm run build
+        run: bun run build
 
-  # ==========================================
+  # ==============================================================
   # 3. Mobile CI (Flutter, Analyze & Unit Tests)
-  # ==========================================
+  # ==============================================================
   mobile-ci:
     name: Mobile (Flutter Stable, Analyze & Test)
+    needs: changes
+    if: ${{ needs.changes.outputs.mobile == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -141,27 +176,27 @@ jobs:
         working-directory: ./mobile
         run: flutter test --coverage
 
-  # ==========================================
+  # ==============================================================
   # 4. Unified Status Gate
-  # ==========================================
+  # ==============================================================
   ci-status:
     name: CI Pipeline Status Check
-    needs: [backend-ci, dashboard-ci, mobile-ci]
-    runs-on: ubuntu-latest
+    needs: [changes, backend-ci, dashboard-ci, mobile-ci]
     if: always()
+    runs-on: ubuntu-latest
     steps:
       - name: Verify All CI Jobs Succeeded
         run: |
-          if [ "${{ needs.backend-ci.result }}" != "success" ]; then
+          if [ "${{ needs.backend-ci.result }}" == "failure" ]; then
             echo "❌ Backend CI failed"
             exit 1
           fi
-          if [ "${{ needs.dashboard-ci.result }}" != "success" ]; then
+          if [ "${{ needs.dashboard-ci.result }}" == "failure" ]; then
             echo "❌ Dashboard CI failed"
             exit 1
           fi
-          if [ "${{ needs.mobile-ci.result }}" != "success" ]; then
+          if [ "${{ needs.mobile-ci.result }}" == "failure" ]; then
             echo "❌ Mobile CI failed"
             exit 1
           fi
-          echo "✅ All CI checks passed successfully!"
+          echo "✅ All required CI checks passed successfully!"

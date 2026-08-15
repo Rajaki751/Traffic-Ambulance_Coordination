@@ -34,5 +34,7 @@ class UserResponse(BaseModel):
     name: str
     email: str
     role: UserRole
+    vehicle_number: str | None = None
+    assigned_zone: str | None = None
 
     model_config = {"from_attributes": True}

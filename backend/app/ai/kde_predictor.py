@@ -42,13 +42,22 @@ def train_kde_models(records):
 class KDEPredictor:
     def __init__(self):
         self.models = {}
+        self._model_sig = (-1, -1)
+        self._refresh_models()
+
+    def _refresh_models(self):
         if KDE_MODEL_PATH.exists():
             try:
-                self.models = joblib.load(KDE_MODEL_PATH)
+                stat = KDE_MODEL_PATH.stat()
+                sig = (stat.st_mtime_ns, stat.st_size)
+                if sig != self._model_sig:
+                    self.models = joblib.load(KDE_MODEL_PATH)
+                    self._model_sig = sig
             except Exception as e:
                 logger.error(f"Failed to load KDE models: {e}")
 
     def predict(self, caller_lat, caller_lon, incident_type):
+        self._refresh_models()
         if not self.models or incident_type not in self.models:
             return None
             

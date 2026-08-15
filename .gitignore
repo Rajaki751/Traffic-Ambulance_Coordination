@@ -28,9 +28,12 @@ backend/data/incidents_history.csv
 # OS
 .DS_Store
 
-# Logs
+# Logs and coverage
 *.log
 dist/
+.coverage
+coverage.xml
+*.tsbuildinfo
 
 # Agents
 .agents/memory/

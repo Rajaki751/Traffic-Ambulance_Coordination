@@ -32,16 +32,6 @@ const navGroups = [
   },
 ];
 
-function initials(name) {
-  return (name || 'A')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-}
-
 export default function Sidebar({ collapsed = false, onToggle }) {
   return (
     <aside

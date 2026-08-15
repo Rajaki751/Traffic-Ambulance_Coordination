@@ -59,11 +59,16 @@ class AnalyticsService:
         sessions = completed_sessions.scalars().all()
         avg_response = 0.0
         if sessions:
-            durations = [
-                (s.ended_at - s.started_at).total_seconds() / 60
-                for s in sessions
-                if s.ended_at
-            ]
+            durations = []
+            for s in sessions:
+                if s.actual_duration_min is not None and s.actual_duration_min > 0:
+                    durations.append(s.actual_duration_min)
+                elif s.ended_at and s.started_at:
+                    s_started = s.started_at.replace(tzinfo=timezone.utc) if s.started_at.tzinfo is None else s.started_at
+                    s_ended = s.ended_at.replace(tzinfo=timezone.utc) if s.ended_at.tzinfo is None else s.ended_at
+                    dur = (s_ended - s_started).total_seconds() / 60.0
+                    if dur > 0:
+                        durations.append(dur)
             avg_response = sum(durations) / len(durations) if durations else 0.0
 
         return AnalyticsSummary(

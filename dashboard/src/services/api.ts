@@ -28,7 +28,7 @@ api.interceptors.response.use(
 
 export const authApi = {
   login: (email, password) =>
-    api.post('/api/v1/auth/login', new URLSearchParams({ username: email, password })),
+    api.post('/api/v1/auth/login', { email, password }),
   me: () => api.get('/api/v1/auth/me'),
 };
 

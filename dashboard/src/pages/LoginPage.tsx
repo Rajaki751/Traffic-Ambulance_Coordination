@@ -9,7 +9,6 @@ import {
   IconLock,
   IconLockAccess,
   IconMail,
-  IconMapPin,
   IconRoute,
   IconShieldCheck,
 } from '@tabler/icons-react';

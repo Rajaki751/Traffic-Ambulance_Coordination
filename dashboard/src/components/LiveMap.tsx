@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useMemo, useRef, Fragment } from 'react';
+import { useEffect, useRef, Fragment } from 'react';
 
 const ambulanceIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
@@ -75,13 +75,21 @@ function FitBounds({ ambulances }) {
       if (amb.route_polyline) {
         positions.push(...parseRoutePolyline(amb.route_polyline));
       }
-      positions.push([amb.latitude, amb.longitude]);
-      if (amb.dest_latitude && amb.dest_longitude) {
+      if (typeof amb.latitude === 'number' && typeof amb.longitude === 'number' && !Number.isNaN(amb.latitude) && !Number.isNaN(amb.longitude)) {
+        positions.push([amb.latitude, amb.longitude]);
+      }
+      if (typeof amb.dest_latitude === 'number' && typeof amb.dest_longitude === 'number' && !Number.isNaN(amb.dest_latitude) && !Number.isNaN(amb.dest_longitude)) {
         positions.push([amb.dest_latitude, amb.dest_longitude]);
       }
     });
-    map.fitBounds(L.latLngBounds(positions), { padding: [50, 50] });
-    hasFitted.current = true;
+    if (positions.length > 0) {
+      try {
+        map.fitBounds(L.latLngBounds(positions), { padding: [50, 50] });
+        hasFitted.current = true;
+      } catch {
+        // Safe fallback
+      }
+    }
   }, [map, ambulances]);
 
   return null;

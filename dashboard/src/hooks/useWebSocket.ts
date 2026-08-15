@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { connectAdminWebSocket } from '../services/websocket';
 
-export const WebSocketContext = createContext({
+export const WebSocketContext = createContext<{
+  status: string;
+  subscribe: (listener: (msg: any) => void) => () => void;
+}>({
   status: 'connecting',
-  subscribe: (listener: (msg: any) => void) => { return () => {}; }
+  subscribe: () => () => {},
 });
 
 interface WSOptions {

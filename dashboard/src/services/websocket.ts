@@ -45,7 +45,7 @@ export function connectAdminWebSocket(token: string, onMessage: (msg: any) => vo
         onStatusChange?.('closed');
         return;
       }
-      if (event.code === 1008) {
+      if (event.code === 1008 || event.code === 4401 || event.code === 4403) {
         onStatusChange?.('closed');
         onSessionExpired?.();
         return;

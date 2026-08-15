@@ -33,7 +33,7 @@ def as_utc(value: Optional[datetime]) -> Optional[datetime]:
         return None
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
-    return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
 
 
 def _type_index(incident_type: Optional[str]) -> float:

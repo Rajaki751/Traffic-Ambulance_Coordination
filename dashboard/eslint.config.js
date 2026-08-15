@@ -6,10 +6,12 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 
 export default [
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ['dist', 'node_modules'],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,

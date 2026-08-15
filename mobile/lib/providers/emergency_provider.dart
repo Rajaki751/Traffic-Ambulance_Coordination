@@ -187,6 +187,9 @@ class EmergencyProvider extends ChangeNotifier {
         currentLat: pos?.latitude,
         currentLon: pos?.longitude,
       );
+      if (_activeEmergency?.status == 'completed') {
+        _gpsService.stopTracking();
+      }
     } catch (e) {
       _activeEmergency = previous;
       _error = 'Failed to update trip stage: $e';

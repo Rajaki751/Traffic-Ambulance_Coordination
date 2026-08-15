@@ -350,6 +350,12 @@ class EmergencyService:
             session.status = EmergencyStatus.COMPLETED
             session.trip_stage = TripStage.COMPLETED.value
             session.ended_at = datetime.now(timezone.utc)
+            started = _as_utc(session.started_at)
+            ended = _as_utc(session.ended_at)
+            if started is not None and ended is not None:
+                session.actual_duration_min = round(
+                    (ended - started).total_seconds() / 60.0, 1
+                )
 
             amb_result = await db.execute(
                 select(Ambulance).where(Ambulance.id == ambulance_id)

@@ -33,6 +33,7 @@ EMERGENCY_SESSION_COLUMNS = [
 NOTIFICATION_COLUMNS = [
     ("user_id", "INTEGER"),
     ("notification_type", "VARCHAR(50) NOT NULL DEFAULT 'emergency_alert'"),
+    ("acknowledgment", "VARCHAR(20)"),
 ]
 
 

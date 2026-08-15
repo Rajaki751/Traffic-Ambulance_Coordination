@@ -86,16 +86,16 @@ class EmergencyModel {
     );
   }
 
-  EmergencyModel copyWith({String? tripStage}) {
+  EmergencyModel copyWith({String? tripStage, String? status, double? etaMinutes}) {
     return EmergencyModel(
       id: id,
       ambulanceId: ambulanceId,
       destination: destination,
       destLat: destLat,
       destLon: destLon,
-      status: status,
+      status: status ?? this.status,
       routePolyline: routePolyline,
-      etaMinutes: etaMinutes,
+      etaMinutes: etaMinutes ?? this.etaMinutes,
       useAiPrediction: useAiPrediction,
       incidentType: incidentType,
       predictionConfidence: predictionConfidence,

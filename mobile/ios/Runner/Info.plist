@@ -24,6 +24,10 @@
 		<string>????</string>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Sajiloroute needs your location to track the ambulance and provide real-time updates to traffic officers.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Sajiloroute needs location access even in the background to ensure accurate emergency routing.</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>UIApplicationSceneManifest</key>

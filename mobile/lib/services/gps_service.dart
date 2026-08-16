@@ -30,6 +30,12 @@ class GpsTrackingService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
+    if (permission == LocationPermission.deniedForever) {
+      // If permission is denied forever, open app settings so user can manually enable it
+      await Geolocator.openAppSettings();
+      // Optionally re-check after returning, but generally we return false and let them retry
+      return false;
+    }
     return permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse;
   }

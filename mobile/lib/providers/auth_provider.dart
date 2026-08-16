@@ -145,17 +145,19 @@ class AuthProvider extends ChangeNotifier {
       channel: user.role.name,
     );
 
-    // Register FCM token for push notifications
-    try {
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      if (fcmToken != null) {
-        await _authService.registerFcmToken(fcmToken);
+    // Register FCM token for push notifications (Skip on Web for now)
+    if (!kIsWeb) {
+      try {
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        if (fcmToken != null) {
+          await _authService.registerFcmToken(fcmToken);
+        }
+        FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+          _authService.registerFcmToken(newToken);
+        });
+      } catch (e) {
+        // Ignored if firebase fails to initialize or get token
       }
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        _authService.registerFcmToken(newToken);
-      });
-    } catch (e) {
-      // Ignored if firebase fails to initialize or get token
     }
   }
 

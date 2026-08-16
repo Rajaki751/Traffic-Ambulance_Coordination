@@ -34,13 +34,22 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'package:flutter/foundation.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  // Request permission for iOS (Android 13+ will prompt automatically)
-  await FirebaseMessaging.instance.requestPermission();
+  // Initialize Firebase only on non-web platforms for now,
+  // as web requires FirebaseOptions to be explicitly provided.
+  if (!kIsWeb) {
+    try {
+      await Firebase.initializeApp();
+      // Request permission for iOS (Android 13+ will prompt automatically)
+      await FirebaseMessaging.instance.requestPermission();
+    } catch (e) {
+      debugPrint("Firebase initialization failed: $e");
+    }
+  }
 
   await Hive.initFlutter();
   await Hive.openBox('offline_queue');

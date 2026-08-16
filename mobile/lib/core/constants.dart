@@ -4,15 +4,15 @@ class AppConstants {
   static const String compileTimeBaseUrl =
       String.fromEnvironment('API_BASE_URL');
 
-  /// Emulator default. Physical phones should set server URL on the login screen.
-  static const String emulatorBaseUrl = 'http://10.0.2.2:8000';
+  /// Production server URL
+  static const String emulatorBaseUrl = 'https://sajiloroute-api.onrender.com';
 
   static String get defaultBaseUrl =>
       compileTimeBaseUrl.isNotEmpty ? compileTimeBaseUrl : emulatorBaseUrl;
 
   static const String wsUrl = String.fromEnvironment(
     'WS_BASE_URL',
-    defaultValue: 'ws://10.0.2.2:8000',
+    defaultValue: 'wss://sajiloroute-api.onrender.com',
   );
 
   static const String tokenKey = 'access_token';

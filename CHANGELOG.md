@@ -1,4 +1,4 @@
-# 🚀 What's New in Sajiloroute v1.2.2
+# 🚀 What's New in Sajiloroute v1.2.3
 
 ## ✨ Premium Experience
 - **Animated Splash Screen**: A brand new, state-of-the-art animated launch experience replacing the old generic loading spinner.
@@ -10,3 +10,5 @@
 - **Icon Alignment**: Re-generated and optimized the `Sajiloroute` launcher icon to ensure Apple App Store and Google Play Store alpha-channel compliance.
 
 Enjoy the new premium feel of Sajiloroute! 🚑💨
+
+- **Build System**: Fixed a strict CI compilation error to ensure the APK is correctly attached to this release.

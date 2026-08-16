@@ -49,8 +49,9 @@ class ApiService {
     try {
       return await _dio.post(path, data: data);
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.connectionTimeout) {
+      if (!path.contains('/auth/') &&
+          (e.type == DioExceptionType.connectionError ||
+              e.type == DioExceptionType.connectionTimeout)) {
         await OfflineQueueService().enqueue(path, 'POST', data);
         return Response(
           requestOptions: e.requestOptions,

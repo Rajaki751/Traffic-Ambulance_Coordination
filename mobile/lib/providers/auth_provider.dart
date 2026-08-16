@@ -111,6 +111,10 @@ class AuthProvider extends ChangeNotifier {
   }
 
   String _messageForDioError(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['detail'] != null) {
+      return data['detail'].toString();
+    }
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.receiveTimeout) {

@@ -417,7 +417,7 @@ class _AuthFieldState extends State<AuthField> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 120),
           curve: Curves.easeOut,
-          height: 44,
+          constraints: const BoxConstraints(minHeight: 48),
           decoration: BoxDecoration(
             color: kAuthCard,
             borderRadius: BorderRadius.circular(10),
@@ -426,6 +426,7 @@ class _AuthFieldState extends State<AuthField> {
             ),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(width: 12),
               Icon(
@@ -560,7 +561,7 @@ class _AuthDropdownFieldState extends State<AuthDropdownField> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 120),
           curve: Curves.easeOut,
-          height: 44,
+          constraints: const BoxConstraints(minHeight: 48),
           decoration: BoxDecoration(
             color: kAuthCard,
             borderRadius: BorderRadius.circular(10),
@@ -668,7 +669,6 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 120),
           curve: Curves.easeOut,
-          height: 44,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color:
@@ -680,7 +680,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton> {
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
               elevation: 0,
-              minimumSize: const Size.fromHeight(44),
+              minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

@@ -8,9 +8,9 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        value: "postgresql+asyncpg://neondb_owner:npg_GVbEfjCow8u4@ep-round-rain-axjqrpdv.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
+        sync: false
       - key: DATABASE_URL_SYNC
-        value: "postgresql://neondb_owner:npg_GVbEfjCow8u4@ep-round-rain-axjqrpdv.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: ENVIRONMENT

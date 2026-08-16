@@ -134,7 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const AuthBadge(),
+                          const Flexible(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: AuthBadge(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(Icons.dns_outlined, size: 20, color: kAuthMuted),
                             tooltip: 'Server Settings',

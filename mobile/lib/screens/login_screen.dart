@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
-import '../services/server_config_service.dart';
 import '../widgets/auth_widgets.dart';
 import 'register_screen.dart';
 
@@ -15,31 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _serverCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _serverConfig = ServerConfigService();
   bool _obscurePass = true;
-  bool _advancedOpen = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadServerUrl();
-  }
-
-  Future<void> _loadServerUrl() async {
-    final url = await _serverConfig.getApiBaseUrl();
-    if (!mounted) return;
-    setState(() {
-      _serverCtrl.text = url;
-    });
-  }
 
   @override
   void dispose() {
-    _serverCtrl.dispose();
     _emailCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
@@ -94,43 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _DisclosureRow(
-                              title: 'Advanced settings',
-                              open: _advancedOpen,
-                              onToggle: () => setState(
-                                  () => _advancedOpen = !_advancedOpen),
-                            ),
-                            AnimatedCrossFade(
-                              firstChild:
-                                  const SizedBox(width: double.infinity),
-                              secondChild: Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: AuthField(
-                                  controller: _serverCtrl,
-                                  label: 'Server URL',
-                                  icon: Icons.dns_outlined,
-                                  keyboardType: TextInputType.url,
-                                  helper: 'Use your PC IP on a physical '
-                                      'phone (same Wi-Fi)',
-                                  validator: (v) {
-                                    if (v == null || v.trim().isEmpty) {
-                                      return 'Server URL required';
-                                    }
-                                    if (!v.contains(':')) {
-                                      return 'Include port, e.g. '
-                                          'http://192.168.x.x:8000';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              crossFadeState: _advancedOpen
-                                  ? CrossFadeState.showSecond
-                                  : CrossFadeState.showFirst,
-                              duration: const Duration(milliseconds: 260),
-                              sizeCurve: Curves.easeOutCubic,
-                            ),
-                            const SizedBox(height: 20),
                             AuthField(
                               controller: _emailCtrl,
                               label: 'Email',
@@ -164,8 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (!_formKey.currentState!.validate()) {
                                   return;
                                 }
-                                await auth
-                                    .configureServer(_serverCtrl.text.trim());
                                 await auth.login(
                                   _emailCtrl.text.trim(),
                                   _passCtrl.text,
@@ -194,58 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DisclosureRow extends StatelessWidget {
-  const _DisclosureRow({
-    required this.title,
-    required this.open,
-    required this.onToggle,
-  });
-
-  final String title;
-  final bool open;
-  final VoidCallback onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = GoogleFonts.inter();
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: InkWell(
-        onTap: onToggle,
-        borderRadius: BorderRadius.circular(8),
-        hoverColor: kAuthBorder.withValues(alpha: 0.35),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: text.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: kAuthFaint,
-                ),
-              ),
-              const SizedBox(width: 4),
-              AnimatedRotation(
-                turns: open ? 0.5 : 0,
-                duration: const Duration(milliseconds: 240),
-                curve: Curves.easeOut,
-                child: Icon(
-                  Icons.chevron_right_rounded,
-                  size: 14,
-                  color: kAuthFaint,
-                ),
-              ),
-            ],
           ),
         ),
       ),

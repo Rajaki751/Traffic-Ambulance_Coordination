@@ -8,7 +8,7 @@ class ServerConfigService {
   Future<String> getApiBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(apiUrlKey);
-    if (saved != null && saved.isNotEmpty) {
+    if (saved != null && saved.isNotEmpty && !saved.contains('10.0.2.2')) {
       return _normalizeHttpUrl(saved);
     }
     return AppConstants.defaultBaseUrl;

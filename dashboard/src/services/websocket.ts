@@ -1,4 +1,4 @@
-const WS_BASE = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8000';
+const WS_BASE = import.meta.env.VITE_WS_BASE_URL || 'wss://sajiloroute-api.onrender.com';
 
 const INITIAL_RETRY_MS = 1000;
 const MAX_RETRY_MS = 30000;

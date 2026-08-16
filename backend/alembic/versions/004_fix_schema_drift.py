@@ -68,14 +68,15 @@ def upgrade() -> None:
     if not _index_exists("notifications", "ix_notifications_user_id"):
         op.create_index("ix_notifications_user_id", "notifications", ["user_id"])
     if not _fk_exists("notifications", "fk_notifications_user_id_users"):
-        op.create_foreign_key(
-            "fk_notifications_user_id_users",
-            "notifications",
-            "users",
-            ["user_id"],
-            ["id"],
-            ondelete="CASCADE",
-        )
+        if op.get_bind().dialect.name != "sqlite":
+            op.create_foreign_key(
+                "fk_notifications_user_id_users",
+                "notifications",
+                "users",
+                ["user_id"],
+                ["id"],
+                ondelete="CASCADE",
+            )
     if not _column_exists("notifications", "notification_type"):
         op.add_column(
             "notifications",
@@ -87,9 +88,10 @@ def downgrade() -> None:
     if _column_exists("notifications", "notification_type"):
         op.drop_column("notifications", "notification_type")
     if _fk_exists("notifications", "fk_notifications_user_id_users"):
-        op.drop_constraint(
-            "fk_notifications_user_id_users", "notifications", type_="foreignkey"
-        )
+        if op.get_bind().dialect.name != "sqlite":
+            op.drop_constraint(
+                "fk_notifications_user_id_users", "notifications", type_="foreignkey"
+            )
     if _index_exists("notifications", "ix_notifications_user_id"):
         op.drop_index("ix_notifications_user_id", table_name="notifications")
     if _column_exists("notifications", "user_id"):

@@ -1,23 +1,24 @@
 <div align="center">
-  <h1>🚑 Emergency Route Coordinator (ERC)</h1>
+  <h1>🚑 Sajiloroute</h1>
   <p><strong>AI-Driven Traffic Ambulance Coordination System</strong></p>
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
   [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat-square&logo=Flutter&logoColor=white)](https://flutter.dev/)
   [![React](https://img.shields.io/badge/react-%2320232a.svg?style=flat-square&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
-  [![PostgreSQL](https://img.shields.io/badge/postgresql-%23316192.svg?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+  [![Render](https://img.shields.io/badge/Render-%2346E3B7.svg?style=flat-square&logo=render&logoColor=white)](https://render.com/)
+  [![Neon](https://img.shields.io/badge/Neon-00E599.svg?style=flat-square&logo=neon&logoColor=black)](https://neon.tech/)
 </div>
 
 ---
 
-A production-ready full-stack system designed to revolutionize emergency response. ERC coordinates ambulances through urban traffic during emergencies by leveraging real-time GPS tracking, OpenStreetMap (OSRM) route optimization, IoT traffic light simulation, and Predictive AI modeling.
+A production-ready full-stack system designed to revolutionize emergency response. **Sajiloroute** coordinates ambulances through urban traffic during emergencies by leveraging real-time GPS tracking, OpenStreetMap (OSRM) route optimization, Firebase Push Notifications, and Predictive AI modeling.
 
 ## 📑 Table of Contents
 - [✨ Features](#-features)
 - [🏗 Architecture](#-architecture)
 - [🛠 Tech Stack](#-tech-stack)
-- [🚀 Quick Start (Local Setup)](#-quick-start-local-setup)
+- [🚀 Quick Start (Production & Local)](#-quick-start-production--local)
 - [🧠 How the AI Works](#-how-the-ai-works)
 - [📖 API Reference](#-api-reference)
 - [🗺 Workflows](#-workflows)
@@ -29,8 +30,8 @@ A production-ready full-stack system designed to revolutionize emergency respons
 ## ✨ Features
 
 - **Predictive AI ETA & Routing:** Utilizes gradient boosting and geometric estimation to predict response times based on traffic heuristics, time of day, and historical OSRM trip data.
+- **Firebase Push Notifications (FCM v1):** Traffic officers receive instant push notifications when an ambulance enters their zone.
 - **Auto-Discovered Risk Hotspots:** Uses K-Means clustering on historical emergency data to auto-discover accident-prone zones and display them via predictive heatmaps on the dashboard.
-- **Offline-First Synchronization:** The mobile app leverages `Hive` and `connectivity_plus` to queue API mutations (like starting/ending emergencies) if the network drops, automatically syncing when connectivity returns.
 - **Real-Time WebSockets:** Live GPS ambulance tracking, traffic officer dispatch alerts, and active session monitoring synced across all platforms in milliseconds.
 - **Advanced Admin Dashboard:** React/Vite-powered interface with dynamic Recharts trend tracking, Predictive Heatmaps (Leaflet), full Fleet Activity logs, and one-click CSV Data Exports.
 - **Interactive Map Pinning:** Overridable AI destination estimation via OpenStreetMap draggable pin-drops with reverse geocoding on the mobile client.
@@ -53,21 +54,20 @@ graph TD
         A[Admin Dashboard]
     end
 
-    subgraph Backend Services [FastAPI Python]
-        API[REST API Router]
-        WS[WebSocket Manager]
-        AI[AI/ML Estimator Engine]
-        DB[(PostgreSQL)]
+    subgraph Cloud Infrastructure [Production]
+        API[Render Web Service: FastAPI]
+        DB[(Neon: Serverless PostgreSQL)]
+        FCM[Firebase Cloud Messaging]
     end
 
     D <-->|REST / WS| API
-    D <-->|Location Sync| WS
     O <-->|REST / WS| API
     A <-->|REST / WS| API
     
-    API <--> AI
-    API <--> DB
-    WS <--> DB
+    API -->|Push Alerts| FCM
+    FCM -.->|Push Notifications| O
+    
+    API <-->|asyncpg| DB
 ```
 
 ---
@@ -76,75 +76,57 @@ graph TD
 
 | Layer | Technologies |
 |-------|-------------|
-| **Backend** | Python 3.12+, FastAPI, SQLAlchemy, Alembic, PostgreSQL, WebSockets, JWT, Scikit-Learn |
-| **Mobile** | Dart, Flutter 3.16+, Provider, Dio, Hive (Offline), flutter_map, geolocator, go_router |
-| **Dashboard** | TypeScript, React, Vite, Tailwind CSS, Recharts, React Leaflet, Axios |
+| **Backend (Render)** | Python 3.12+, FastAPI, SQLAlchemy, Alembic, PostgreSQL, WebSockets, JWT, Scikit-Learn |
+| **Database (Neon)** | Serverless PostgreSQL (Scale-to-zero, Connection Pooling) |
+| **Mobile (Flutter)** | Dart, Flutter 3.16+, Provider, Dio, firebase_messaging, flutter_map, geolocator, go_router |
+| **Dashboard (React)** | TypeScript, React, Vite, Tailwind CSS, Recharts, React Leaflet, Axios |
 | **Mapping / Routing** | OpenStreetMap (OSRM shortest-path), Nominatim (Geocoding) |
 
 ---
 
-## 🚀 Quick Start (Local Setup)
+## 🚀 Quick Start (Production & Local)
 
-### Prerequisites
-- Python 3.12+
-- PostgreSQL 16+ (or Docker installed)
-- Node.js 18+
-- Flutter 3.16+ (for mobile development)
+### Live Production Deployment
+This repository is configured to deploy instantly using Infrastructure-as-Code.
+1. Connect a [Neon PostgreSQL](https://neon.tech) database.
+2. Connect this repository to [Render](https://render.com) using the provided **Blueprint** (`render.yaml`).
+3. Render automatically provisions the API and points it to Neon.
 
-### 1. Database & Backend
-First, spin up the local PostgreSQL database using Docker:
-```bash
-docker compose up postgres -d
-```
-Next, initialize the Python backend:
+### Default Seed Credentials (Live)
+The production database is pre-seeded with the following accounts for immediate testing:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin (Web)** | `admin@sajiloroute.com` | `admin123` |
+| **Driver (Mobile)** | `driver@sajiloroute.com` | `driver123` |
+| **Officer (Mobile/Web)** | `officer@sajiloroute.com` | `officer123` |
+
+### Running Locally
+
+**1. Backend**
 ```bash
 cd backend
 python -m venv venv
-
-# Windows: venv\Scripts\activate
-# macOS/Linux: source venv/bin/activate
-# Fish Shell: source venv/bin/activate.fish
-
+source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-
-# Run database migrations and seed default users
 alembic upgrade head
-python -m scripts.seed_data
-
-# Start the API server
+python seed.py
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-*API Documentation available at: [http://localhost:8000/docs](http://localhost:8000/docs)*
 
-### 2. Admin Dashboard
-In a new terminal window, initialize the React frontend:
+**2. React Dashboard**
 ```bash
 cd dashboard
 npm install
-cp .env.example .env
 npm run dev
 ```
-*Dashboard available at: [http://localhost:5173](http://localhost:5173)*
 
-### 3. Flutter Mobile
-In a new terminal window, initialize the mobile application:
+**3. Flutter Mobile**
 ```bash
 cd mobile
 flutter pub get
-
-# Run on iOS/Android Simulator (Use your machine IP for physical devices)
-flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8000
+flutter run
 ```
-
-### Seed Credentials
-| Role | Email | Password |
-|------|-------|----------|
-| **Admin** | `admin@ambulance.gov` | `Admin@12345` |
-| **Driver** | `driver@ambulance.gov` | `Driver@12345` |
-| **Officer** | `officer@ambulance.gov` | `Officer@12345` |
-
-*(Note: Admins can dynamically create unlimited additional users via the React Dashboard).*
 
 ---
 

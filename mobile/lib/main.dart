@@ -150,7 +150,7 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
         ),
       ],
       child: MaterialApp.router(
-        title: 'Ambulance Coordination',
+        title: 'Sajiloroute',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,

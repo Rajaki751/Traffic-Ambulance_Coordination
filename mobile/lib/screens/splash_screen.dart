@@ -129,8 +129,8 @@ class _PremiumSplashScreenState extends State<PremiumSplashScreen>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          _softRed.withOpacity(0.5),
-                          _background.withOpacity(0.0),
+                          _softRed.withAlpha(128),
+                          _background.withAlpha(0),
                         ],
                       ),
                     ),
@@ -157,7 +157,7 @@ class _PremiumSplashScreenState extends State<PremiumSplashScreen>
                             borderRadius: BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
-                                color: _primaryNavy.withOpacity(0.08),
+                                color: _primaryNavy.withAlpha(20),
                                 blurRadius: 30,
                                 offset: const Offset(0, 10),
                               ),
@@ -182,7 +182,7 @@ class _PremiumSplashScreenState extends State<PremiumSplashScreen>
                     child: CustomPaint(
                       painter: _RoutePulsePainter(
                         progress: _pulseLine.value,
-                        baseColor: _primaryNavy.withOpacity(0.1),
+                        baseColor: _primaryNavy.withAlpha(25),
                         pulseColor: _emergencyRed,
                       ),
                     ),
@@ -361,12 +361,12 @@ class _LoadingLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final bgPaint = Paint()
-      ..color = const Color(0xFF0B1F3A).withOpacity(0.05)
+      ..color = const Color(0xFF0B1F3A).withAlpha(13)
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 
     final fgPaint = Paint()
-      ..color = const Color(0xFFE31B23).withOpacity(0.8)
+      ..color = const Color(0xFFE31B23).withAlpha(204)
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 

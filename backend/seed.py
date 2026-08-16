@@ -25,6 +25,12 @@ async def seed_users():
                 role=UserRole.DRIVER
             ),
             User(
+                name="Driver Alex",
+                email="driver2@sajiloroute.com",
+                password_hash=await hash_password("driver123"),
+                role=UserRole.DRIVER
+            ),
+            User(
                 name="Officer Sarah",
                 email="officer@sajiloroute.com",
                 password_hash=await hash_password("officer123"),

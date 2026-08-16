@@ -98,7 +98,8 @@ The production database is pre-seeded with the following accounts for immediate 
 | Role | Email | Password |
 |------|-------|----------|
 | **Admin (Web)** | `admin@sajiloroute.com` | `admin123` |
-| **Driver (Mobile)** | `driver@sajiloroute.com` | `driver123` |
+| **Driver 1 (Mobile)** | `driver@sajiloroute.com` | `driver123` |
+| **Driver 2 (Mobile)** | `driver2@sajiloroute.com` | `driver123` |
 | **Officer (Mobile/Web)** | `officer@sajiloroute.com` | `officer123` |
 
 ### Running Locally

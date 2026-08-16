@@ -236,28 +236,31 @@ class AuthBadge extends StatelessWidget {
         color: kAuthRedBadgeBg,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: kAuthRed,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: kAuthRed,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'EMERGENCY RESPONSE NETWORK',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.88,
-              color: kAuthRedBadgeText,
+            const SizedBox(width: 8),
+            Text(
+              'EMERGENCY RESPONSE NETWORK',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.88,
+                color: kAuthRedBadgeText,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -725,8 +728,9 @@ class AuthFooterLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = GoogleFonts.inter();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(
           question,

@@ -26,7 +26,8 @@ import 'services/notification_service.dart';
 import 'services/profile_service.dart';
 import 'services/server_config_service.dart';
 import 'providers/settings_provider.dart';
-import 'widgets/auth_widgets.dart';
+
+import 'screens/splash_screen.dart';
 
 import 'core/map_cache.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -68,11 +69,13 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
   late final _authProvider =
       AuthProvider(_authService, widget.serverConfig, _liveService);
   late final _profileService = ProfileService(widget.api);
+  bool _splashMinDurationElapsed = false;
+
   late final _router = GoRouter(
     initialLocation: '/',
     refreshListenable: _authProvider,
     redirect: (context, state) {
-      if (_authProvider.loading) return null;
+      if (_authProvider.loading || !_splashMinDurationElapsed) return null;
       final loggedIn = _authProvider.isAuthenticated;
       final path = state.matchedLocation;
       if (!loggedIn) {
@@ -88,7 +91,7 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
       return null;
     },
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const _SplashScreen()),
+      GoRoute(path: '/', builder: (_, __) => const PremiumSplashScreen()),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
       GoRoute(path: '/driver', builder: (_, __) => const DriverHomeScreen()),
@@ -103,6 +106,21 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
       _authProvider.logout();
     };
     _authProvider.init();
+
+    // Enforce a minimum display duration for the splash screen animation to play out (2 seconds)
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        setState(() {
+          _splashMinDurationElapsed = true;
+          // Trigger the router to re-evaluate after time elapsed
+          // A tiny hack is to call notifyListeners on the auth provider if it's already done loading.
+          if (!_authProvider.loading) {
+            // Re-assigning router forces redirect evaluation since the router itself doesn't listen to `_splashMinDurationElapsed`
+            _router.go(_router.routerDelegate.currentConfiguration.uri.toString());
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -157,18 +175,6 @@ class _AmbulanceAppState extends State<AmbulanceApp> {
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
       ),
-    );
-  }
-}
-
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: kAuthBg,
-      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
